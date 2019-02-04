@@ -1,17 +1,16 @@
 # Backlog
 
 ## TODO
-* Create test module and all unit tests
-* Make a mlsurvey package including all classes
 * Configuration management
 * Log management
 * Git repository : gitlab
 
 ## Current
-* Basic architecture
+* Make a mlsurvey package including all classes
 
 ## Done
 * Git repository : local
+* Basic architecture
 
 # Done definition
 1. Code 

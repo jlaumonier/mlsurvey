@@ -2,8 +2,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import ListedColormap
 
-"""Not tested because il will be transform to a external module (application ?)"""
-
 
 class Visualization:
 

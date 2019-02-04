@@ -1,6 +1,6 @@
 import unittest
 
-import mlsurvey.algorithm as a
+import mlsurvey as mls
 
 
 class TestAlgorithm(unittest.TestCase):
@@ -12,7 +12,7 @@ class TestAlgorithm(unittest.TestCase):
             'algorithm': 'auto',
             'weights': 'uniform'
         }
-        algo = a.Algorithm(algorithm_family, hyperparameters)
+        algo = mls.Algorithm(algorithm_family, hyperparameters)
         self.assertEqual(algorithm_family, algo.algorithm_family)
         self.assertEqual(hyperparameters['n_neighbors'], algo.hyperparameters['n_neighbors'])
         self.assertEqual(hyperparameters['algorithm'], algo.hyperparameters['algorithm'])

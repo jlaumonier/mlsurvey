@@ -1,9 +1,9 @@
-from mlsurvey import algorithm as alg, input as inp, visualization as v
+import mlsurvey as mls
 
 
 def main():
-    visual = v.Visualization()
-    inpt = inp.Input()
+    visual = mls.Visualization()
+    inpt = mls.Input()
 
     algorithm_family = 'knn'
     hyperparameters = {
@@ -11,7 +11,7 @@ def main():
         'algorithm': 'auto',
         'weights': 'uniform'
     }
-    algorithm = alg.Algorithm(algorithm_family, hyperparameters)
+    algorithm = mls.Algorithm(algorithm_family, hyperparameters)
     classifier = algorithm.learn(inpt.x, inpt.y)
 
     visual.plot_data(inpt.x, inpt.y)
