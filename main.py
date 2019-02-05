@@ -2,8 +2,10 @@ import mlsurvey as mls
 
 
 def main():
-    visual = mls.Visualization()
     inpt = mls.Input()
+    data = mls.datasets.DataSetFactory.create_dataset("Moons")
+    data.generate()
+    inpt.set_data(data)
 
     algorithm_family = 'knn'
     hyperparameters = {
@@ -14,8 +16,8 @@ def main():
     algorithm = mls.Algorithm(algorithm_family, hyperparameters)
     classifier = algorithm.learn(inpt.x, inpt.y)
 
-    visual.plot_data(inpt.x, inpt.y)
-    visual.plot_result(inpt.x, classifier)
+    mls.Visualization.plot_data(inpt.x, inpt.y)
+    mls.Visualization.plot_result(inpt.x, classifier)
 
 
 if __name__ == "__main__":

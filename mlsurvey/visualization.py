@@ -5,9 +5,9 @@ from matplotlib.colors import ListedColormap
 
 class Visualization:
 
-    def plot_data(self, x, y=None):
+    @staticmethod
+    def plot_data(x, y=None):
         fig, ax = plt.subplots()
-
         print(x)
         print(y)
         ax.scatter(x[:, 0], x[:, 1], c=y)
@@ -15,7 +15,8 @@ class Visualization:
         fig.tight_layout()
         plt.draw()
 
-    def plot_result(self, x, clf):
+    @staticmethod
+    def plot_result(x, clf):
         # Create color maps
         cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
         h = .05  # step size in the mesh

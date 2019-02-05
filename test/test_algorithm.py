@@ -17,3 +17,4 @@ class TestAlgorithm(unittest.TestCase):
         self.assertEqual(hyperparameters['n_neighbors'], algo.hyperparameters['n_neighbors'])
         self.assertEqual(hyperparameters['algorithm'], algo.hyperparameters['algorithm'])
         self.assertEqual(hyperparameters['weights'], algo.hyperparameters['weights'])
+
