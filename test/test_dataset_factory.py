@@ -34,5 +34,5 @@ class TestDataSetFactory(unittest.TestCase):
         data = dataset_factory.create_dataset('NClassRandomClassification')
         data.generate()
         self.assertEqual(100, data.x.shape[0])
-        self.assertEqual(20, data.x.shape[1])
+        self.assertEqual(2, data.x.shape[1])
         self.assertEqual(100, data.y.shape[0])

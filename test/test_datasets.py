@@ -15,14 +15,14 @@ class TestNClassRandomDataSet(unittest.TestCase):
         data = mls.datasets.NClassRandomClassification()
         data.generate()
         self.assertEqual(100, data.x.shape[0])
-        self.assertEqual(20, data.x.shape[1])
+        self.assertEqual(2, data.x.shape[1])
         self.assertEqual(100, data.y.shape[0])
 
     def test_generate_n_class_random_data_set_is_generated_by_factory(self):
         data = mls.datasets.DataSetFactory.create_dataset('NClassRandomClassification')
         data.generate()
         self.assertEqual(100, data.x.shape[0])
-        self.assertEqual(20, data.x.shape[1])
+        self.assertEqual(2, data.x.shape[1])
         self.assertEqual(100, data.y.shape[0])
 
 

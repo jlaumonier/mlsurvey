@@ -1,15 +1,16 @@
 # Backlog
 
 ## TODO
-* Configuration management
 * Parameters for datasets
+* Visualizing classifier results
+* Configuration management
 * Log management
 * Bug : package management. submodule dataset not correctly handled (mls.XX instead of mls.datasets.XX)
 * Regularization
 * Model evaluation (split datasets)
 
 ## Current
-* Result management : input data
+* Visualizing input from file
 
 ## Done
 * Git repository : local
@@ -18,6 +19,7 @@
 * BUG : datasetfactory pas sur d'ajouter des factory automatiquement
 * Input data : Moons, circles, linearly separable
 * Git repository : gitlab
+* Result management : input data
 
 # Done definition
 1. Code 

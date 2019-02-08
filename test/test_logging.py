@@ -1,11 +1,17 @@
 import datetime
 import os
+import shutil
 import unittest
 
 import mlsurvey as mls
 
 
 class TestLogging(unittest.TestCase):
+
+    @classmethod
+    def tearDownClass(cls):
+        log = mls.Logging()
+        shutil.rmtree(log.base_dir)
 
     def test_init_log_directory_created_with_date(self):
         log = mls.Logging()
@@ -31,3 +37,13 @@ class TestLogging(unittest.TestCase):
         contents = f.read()
         self.assertEqual('{"input.x": [[5.1, 3.5], ', contents[:25])
         f.close()
+
+    def test_load_input_input_loaded(self):
+        dir_name = 'files/'
+        log = mls.Logging(dir_name, base_dir='../test/')
+        i = log.load_input('logging_test_load_input_input_loaded.json')
+        self.assertEqual(5.1, i.x[0, 0])
+        self.assertEqual(0, i.y[0])
+        self.assertEqual(2, i.x.shape[1])
+        self.assertEqual(150, i.x.shape[0])
+        self.assertEqual(150, i.y.shape[0])
