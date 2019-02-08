@@ -8,8 +8,6 @@ class Visualization:
     @staticmethod
     def plot_data(x, y=None):
         fig, ax = plt.subplots()
-        print(x)
-        print(y)
         ax.scatter(x[:, 0], x[:, 1], c=y)
         ax.grid(True)
         fig.tight_layout()

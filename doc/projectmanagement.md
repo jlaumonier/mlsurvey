@@ -4,17 +4,20 @@
 * Configuration management
 * Parameters for datasets
 * Log management
-* Git repository : gitlab
 * Bug : package management. submodule dataset not correctly handled (mls.XX instead of mls.datasets.XX)
+* Regularization
+* Model evaluation (split datasets)
 
 ## Current
-* Input data : Moons, circles, linearly separable
+* Result management : input data
 
 ## Done
 * Git repository : local
 * Basic architecture
 * Make a mlsurvey package including all classes
 * BUG : datasetfactory pas sur d'ajouter des factory automatiquement
+* Input data : Moons, circles, linearly separable
+* Git repository : gitlab
 
 # Done definition
 1. Code 

@@ -2,6 +2,7 @@ import mlsurvey as mls
 
 
 def main():
+
     inpt = mls.Input()
     data = mls.datasets.DataSetFactory.create_dataset("Moons")
     data.generate()
@@ -18,6 +19,9 @@ def main():
 
     mls.Visualization.plot_data(inpt.x, inpt.y)
     mls.Visualization.plot_result(inpt.x, classifier)
+
+    log = mls.Logging()
+    log.save_input(inpt)
 
 
 if __name__ == "__main__":

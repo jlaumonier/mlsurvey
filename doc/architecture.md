@@ -27,3 +27,7 @@ A DataSet can be affected to an input to feed the algorithm
 1. Iris : Iris dataset (from sklearn.datasets)
 1. Moons : make moons (from sklearn.datasets)
 1. N Class Random : Make a n class random problem (from sklearn.datasets)
+
+# Exporting results
+
+Results of a learning (input) can be stored as json files into a directory Logs/(datehour)/
