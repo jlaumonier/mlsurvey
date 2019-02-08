@@ -1,7 +1,7 @@
 # Backlog
 
 ## TODO
-* Parameters for datasets
+
 * Visualizing classifier results
 * Configuration management
 * Log management
@@ -10,7 +10,7 @@
 * Model evaluation (split datasets)
 
 ## Current
-* Visualizing input from file
+* Parameters for datasets
 
 ## Done
 * Git repository : local
@@ -20,6 +20,7 @@
 * Input data : Moons, circles, linearly separable
 * Git repository : gitlab
 * Result management : input data
+* Visualizing input from file
 
 # Done definition
 1. Code 

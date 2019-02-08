@@ -20,6 +20,7 @@
 Sone datasets are defined : Iris (REF), N-class Random data (REF) based on scikit learn.
 DataSetFactory can be used to create a DataSet from the name of the dataset
 A DataSet can be affected to an input to feed the algorithm
+Some parameters are defined for some datasets. Not all parameters defined in sckitlearn can be used
 
 ## Existing datasets
 

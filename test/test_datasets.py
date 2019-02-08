@@ -3,6 +3,15 @@ import unittest
 import mlsurvey as mls
 
 
+class TestDataSet(unittest.TestCase):
+
+    def test_set_generation_parameters(self):
+        data = mls.datasets.DataSet()
+        params = {'param1': 1, 'param2': 3}
+        data.set_generation_parameters(params)
+        self.assertDictEqual(data.params, params)
+
+
 class TestNClassRandomDataSet(unittest.TestCase):
 
     def test_init_n_class_random_data_set(self):
@@ -24,6 +33,25 @@ class TestNClassRandomDataSet(unittest.TestCase):
         self.assertEqual(100, data.x.shape[0])
         self.assertEqual(2, data.x.shape[1])
         self.assertEqual(100, data.y.shape[0])
+
+    def test_generate_n_class_random_data_set_is_generated_with_params(self):
+        data = mls.datasets.Moons()
+        params = {
+            'n_samples': 200,
+            # not tested
+            'shuffle': False,
+            # not tested
+            'noise': 0.5,
+            # not tested
+            'random_state': 10,
+            # not tested
+            'factor': 0.3
+        }
+        data.set_generation_parameters(params)
+        data.generate()
+        self.assertEqual(2, data.x.shape[1])
+        self.assertEqual(params['n_samples'], data.x.shape[0])
+        self.assertEqual(params['n_samples'], data.y.shape[0])
 
 
 class TestIrisDataSet(unittest.TestCase):
@@ -75,6 +103,25 @@ class TestMoonsDataSet(unittest.TestCase):
         self.assertEqual(100, data.x.shape[0])
         self.assertEqual(100, data.y.shape[0])
 
+    def test_generate_moons_data_set_is_generated_with_params(self):
+        data = mls.datasets.Moons()
+        params = {
+            'n_samples': 200,
+            # not tested
+            'shuffle': False,
+            # not tested
+            'noise': 0.5,
+            # not tested
+            'random_state': 10,
+            # not tested
+            'factor': 0.3
+        }
+        data.set_generation_parameters(params)
+        data.generate()
+        self.assertEqual(2, data.x.shape[1])
+        self.assertEqual(params['n_samples'], data.x.shape[0])
+        self.assertEqual(params['n_samples'], data.y.shape[0])
+
 
 class TestCirclesDataSet(unittest.TestCase):
 
@@ -97,3 +144,22 @@ class TestCirclesDataSet(unittest.TestCase):
         self.assertEqual(2, data.x.shape[1])
         self.assertEqual(100, data.x.shape[0])
         self.assertEqual(100, data.y.shape[0])
+
+    def test_generate_moons_data_set_is_generated_with_params(self):
+        data = mls.datasets.Circles()
+        params = {
+            'n_samples': 200,
+            # not tested
+            'shuffle': False,
+            # not tested
+            'noise': 0.5,
+            # not tested
+            'random_state': 10,
+            # not tested
+            'factor': 0.3
+        }
+        data.set_generation_parameters(params)
+        data.generate()
+        self.assertEqual(2, data.x.shape[1])
+        self.assertEqual(params['n_samples'], data.x.shape[0])
+        self.assertEqual(params['n_samples'], data.y.shape[0])

@@ -13,6 +13,14 @@ def main():
     name = 'NClassRandomClassification'
     inpt = mls.Input()
     data = mls.datasets.DataSetFactory.create_dataset(name)
+    data_params = {
+        'n_samples': 100,
+        'shuffle': True,
+        'noise': 0,
+        'random_state': 0,
+        'factor': 0.3
+    }
+    data.set_generation_parameters(data_params)
     data.generate()
     data.x = StandardScaler().fit_transform(data.x)
     inpt.set_data(data)
@@ -25,7 +33,7 @@ def main():
     }
     algorithm = mls.Algorithm(algorithm_family, hyperparameters)
     classifier = algorithm.learn(inpt.x, inpt.y)
-    mls.Visualization.plot_result(inpt.x, inpt.y, classifier, name, True)
+    mls.Visualization.plot_result(inpt.x, inpt.y, classifier, name, False)
     log = mls.Logging()
     log.save_input(inpt)
 
