@@ -2,15 +2,14 @@
 
 ## TODO
 
-* Visualizing classifier results
-* Configuration management
+* Supervised learning process
 * Log management
 * Bug : package management. submodule dataset not correctly handled (mls.XX instead of mls.datasets.XX)
 * Regularization
 * Model evaluation (split datasets)
 
 ## Current
-* Parameters for datasets
+* Configuration management
 
 ## Done
 * Git repository : local
@@ -21,6 +20,8 @@
 * Git repository : gitlab
 * Result management : input data
 * Visualizing input from file
+* Parameters for datasets
+* Visualizing classifier results
 
 # Done definition
 1. Code 

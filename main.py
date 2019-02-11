@@ -10,30 +10,22 @@ def visualize():
 
 
 def main():
-    name = 'NClassRandomClassification'
+    config = mls.Config()
+    dataset_name = config.data.learning_process.input
     inpt = mls.Input()
-    data = mls.datasets.DataSetFactory.create_dataset(name)
-    data_params = {
-        'n_samples': 100,
-        'shuffle': True,
-        'noise': 0,
-        'random_state': 0,
-        'factor': 0.3
-    }
+    data = mls.datasets.DataSetFactory.create_dataset(config.data.datasets[dataset_name].type)
+    data_params = config.data.datasets[dataset_name].parameters
     data.set_generation_parameters(data_params)
     data.generate()
     data.x = StandardScaler().fit_transform(data.x)
     inpt.set_data(data)
 
-    algorithm_family = 'knn'
-    hyperparameters = {
-        'n_neighbors': 15,
-        'algorithm': 'auto',
-        'weights': 'uniform'
-    }
+    algorithm_name = config.data.learning_process.algorithm
+    algorithm_family = config.data.algorithms[algorithm_name].algorithm_family
+    hyperparameters = config.data.algorithms[algorithm_name].hyperparameters
     algorithm = mls.Algorithm(algorithm_family, hyperparameters)
     classifier = algorithm.learn(inpt.x, inpt.y)
-    mls.Visualization.plot_result(inpt.x, inpt.y, classifier, name, False)
+    mls.Visualization.plot_result(inpt.x, inpt.y, classifier, dataset_name, False)
     log = mls.Logging()
     log.save_input(inpt)
 

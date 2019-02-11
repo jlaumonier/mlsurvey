@@ -1,0 +1,28 @@
+{
+  "datasets": {
+    "DataSet1": {
+      "type": "NClassRandomClassification",
+      "parameters": {
+        "n_samples": 100,
+        "shuffle": true,
+        "noise": 0,
+        "random_state": 0,
+        "factor": 0.3
+      }
+    }
+  },
+  "algorithms": {
+    "knn-base": {
+      "algorithm_family": "knn",
+      "hyperparameters": {
+        "n_neighbors": 15,
+        "algorithm": "auto",
+        "weights": "uniform"
+      }
+    }
+  },
+  "learning_process": {
+    "input": "DataSet1",
+    "algorithm": "knn-base"
+  }
+}

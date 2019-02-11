@@ -32,3 +32,8 @@ Some parameters are defined for some datasets. Not all parameters defined in sck
 # Exporting results
 
 Results of a learning (input) can be stored as json files into a directory Logs/(datehour)/
+
+# Configuration
+
+The configuration of the learning process is defined in the config/config.json and can be loaded and accessed 
+from the mlsurvey.Config class. 
