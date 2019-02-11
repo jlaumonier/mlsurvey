@@ -21,8 +21,19 @@
       }
     }
   },
+  "splits": {
+    "traintest20": {
+      "type": "traintest",
+      "parameters": {
+        "test_size": 20,
+        "random_state": 0,
+        "shuffle": true
+      }
+    }
+  },
   "learning_process": {
     "input": "DataSet1",
+    "split": "traintest20",
     "algorithm": "knn-base"
   }
 }

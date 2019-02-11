@@ -1,15 +1,16 @@
 # Backlog
 
 ## TODO
-
-* Supervised learning process
 * Log management
 * Bug : package management. submodule dataset not correctly handled (mls.XX instead of mls.datasets.XX)
 * Regularization
-* Model evaluation (split datasets)
+* Model evaluation (complete)
+* Keep DotMap in Config ?
+* Random seed global
+* Complete Visualization
 
 ## Current
-* Configuration management
+* Supervised learning process
 
 ## Done
 * Git repository : local
@@ -22,6 +23,7 @@
 * Visualizing input from file
 * Parameters for datasets
 * Visualizing classifier results
+* Configuration management
 
 # Done definition
 1. Code 

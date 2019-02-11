@@ -36,4 +36,14 @@ Results of a learning (input) can be stored as json files into a directory Logs/
 # Configuration
 
 The configuration of the learning process is defined in the config/config.json and can be loaded and accessed 
-from the mlsurvey.Config class. 
+from the mlsurvey.Config class. However, I am not sure if i will keep DotMap() access. 
+
+# Learning process
+
+The supervised learning process follow this structure :
+1. choose the dataset (generate, load, define)
+1. input pretreatement (support StandartScaler (mean 0, stddev 1))
+1. apply the model evaluation strategy to split the input (support Train+Test)
+1. learn
+1. model evaluation and metrics calculation (confusion matrix, TODO)
+
