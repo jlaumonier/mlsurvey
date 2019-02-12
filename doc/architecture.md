@@ -31,7 +31,8 @@ Some parameters are defined for some datasets. Not all parameters defined in sck
 
 # Exporting results
 
-Results of a learning (input) can be stored as json files into a directory Logs/(datehour)/
+Results of a learning (input. classifiers, evalution, config) can be stored as json files into a directory Logs/(datehour)/
+The results can be loaded be the supervised learning workflow and can be show by Visualization
 
 # Configuration
 

@@ -1,5 +1,11 @@
 # Backlog
 
+# Done definition
+1. Code 
+2. Unit test
+3. Documentation
+4. Pushed in git
+
 ## TODO
 * Log management
 * Bug : package management. submodule dataset not correctly handled (mls.XX instead of mls.datasets.XX)
@@ -8,9 +14,12 @@
 * Keep DotMap in Config ?
 * Random seed global
 * Complete Visualization
+* Error Management
+* Reorganize Dataset and Input : concept are too similar and not well defined
+* Document supervisedlearningworkflow.py
 
 ## Current
-* Supervised learning process
+* save and load classifier and results
 
 ## Done
 * Git repository : local
@@ -24,9 +33,7 @@
 * Parameters for datasets
 * Visualizing classifier results
 * Configuration management
+* Supervised learning process
 
-# Done definition
-1. Code 
-2. Unit test
-3. Documentation
-4. Pushed in git
+
+

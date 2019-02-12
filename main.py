@@ -1,21 +1,20 @@
 import mlsurvey as mls
 
 
-def visualize():
-    log = mls.Logging()
-    i = log.load_input('input.json')
-    mls.Visualization.plot_data(i.x, i.y)
+def visualize(directory):
+    slw = mls.SupervisedLearningWorkflow()
+    slw.load_data_classifier(directory)
+    mls.Visualization.plot_result(slw.data_train.x, slw.data_train.y, slw.classifier, "Train", False, 1)
+    plt = mls.Visualization.plot_result(slw.data_test.x, slw.data_test.y, slw.classifier, "Test", False, 2)
+    print(slw.score)
+    plt.show()
 
 
 def main():
     slw = mls.SupervisedLearningWorkflow()
     slw.run()
-    mls.Visualization.plot_result(slw.data.x, slw.data.y, slw.classifier, "test", False)
-    print(slw.score)
-    log = mls.Logging()
-    log.save_input(slw.data_train)
+    visualize(slw.log.directory)
 
 
 if __name__ == "__main__":
     main()
-    visualize()

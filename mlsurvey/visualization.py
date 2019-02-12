@@ -33,7 +33,7 @@ class Visualization:
         return xx, yy
 
     @staticmethod
-    def plot_result(x, y, clf, name, multi=False):
+    def plot_result(x, y, clf, name, multi=False, n=1):
         """
         Display classifier result on a dataset
         :param x: 2D array for x values
@@ -41,6 +41,7 @@ class Visualization:
         :param clf: classifier
         :param name: name of the graph
         :param multi: display decision frontier
+        :param n: nth graphic in the plot
         """
 
         cm = 'jet_r'
@@ -56,7 +57,7 @@ class Visualization:
                 z = clf.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
 
         z = z.reshape(xx.shape)
-        ax = plt.subplot(1, 2, 1)
+        ax = plt.subplot(1, 2, n)
         test = ax.contourf(xx, yy, z, 100, cmap=cm, alpha=.8)
 
         cbar = plt.colorbar(test)
@@ -68,3 +69,4 @@ class Visualization:
         ax.set_title(name, fontsize=22)
 
         plt.draw()
+        return plt

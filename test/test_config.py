@@ -17,3 +17,7 @@ class TestConfig(unittest.TestCase):
         config = mls.Config('complete_config_loaded.json')
         self.assertEqual('NClassRandomClassification', config.data.datasets.DataSet1.type)
         self.assertEqual(100, config.data.datasets['DataSet1'].parameters.n_samples)
+
+    def test_load_config_from_other_directory(self):
+        config = mls.Config('config_loaded.json', 'files/')
+        self.assertEqual('config loaded', config.data.testconfig)
