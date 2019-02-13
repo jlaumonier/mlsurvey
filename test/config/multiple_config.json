@@ -1,0 +1,58 @@
+{
+  "datasets": {
+    "DataSet1": {
+      "type": "NClassRandomClassification",
+      "parameters": {
+        "n_samples": 100,
+        "shuffle": true,
+        "noise": 0,
+        "random_state": 0,
+        "factor": 0.3
+      }
+    },
+    "DataSet2": {
+      "type": "Circles",
+      "parameters": {
+        "n_samples": 100,
+        "shuffle": true,
+        "noise": 0,
+        "random_state": 0,
+        "factor": 0.3
+      }
+    },
+    "DataSet3": {
+      "type": "Iris",
+      "parameters": {
+      }
+    }
+  },
+  "algorithms": {
+    "knn-base": {
+      "algorithm-family": "knn",
+      "hyperparameters": {
+        "n_neighbors": 15,
+        "algorithm": "auto",
+        "weights": "uniform"
+      }
+    }
+  },
+  "splits": {
+    "traintest20": {
+      "type": "traintest",
+      "parameters": {
+        "test_size": 20,
+        "random_state": 0,
+        "shuffle": true
+      }
+    }
+  },
+  "learning_process": {
+    "input": [
+      "DataSet1",
+      "DataSet2",
+      "DataSet3"
+    ],
+    "split": "traintest20",
+    "algorithm": "knn-base"
+  }
+}

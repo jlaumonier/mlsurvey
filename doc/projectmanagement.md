@@ -17,9 +17,11 @@
 * Error Management
 * Reorganize Dataset and Input : concept are too similar and not well defined
 * Document supervisedlearningworkflow.py
+* use Jupyter, AppMode, Bokeh, bqplot... to interactively visualize data and results
 
 ## Current
-* save and load classifier and results
+* workflow for multiple datasets
+
 
 ## Done
 * Git repository : local
@@ -34,6 +36,7 @@
 * Visualizing classifier results
 * Configuration management
 * Supervised learning process
+* save and load classifier and results
 
 
 

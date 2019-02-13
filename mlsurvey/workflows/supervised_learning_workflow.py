@@ -2,11 +2,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 import mlsurvey as mls
+from .learning_workflow import LearningWorkflow
 
 
-class SupervisedLearningWorkflow:
+class SupervisedLearningWorkflow(LearningWorkflow):
 
     def __init__(self, config_file='config.json'):
+        super().__init__()
         self.config = mls.Config(config_file)
         self.task_terminated_get_data = False
         self.task_terminated_prepare_data = False
@@ -14,7 +16,6 @@ class SupervisedLearningWorkflow:
         self.task_terminated_learn = False
         self.task_terminated_evaluate = False
         self.task_terminated_persistence = False
-        self.terminated = False
         self.data = mls.datasets.DataSet()
         self.data_preparation = StandardScaler()
         self.data_train = mls.Input()

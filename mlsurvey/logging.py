@@ -30,8 +30,7 @@ class Logging:
         output = {}
         for k, v in inpts.items():
             output[k] = v.to_dict()
-        with open(self.directory + 'input.json', 'w') as outfile:
-            json.dump(output, outfile)
+        self.save_dict_as_json('input.json', output)
 
     def load_input(self, filename):
         """
@@ -39,8 +38,7 @@ class Logging:
         :param filename: the name of the file
         :return: dictionary containing each inputs
         """
-        with open(self.directory + filename, 'r') as infile:
-            data = json.load(infile)
+        data = self.load_json_as_dict(filename)
         result = {}
         for k, v in data.items():
             i = mls.Input()
