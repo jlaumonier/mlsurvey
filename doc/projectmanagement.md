@@ -20,8 +20,7 @@
 * use Jupyter, AppMode, Bokeh, bqplot... to interactively visualize data and results
 
 ## Current
-* workflow for multiple datasets
-
+* workflow for multiple datasets, algo and split
 
 ## Done
 * Git repository : local

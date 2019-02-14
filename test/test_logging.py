@@ -1,4 +1,3 @@
-import datetime
 import os
 import shutil
 import unittest
@@ -17,9 +16,9 @@ class TestLogging(unittest.TestCase):
 
     def test_init_log_directory_created_with_date(self):
         log = mls.Logging()
-        dh = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + "/"
-        self.assertTrue(os.path.isdir(log.base_dir + dh))
-        self.assertEqual(log.directory, log.base_dir + dh)
+        self.assertIsNotNone(log.dir_name)
+        self.assertTrue(os.path.isdir(log.base_dir + log.dir_name + '/'))
+        self.assertEqual(log.directory, log.base_dir + log.dir_name + '/')
 
     def test_init_log_directory_create_with_fixed_name(self):
         dir_name = 'testing/'

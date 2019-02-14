@@ -33,6 +33,11 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertEqual(0.0, slw.score)
         self.assertIsInstance(slw.log, mls.Logging)
 
+    def test_init_SL_workflow_should_initialized_with_config(self):
+        c = {'testconfig': 'config loaded'}
+        slw = mls.SupervisedLearningWorkflow(config=c)
+        self.assertEqual('config loaded', slw.config.data.testconfig)
+
     def test_set_terminated_all_terminated(self):
         slw = mls.SupervisedLearningWorkflow()
         slw.task_terminated_get_data = True

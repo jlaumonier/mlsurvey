@@ -7,9 +7,9 @@ from .learning_workflow import LearningWorkflow
 
 class SupervisedLearningWorkflow(LearningWorkflow):
 
-    def __init__(self, config_file='config.json'):
+    def __init__(self, config_file='config.json', config=None):
         super().__init__()
-        self.config = mls.Config(config_file)
+        self.config = mls.Config(config_file, config=config)
         self.task_terminated_get_data = False
         self.task_terminated_prepare_data = False
         self.task_terminated_split_data = False

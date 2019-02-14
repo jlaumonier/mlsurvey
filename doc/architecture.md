@@ -37,7 +37,8 @@ The results can be loaded be the supervised learning workflow and can be show by
 # Configuration
 
 The configuration of the learning process is defined in the config/config.json and can be loaded and accessed 
-from the mlsurvey.Config class. However, I am not sure if i will keep DotMap() access. 
+from the mlsurvey.Config class. Each element in the learning_process section can be a list to launch multiple learning
+However, I am not sure if i will keep DotMap() access. 
 
 # Learning process
 
@@ -47,4 +48,6 @@ The supervised learning process follow this structure :
 1. apply the model evaluation strategy to split the input (support Train+Test)
 1. learn
 1. model evaluation and metrics calculation (confusion matrix, TODO)
+
+The multiple learning workflow run multiple supervised learning workflow according to the config file
 

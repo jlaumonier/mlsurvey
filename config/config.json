@@ -45,7 +45,10 @@
     }
   },
   "learning_process": {
-    "input": "DataSetCircle",
+    "input": [
+      "DataSetCircle",
+      "DataSetIris"
+    ],
     "split": "traintest20",
     "algorithm": "knn-base"
   }

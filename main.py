@@ -11,9 +11,10 @@ def visualize(directory):
 
 
 def main():
-    slw = mls.SupervisedLearningWorkflow()
-    slw.run()
-    visualize(slw.log.directory)
+    mlw = mls.MultipleLearningWorkflow()
+    mlw.run()
+    for sl in mlw.slw:
+        visualize(sl.log.directory)
 
 
 if __name__ == "__main__":

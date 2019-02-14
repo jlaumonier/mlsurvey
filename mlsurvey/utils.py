@@ -1,4 +1,5 @@
 import hashlib
+import itertools
 
 
 class Utils:
@@ -17,3 +18,19 @@ class Utils:
                 hasher.update(buf)
                 buf = afile.read(blocksize)
         return hasher.hexdigest()
+
+    @classmethod
+    def dict_generator_cartesian_product(cls, source):
+        """ get a dictionary containing lists and calculate the cartesian product of these lists.
+            return a generator of dictionaries
+        """
+        keys = []
+        vals = []
+        for k, v in source.items():
+            keys.append(k)
+            if isinstance(v, list):
+                vals.append(v)
+            else:
+                vals.append([v])
+        for instance in itertools.product(*vals):
+            yield dict(zip(keys, instance))
