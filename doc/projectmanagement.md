@@ -13,14 +13,12 @@
 * Model evaluation (complete)
 * Keep DotMap in Config ?
 * Random seed global
-* Complete Visualization
 * Error Management
 * Reorganize Dataset and Input : concept are too similar and not well defined
-* Document supervisedlearningworkflow.py
-* use Jupyter, AppMode, Bokeh, bqplot... to interactively visualize data and results
+* Complete Visualization : use Jupyter, AppMode, Bokeh, bqplot... to interactively visualize data and results
 
 ## Current
-* workflow for multiple datasets, algo and split
+* Document supervisedlearningworkflow.py
 
 ## Done
 * Git repository : local
@@ -36,6 +34,7 @@
 * Configuration management
 * Supervised learning process
 * save and load classifier and results
+* workflow for multiple datasets, algo and split
 
 
 
