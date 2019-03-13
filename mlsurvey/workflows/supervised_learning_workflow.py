@@ -43,9 +43,9 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         """
         Initialize and generate the dataset from configuration learning_process.input
         """
-        dataset_name = self.config.data.learning_process.input
-        data_params = self.config.data.datasets[dataset_name].parameters
-        self.data = mls.datasets.DataSetFactory.create_dataset(self.config.data.datasets[dataset_name].type)
+        dataset_name = self.config.data['learning_process']['input']
+        data_params = self.config.data['datasets'][dataset_name]['parameters']
+        self.data = mls.datasets.DataSetFactory.create_dataset(self.config.data['datasets'][dataset_name]['type'])
         self.data.set_generation_parameters(data_params)
         self.data.generate()
         self.task_terminated_get_data = True
@@ -59,23 +59,23 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         """ split the data for training/testing process.
         At the moment, only the split 'traintest' to split into train and test set is supported
         """
-        split_name = self.config.data.learning_process.split
-        split_param = self.config.data.splits[split_name].parameters
-        if self.config.data.splits[split_name].type == 'traintest':
-            self.data_train.x, \
-            self.data_test.x, \
-            self.data_train.y, \
-            self.data_test.y = train_test_split(self.data.x,
-                                                self.data.y,
-                                                test_size=split_param.test_size,
-                                                random_state=split_param.random_state,
-                                                shuffle=split_param.shuffle)
+        split_name = self.config.data['learning_process']['split']
+        split_param = self.config.data['splits'][split_name]['parameters']
+        if self.config.data['splits'][split_name]['type'] == 'traintest':
+            (self.data_train.x,
+             self.data_test.x,
+             self.data_train.y,
+             self.data_test.y) = train_test_split(self.data.x,
+                                                  self.data.y,
+                                                  test_size=split_param['test_size'],
+                                                  random_state=split_param['random_state'],
+                                                  shuffle=split_param['shuffle'])
             self.task_terminated_split_data = True
 
     def task_learn(self):
         """ learn the classifier with train data"""
-        algorithm_name = self.config.data.learning_process.algorithm
-        algorithm = mls.Algorithm(self.config.data.algorithms[algorithm_name])
+        algorithm_name = self.config.data['learning_process']['algorithm']
+        algorithm = mls.Algorithm(self.config.data['algorithms'][algorithm_name])
         self.classifier = algorithm.learn(self.data_train.x, self.data_train.y)
         self.task_terminated_learn = True
 

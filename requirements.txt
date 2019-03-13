@@ -1,5 +1,4 @@
 scikit-learn
 numpy
 matplotlib
-dotmap
 joblib

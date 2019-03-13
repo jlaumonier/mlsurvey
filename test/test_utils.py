@@ -24,3 +24,10 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(1, len(result))
         expected_first_dict = {"element1": "test"}
         self.assertDictEqual(expected_first_dict, result[0])
+
+    def test_dict_generator_cartesian_product_empty(self):
+        source = {}
+        result = list(mls.Utils.dict_generator_cartesian_product(source))
+        self.assertEqual(1, len(result))
+        expected_first_dict = {}
+        self.assertDictEqual(expected_first_dict, result[0])

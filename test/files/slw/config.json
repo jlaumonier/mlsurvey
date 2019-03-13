@@ -18,8 +18,7 @@
         "n_neighbors": 15,
         "algorithm": "auto",
         "weights": "uniform"
-      },
-      "algorithm_family": {}
+      }
     }
   },
   "splits": {

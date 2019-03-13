@@ -36,7 +36,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
     def test_init_SL_workflow_should_initialized_with_config(self):
         c = {'testconfig': 'config loaded'}
         slw = mls.SupervisedLearningWorkflow(config=c)
-        self.assertEqual('config loaded', slw.config.data.testconfig)
+        self.assertEqual('config loaded', slw.config.data['testconfig'])
 
     def test_set_terminated_all_terminated(self):
         slw = mls.SupervisedLearningWorkflow()
@@ -168,7 +168,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.task_evaluate()
         slw.task_persist()
         self.assertTrue(os.path.isfile(slw.log.directory + 'config.json'))
-        self.assertEqual('8afaddc85b486762a84b7ab6969246c2', mls.Utils.md5_file(slw.log.directory + 'config.json'))
+        self.assertEqual('c9935d6e4a4490fac609e68333342760', mls.Utils.md5_file(slw.log.directory + 'config.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'input.json'))
         self.assertEqual('0b62a3861adcbdb1a2c68541e8a1519b', mls.Utils.md5_file(slw.log.directory + 'input.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'model.joblib'))
@@ -180,7 +180,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
     def test_load_data_classifier_loaded(self):
         slw = mls.SupervisedLearningWorkflow()
         slw.load_data_classifier("files/slw/")
-        self.assertTrue('DataSet1', slw.config.data.learning_process.input)
+        self.assertTrue('DataSet1', slw.config.data['learning_process']['input'])
         self.assertEqual(20, len(slw.data_test.x))
         self.assertEqual(20, len(slw.data_test.y))
         self.assertEqual(80, len(slw.data_train.x))

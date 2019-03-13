@@ -3,8 +3,14 @@
     "DataSet1": {
       "type": "NClassRandomClassification",
       "parameters": {
-        "n_samples": 100,
-        "shuffle": true,
+        "n_samples": [
+          100,
+          200
+        ],
+        "shuffle": [
+          true,
+          false
+        ],
         "noise": 0,
         "random_state": 0,
         "factor": 0.3
@@ -34,13 +40,26 @@
         "algorithm": "auto",
         "weights": "uniform"
       }
+    },
+    "svm": {
+      "algorithm-family": "svm",
+      "hyperparameters": {
+        "kernel": "rbf",
+        "C": [
+          0.5,
+          1.0
+        ]
+      }
     }
   },
   "splits": {
     "traintest20": {
       "type": "traintest",
       "parameters": {
-        "test_size": 20,
+        "test_size": [
+          20,
+          50
+        ],
         "random_state": 0,
         "shuffle": true
       }
@@ -52,11 +71,10 @@
       "DataSet2",
       "DataSet3"
     ],
-    "split": [
-      "traintest20"
-    ],
+    "split": "traintest20",
     "algorithm": [
-      "knn-base"
+      "knn-base",
+      "svm"
     ]
   }
 }

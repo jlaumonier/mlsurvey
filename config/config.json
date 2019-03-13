@@ -28,7 +28,11 @@
     "knn-base": {
       "algorithm-family": "knn",
       "hyperparameters": {
-        "n_neighbors": 15,
+        "n_neighbors": [
+          2,
+          5,
+          15
+        ],
         "algorithm": "auto",
         "weights": "uniform"
       }
