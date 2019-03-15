@@ -8,17 +8,17 @@
 
 ## TODO
 * Log management
+* Multiple-learning workflow : use concurent learning processes
+* Complete Visualization : use Jupyter, AppMode, Bokeh, bqplot... to interactively visualize data and results - Not sure
 * Bug : package management. submodule dataset not correctly handled (mls.XX instead of mls.datasets.XX)
 * Regularization
 * Model evaluation (complete)
 * Random seed global
 * Error Management - Make the system robust
-* Multiple-learning workflow : use concurent learning processes
 * Reorganize Dataset and Input : concept are too similar and not well defined
-* Complete Visualization : use Jupyter, AppMode, Bokeh, bqplot... to interactively visualize data and results - Not sure
 
 ## Current
-* Implements other algorithms and datasets - Generalization
+
 
 ## Done
 * Git repository : local
@@ -38,6 +38,7 @@
 * Document supervisedlearningworkflow.py
 * Improve multiple learning
 * Do not keep DotMap in Config 
+* Implements other algorithms and datasets - Generalization
 
 
 
