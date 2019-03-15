@@ -1,4 +1,5 @@
 import hashlib
+import importlib
 import itertools
 
 
@@ -34,3 +35,12 @@ class Utils:
                 vals.append([v])
         for instance in itertools.product(*vals):
             yield dict(zip(keys, instance))
+
+    @classmethod
+    def import_from_dotted_path(cls, dotted_names):
+        """ import_from_dotted_path('foo.bar') -> from foo import bar; return bar
+        """
+        module_name, class_name = dotted_names.rsplit('.', 1)
+        module = importlib.import_module(module_name)
+        handler_class = getattr(module, class_name)
+        return handler_class

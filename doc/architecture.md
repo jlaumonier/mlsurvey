@@ -8,10 +8,6 @@
         1. Loss function
         1. Optimization method
 1. Hyperparameters
-    1. Hyperparameters for knn : 
-        * n_neighbors 
-        * algorithm 
-        * weights
 1. Result : results of the algorithm
 1. Visualization with matplotlib
 
@@ -24,10 +20,8 @@ Some parameters are defined for some datasets. Not all parameters defined in sck
 
 ## Existing datasets
 
-1. Circles : make circles (from sklearn.datasets)
-1. Iris : Iris dataset (from sklearn.datasets)
-1. Moons : make moons (from sklearn.datasets)
-1. N Class Random : Make a n class random problem (from sklearn.datasets)
+1. N Class Random : Make a n class random problem (from sklearn.datasets) with noise calculation
+1. Any datasets in sklearn.datasets (in theory)
 
 # Exporting results
 
@@ -37,7 +31,7 @@ The results can be loaded be the supervised learning workflow and can be show by
 # Configuration
 
 The configuration of the learning process is defined in the config/config.json and can be loaded and accessed 
-from the mlsurvey.Config class. Each element in the learning_process section can be a list to launch multiple learning
+from the mlsurvey.Config class. Each element in the learning_process section can be a list to launch multiple learning.
 
 # Learning process
 

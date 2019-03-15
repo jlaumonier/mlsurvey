@@ -1,4 +1,4 @@
-from sklearn import neighbors
+import mlsurvey as mls
 
 
 class Algorithm:
@@ -10,9 +10,7 @@ class Algorithm:
 
     def learn(self, x, y):
         """learn a classifier from input x and y"""
-        classifier = neighbors.KNeighborsClassifier(self.hyperparameters['n_neighbors'],
-                                                    algorithm=self.hyperparameters['algorithm'],
-                                                    weights=self.hyperparameters['weights']
-                                                    )
+        classifier_class = mls.Utils.import_from_dotted_path(self.algorithm_family)
+        classifier = classifier_class(**self.hyperparameters)
         classifier.fit(x, y)
         return classifier

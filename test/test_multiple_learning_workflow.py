@@ -48,11 +48,11 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
         self.assertDictEqual(d0, mlw.expanded_config[0]['learning_process'])
         self.assertDictEqual(d1, mlw.expanded_config[1]['learning_process'])
         self.assertDictEqual(d2, mlw.expanded_config[2]['learning_process'])
-        self.assertEqual('NClassRandomClassification', mlw.expanded_config[0]['datasets']['DataSet1']['type'])
+        self.assertEqual('NClassRandomClassificationWithNoise', mlw.expanded_config[0]['datasets']['DataSet1']['type'])
         self.assertEqual(100, mlw.expanded_config[0]['datasets']['DataSet1']['parameters']['n_samples'])
-        self.assertEqual('Circles', mlw.expanded_config[1]['datasets']['DataSet2']['type'])
+        self.assertEqual('make_circles', mlw.expanded_config[1]['datasets']['DataSet2']['type'])
         self.assertEqual(100, mlw.expanded_config[1]['datasets']['DataSet2']['parameters']['n_samples'])
-        self.assertEqual('Iris', mlw.expanded_config[2]['datasets']['DataSet3']['type'])
+        self.assertEqual('load_iris', mlw.expanded_config[2]['datasets']['DataSet3']['type'])
         self.assertEqual(0, len(mlw.expanded_config[2]['datasets']['DataSet3']['parameters']))
         self.assertTrue(mlw.task_terminated_expand_config)
 
@@ -61,13 +61,12 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
         mlw.task_expand_config()
         self.assertEqual(36, len(mlw.expanded_config))
         lp0 = {"input": "DataSet1", "split": "traintest20", "algorithm": "knn-base"}
-        ds0 = {"type": "NClassRandomClassification",
+        ds0 = {"type": "make_classification",
                "parameters": {
                    "n_samples": 100,
                    "shuffle": True,
                    "noise": 0,
-                   "random_state": 0,
-                   "factor": 0.3
+                   "random_state": 0
                }
                }
         self.assertDictEqual(lp0, mlw.expanded_config[0]['learning_process'])

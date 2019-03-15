@@ -5,7 +5,7 @@ from .dataset import DataSet
 from .dataset_factory import DataSetFactory
 
 
-class NClassRandomClassification(DataSet):
+class NClassRandomClassificationWithNoise(DataSet):
 
     def generate(self):
         n_samples = self.params.get('n_samples', 100)
@@ -27,7 +27,7 @@ class NClassRandomClassification(DataSet):
 
     class Factory:
         @staticmethod
-        def create(): return NClassRandomClassification()
+        def create(t): return NClassRandomClassificationWithNoise(t)
 
 
-DataSetFactory.add_factory('NClassRandomClassification', NClassRandomClassification.Factory)
+DataSetFactory.add_factory('NClassRandomClassificationWithNoise', NClassRandomClassificationWithNoise.Factory)

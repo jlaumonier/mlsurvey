@@ -1,7 +1,7 @@
 {
   "datasets": {
     "DataSet1": {
-      "type": "NClassRandomClassification",
+      "type": "make_classification",
       "parameters": {
         "n_samples": [
           100,
@@ -12,12 +12,11 @@
           false
         ],
         "noise": 0,
-        "random_state": 0,
-        "factor": 0.3
+        "random_state": 0
       }
     },
     "DataSet2": {
-      "type": "Circles",
+      "type": "make_circles",
       "parameters": {
         "n_samples": 100,
         "shuffle": true,
@@ -27,7 +26,7 @@
       }
     },
     "DataSet3": {
-      "type": "Iris",
+      "type": "load_iris",
       "parameters": {
       }
     }

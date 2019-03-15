@@ -7,4 +7,7 @@ class DataSetFactory:
 
     @staticmethod
     def create_dataset(name):
-        return DataSetFactory.factories[name].create()
+        factory_name = name
+        if name not in DataSetFactory.factories.keys():
+            factory_name = 'generic'
+        return DataSetFactory.factories[factory_name].create(name)

@@ -18,8 +18,8 @@ class MultipleLearningWorkflow(LearningWorkflow):
 
     def set_terminated(self):
         """ set the workflow as terminated if all tasks are terminated"""
-        self.terminated = self.task_terminated_expand_config \
-                          & self.task_terminated_run_each_config
+        self.terminated = (self.task_terminated_expand_config
+                           & self.task_terminated_run_each_config)
 
     def task_expand_config(self):
         """

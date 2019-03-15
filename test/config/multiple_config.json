@@ -1,17 +1,16 @@
 {
   "datasets": {
     "DataSet1": {
-      "type": "NClassRandomClassification",
+      "type": "NClassRandomClassificationWithNoise",
       "parameters": {
         "n_samples": 100,
         "shuffle": true,
-        "noise": 0,
         "random_state": 0,
-        "factor": 0.3
+        "noise": 0
       }
     },
     "DataSet2": {
-      "type": "Circles",
+      "type": "make_circles",
       "parameters": {
         "n_samples": 100,
         "shuffle": true,
@@ -21,14 +20,14 @@
       }
     },
     "DataSet3": {
-      "type": "Iris",
+      "type": "load_iris",
       "parameters": {
       }
     }
   },
   "algorithms": {
     "knn-base": {
-      "algorithm-family": "knn",
+      "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
       "hyperparameters": {
         "n_neighbors": 15,
         "algorithm": "auto",

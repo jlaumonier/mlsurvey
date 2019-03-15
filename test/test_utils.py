@@ -1,5 +1,7 @@
 import unittest
 
+import sklearn.neighbors as neighbors
+
 import mlsurvey as mls
 
 
@@ -31,3 +33,8 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(1, len(result))
         expected_first_dict = {}
         self.assertDictEqual(expected_first_dict, result[0])
+
+    def test_import_from_dotted_path_class_created(self):
+        to_import = 'sklearn.neighbors.KNeighborsClassifier'
+        classdef = mls.Utils.import_from_dotted_path(to_import)
+        self.assertEqual(neighbors.KNeighborsClassifier, classdef)

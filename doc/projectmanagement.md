@@ -7,7 +7,6 @@
 4. Pushed in git
 
 ## TODO
-* Implements other algorithms - Generalization
 * Log management
 * Bug : package management. submodule dataset not correctly handled (mls.XX instead of mls.datasets.XX)
 * Regularization
@@ -19,8 +18,7 @@
 * Complete Visualization : use Jupyter, AppMode, Bokeh, bqplot... to interactively visualize data and results - Not sure
 
 ## Current
-* Improve multiple learning
-* Do not keep DotMap in Config 
+* Implements other algorithms and datasets - Generalization
 
 ## Done
 * Git repository : local
@@ -38,6 +36,8 @@
 * save and load classifier and results
 * workflow for multiple datasets, algo and split
 * Document supervisedlearningworkflow.py
+* Improve multiple learning
+* Do not keep DotMap in Config 
 
 
 

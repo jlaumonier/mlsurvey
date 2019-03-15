@@ -1,7 +1,7 @@
 {
   "datasets": {
     "DataSetNClassRandom": {
-      "type": "NClassRandomClassification",
+      "type": "NClassRandomClassificationWithNoise",
       "parameters": {
         "n_samples": 100,
         "shuffle": true,
@@ -10,7 +10,7 @@
       }
     },
     "DataSetCircle": {
-      "type": "Circles",
+      "type": "make_circles",
       "parameters": {
         "n_samples": 100,
         "shuffle": true,
@@ -26,15 +26,18 @@
   },
   "algorithms": {
     "knn-base": {
-      "algorithm-family": "knn",
+      "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
       "hyperparameters": {
-        "n_neighbors": [
-          2,
-          5,
-          15
-        ],
+        "n_neighbors": 2,
         "algorithm": "auto",
         "weights": "uniform"
+      }
+    },
+    "smv-base": {
+      "algorithm-family": "sklearn.svm.SVC",
+      "hyperparameters": {
+        "C": 0.9,
+        "kernel": "rbf"
       }
     }
   },
@@ -51,9 +54,12 @@
   "learning_process": {
     "input": [
       "DataSetCircle",
-      "DataSetIris"
+      "DataSetNClassRandom"
     ],
     "split": "traintest20",
-    "algorithm": "knn-base"
+    "algorithm": [
+      "knn-base",
+      "smv-base"
+    ]
   }
 }

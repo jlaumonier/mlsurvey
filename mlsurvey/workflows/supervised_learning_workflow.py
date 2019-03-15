@@ -21,7 +21,7 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         self.task_terminated_learn = False
         self.task_terminated_evaluate = False
         self.task_terminated_persistence = False
-        self.data = mls.datasets.DataSet()
+        self.data = mls.datasets.DataSet('default')
         self.data_preparation = StandardScaler()
         self.data_train = mls.Input()
         self.data_test = mls.Input()
@@ -32,12 +32,12 @@ class SupervisedLearningWorkflow(LearningWorkflow):
 
     def set_terminated(self):
         """ set the workflow as terminated if all tasks are terminated"""
-        self.terminated = self.task_terminated_get_data \
-                          & self.task_terminated_prepare_data \
-                          & self.task_terminated_split_data \
-                          & self.task_terminated_learn \
-                          & self.task_terminated_evaluate \
-                          & self.task_terminated_persistence
+        self.terminated = (self.task_terminated_get_data
+                           & self.task_terminated_prepare_data
+                           & self.task_terminated_split_data
+                           & self.task_terminated_learn
+                           & self.task_terminated_evaluate
+                           & self.task_terminated_persistence)
 
     def task_get_data(self):
         """
