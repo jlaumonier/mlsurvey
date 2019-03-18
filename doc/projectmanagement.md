@@ -8,7 +8,6 @@
 
 ## TODO
 * Log management
-* Multiple-learning workflow : use concurent learning processes
 * Complete Visualization : use Jupyter, AppMode, Bokeh, bqplot... to interactively visualize data and results - Not sure
 * Bug : package management. submodule dataset not correctly handled (mls.XX instead of mls.datasets.XX)
 * Regularization
@@ -16,9 +15,10 @@
 * Random seed global
 * Error Management - Make the system robust
 * Reorganize Dataset and Input : concept are too similar and not well defined
+* Configuration : add config about the program behavior (log dir, ...)
 
 ## Current
-
+* Multiple-learning workflow : use concurent learning processes
 
 ## Done
 * Git repository : local
