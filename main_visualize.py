@@ -4,7 +4,7 @@ import mlsurvey as mls
 
 
 def main():
-    vw = mls.VisualizationWorkflow(directory=sys.argv[1])
+    vw = mls.workflows.VisualizationWorkflow(directory=sys.argv[1])
     vw.run()
 
 

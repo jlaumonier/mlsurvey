@@ -16,7 +16,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         shutil.rmtree(log.base_dir)
 
     def test_init_SL_workflow_should_initialized(self):
-        slw = mls.SupervisedLearningWorkflow()
+        slw = mls.workflows.SupervisedLearningWorkflow()
         self.assertIsNotNone(slw.config.data)
         self.assertFalse(slw.terminated)
         self.assertFalse(slw.task_terminated_get_data)
@@ -35,11 +35,11 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
 
     def test_init_SL_workflow_should_initialized_with_config(self):
         c = {'testconfig': 'config loaded'}
-        slw = mls.SupervisedLearningWorkflow(config=c)
+        slw = mls.workflows.SupervisedLearningWorkflow(config=c)
         self.assertEqual('config loaded', slw.config.data['testconfig'])
 
     def test_set_terminated_all_terminated(self):
-        slw = mls.SupervisedLearningWorkflow()
+        slw = mls.workflows.SupervisedLearningWorkflow()
         slw.task_terminated_get_data = True
         slw.task_terminated_prepare_data = True
         slw.task_terminated_split_data = True
@@ -50,7 +50,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(slw.terminated)
 
     def test_set_terminated_all_terminated_but_get_data(self):
-        slw = mls.SupervisedLearningWorkflow()
+        slw = mls.workflows.SupervisedLearningWorkflow()
         slw.task_terminated_get_data = False
         slw.task_terminated_prepare_data = True
         slw.task_terminated_split_data = True
@@ -61,7 +61,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertFalse(slw.terminated)
 
     def test_set_terminated_all_terminated_but_prepare_data(self):
-        slw = mls.SupervisedLearningWorkflow()
+        slw = mls.workflows.SupervisedLearningWorkflow()
         slw.task_terminated_get_data = True
         slw.task_terminated_prepare_data = False
         slw.task_terminated_split_data = True
@@ -72,7 +72,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertFalse(slw.terminated)
 
     def test_set_terminated_all_terminated_but_split_data(self):
-        slw = mls.SupervisedLearningWorkflow()
+        slw = mls.workflows.SupervisedLearningWorkflow()
         slw.task_terminated_get_data = True
         slw.task_terminated_prepare_data = True
         slw.task_terminated_split_data = False
@@ -83,7 +83,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertFalse(slw.terminated)
 
     def test_set_terminated_all_terminated_but_learn(self):
-        slw = mls.SupervisedLearningWorkflow()
+        slw = mls.workflows.SupervisedLearningWorkflow()
         slw.task_terminated_get_data = True
         slw.task_terminated_prepare_data = True
         slw.task_terminated_split_data = True
@@ -94,7 +94,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertFalse(slw.terminated)
 
     def test_set_terminated_all_terminated_but_evaluate(self):
-        slw = mls.SupervisedLearningWorkflow()
+        slw = mls.workflows.SupervisedLearningWorkflow()
         slw.task_terminated_get_data = True
         slw.task_terminated_prepare_data = True
         slw.task_terminated_split_data = True
@@ -105,7 +105,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertFalse(slw.terminated)
 
     def test_set_terminated_all_terminated_but_persistence(self):
-        slw = mls.SupervisedLearningWorkflow()
+        slw = mls.workflows.SupervisedLearningWorkflow()
         slw.task_terminated_get_data = True
         slw.task_terminated_prepare_data = True
         slw.task_terminated_split_data = True
@@ -116,7 +116,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertFalse(slw.terminated)
 
     def test_task_get_data_data_is_obtained(self):
-        slw = mls.SupervisedLearningWorkflow('complete_config_loaded.json')
+        slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json')
         slw.task_get_data()
         self.assertIsNotNone(slw.data)
         self.assertEqual(100, len(slw.data.x))
@@ -124,7 +124,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(slw.task_terminated_get_data)
 
     def test_task_prepare_data_data_should_be_prepared(self):
-        slw = mls.SupervisedLearningWorkflow('complete_config_loaded.json')
+        slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json')
         slw.task_get_data()
         self.assertEqual(-1.766054694735782, slw.data.x[0][0])
         slw.task_prepare_data()
@@ -132,7 +132,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(slw.task_terminated_prepare_data)
 
     def test_task_split_data_data_should_be_split_train_test(self):
-        slw = mls.SupervisedLearningWorkflow('complete_config_loaded.json')
+        slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json')
         slw.task_get_data()
         self.assertEqual(100, len(slw.data.x))
         slw.task_split_data()
@@ -143,7 +143,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(slw.task_terminated_split_data)
 
     def test_task_learn_classifier_should_have_learn(self):
-        slw = mls.SupervisedLearningWorkflow('complete_config_loaded.json')
+        slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json')
         slw.task_get_data()
         slw.task_split_data()
         slw.task_learn()
@@ -152,7 +152,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(slw.task_terminated_learn)
 
     def test_task_evaluate_classifier_should_have_evaluate(self):
-        slw = mls.SupervisedLearningWorkflow('complete_config_loaded.json')
+        slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json')
         slw.task_get_data()
         slw.task_split_data()
         slw.task_learn()
@@ -161,7 +161,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(slw.task_terminated_evaluate)
 
     def test_task_persist_data_classifier_should_have_been_saved(self):
-        slw = mls.SupervisedLearningWorkflow('complete_config_loaded.json')
+        slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json')
         slw.task_get_data()
         slw.task_split_data()
         slw.task_learn()
@@ -178,7 +178,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(slw.task_terminated_persistence)
 
     def test_load_data_classifier_loaded(self):
-        slw = mls.SupervisedLearningWorkflow()
+        slw = mls.workflows.SupervisedLearningWorkflow()
         slw.load_data_classifier("files/slw/")
         self.assertTrue('DataSet1', slw.config.data['learning_process']['input'])
         self.assertEqual(20, len(slw.data_test.x))
@@ -189,7 +189,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertEqual(0.95, slw.score)
 
     def test_run_all_step_should_be_executed(self):
-        slw = mls.SupervisedLearningWorkflow('complete_config_loaded.json')
+        slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json')
         self.assertFalse(slw.terminated)
         slw.run()
 

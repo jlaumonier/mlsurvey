@@ -4,6 +4,10 @@ from abc import abstractmethod
 class DataSet:
 
     def __init__(self, t):
+        """
+        initialize the dataset
+        :param t: type of the dataset (usually the name of the class or the name of the function called)
+        """
         self.x = []
         self.y = []
         self.params = {}

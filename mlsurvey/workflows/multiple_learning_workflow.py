@@ -59,7 +59,7 @@ class MultipleLearningWorkflow(LearningWorkflow):
         :param c: configuration for the supervised learning workflow
         :return: the supervised learning workflow after a run
         """
-        sl = mls.SupervisedLearningWorkflow(config=c)
+        sl = mls.workflows.SupervisedLearningWorkflow(config=c)
         sl.run()
         return sl
 

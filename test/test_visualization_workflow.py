@@ -19,7 +19,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
 
     def test_init_should_init(self):
         directory = 'files/visualization/'
-        vw = mls.VisualizationWorkflow(directory=directory)
+        vw = mls.workflows.VisualizationWorkflow(directory=directory)
         self.assertEqual(vw.source_directory, directory, )
         self.assertIsInstance(vw.slw, mls.workflows.SupervisedLearningWorkflow)
         self.assertIsNone(vw.figure)
@@ -28,7 +28,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
 
     def test_set_terminated_all_terminated(self):
         directory = 'files/visualization/'
-        vw = mls.VisualizationWorkflow(directory=directory)
+        vw = mls.workflows.VisualizationWorkflow(directory=directory)
         vw.task_terminated_load_data = True
         vw.task_terminated_display_data = True
         vw.set_terminated()
@@ -36,7 +36,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
 
     def test_set_terminated_all_terminated_but_load_data(self):
         directory = 'files/visualization/'
-        vw = mls.VisualizationWorkflow(directory=directory)
+        vw = mls.workflows.VisualizationWorkflow(directory=directory)
         vw.task_terminated_load_data = False
         vw.task_terminated_display_data = True
         vw.set_terminated()
@@ -44,7 +44,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
 
     def test_set_terminated_all_terminated_but_display_data(self):
         directory = 'files/visualization/'
-        vw = mls.VisualizationWorkflow(directory=directory)
+        vw = mls.workflows.VisualizationWorkflow(directory=directory)
         vw.task_terminated_load_data = True
         vw.task_terminated_display_data = False
         vw.set_terminated()
@@ -52,7 +52,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
 
     def test_task_load_data_data_loaded(self):
         directory = 'files/visualization/'
-        vw = mls.VisualizationWorkflow(directory=directory)
+        vw = mls.workflows.VisualizationWorkflow(directory=directory)
         vw.task_load_data()
         self.assertTrue('DataSet1', vw.slw.config.data['learning_process']['input'])
         self.assertEqual(20, len(vw.slw.data_test.x))
@@ -64,7 +64,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
 
     def test_task_display_data_figure_generated(self):
         directory = 'files/visualization/'
-        vw = mls.VisualizationWorkflow(directory=directory)
+        vw = mls.workflows.VisualizationWorkflow(directory=directory)
         vw.task_load_data()
         vw.task_display_data()
         self.assertIsInstance(vw.figure, Figure)
@@ -74,7 +74,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
 
     def test_run_all_step_should_be_executed(self):
         directory = 'files/visualization/'
-        vw = mls.VisualizationWorkflow(directory=directory)
+        vw = mls.workflows.VisualizationWorkflow(directory=directory)
         self.assertFalse(vw.terminated)
         vw.run()
 

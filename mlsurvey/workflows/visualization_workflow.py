@@ -20,7 +20,7 @@ class VisualizationWorkflow(LearningWorkflow):
         """
         super().__init__()
         self.source_directory = directory
-        self.slw = mls.SupervisedLearningWorkflow()
+        self.slw = mls.workflows.SupervisedLearningWorkflow()
         self.task_terminated_load_data = False
         self.task_terminated_display_data = False
         self.figure = None

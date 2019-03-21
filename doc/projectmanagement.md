@@ -7,7 +7,7 @@
 4. Pushed in git
 
 ## TODO
-* Bug : package management. submodule dataset not correctly handled (mls.XX instead of mls.datasets.XX)
+
 * Log management
 * Regularization
 * Model evaluation (complete)
@@ -16,9 +16,10 @@
 * Reorganize Dataset and Input : concept are too similar and not well defined
 * Configuration : add config about the program behavior (log dir, ...)
 * split supervised_learning_workflow to separate data from workflow. Data should be using in visualization_workflow
+* Version management : https://github.com/aebrahim/python-git-version
 
 ## Current
-* Complete Visualization : load directory and display data, score and config
+* Bug : package management. submodule dataset not correctly handled (mls.XX instead of mls.datasets.XX)
 
 ## Done
 * Git repository : local
@@ -40,6 +41,7 @@
 * Do not keep DotMap in Config 
 * Implements other algorithms and datasets - Generalization
 * Multiple-learning workflow : use concurent learning processes
+* Complete Visualization : load directory and display data, score and config
 
 
 
