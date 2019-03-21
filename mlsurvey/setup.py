@@ -12,5 +12,6 @@ setup(
                       'matplotlib',
                       'joblib',
                       'bokeh',
-                      'json2html']
+                      'json2html',
+                      'colorcet']
 )

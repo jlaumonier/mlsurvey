@@ -49,5 +49,5 @@ and splits.
 # Visualization process
 
 From a log directory with config.json, evaluation.json, input.json and model.joblib, the visusalization process
-create an html page to display dataset, configuration and score of the learning process.
+create an html page to display dataset, classification, configuration and score of the learning process.
 
