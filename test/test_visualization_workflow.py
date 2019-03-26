@@ -55,12 +55,14 @@ class TestVisualizationWorkflow(unittest.TestCase):
         vw = mls.workflows.VisualizationWorkflow(directory=directory)
         vw.task_load_data()
         self.assertTrue('DataSet1', vw.slw.config.data['learning_process']['input'])
-        self.assertEqual(20, len(vw.slw.data_test.x))
-        self.assertEqual(20, len(vw.slw.data_test.y))
-        self.assertEqual(80, len(vw.slw.data_train.x))
-        self.assertEqual(80, len(vw.slw.data_train.y))
-        self.assertIsInstance(vw.slw.classifier, neighbors.KNeighborsClassifier)
-        self.assertEqual(0.95, vw.slw.score)
+        self.assertEqual(100, len(vw.slw.context.data.x))
+        self.assertEqual(100, len(vw.slw.context.data.y))
+        self.assertEqual(20, len(vw.slw.context.data_test.x))
+        self.assertEqual(20, len(vw.slw.context.data_test.y))
+        self.assertEqual(80, len(vw.slw.context.data_train.x))
+        self.assertEqual(80, len(vw.slw.context.data_train.y))
+        self.assertIsInstance(vw.slw.context.classifier, neighbors.KNeighborsClassifier)
+        self.assertEqual(1.00, vw.slw.context.score)
 
     def test_task_display_data_figure_generated(self):
         directory = 'files/visualization/'

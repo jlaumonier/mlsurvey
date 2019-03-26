@@ -1,21 +1,20 @@
 {
   "datasets": {
-    "DataSet1": {
-      "type": "NClassRandomClassification",
+    "DataSetNClassRandom": {
+      "type": "NClassRandomClassificationWithNoise",
       "parameters": {
         "n_samples": 100,
         "shuffle": true,
         "noise": 0,
-        "random_state": 0,
-        "factor": 0.3
+        "random_state": 0
       }
     }
   },
   "algorithms": {
     "knn-base": {
-      "algorithm-family": "knn",
+      "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
       "hyperparameters": {
-        "n_neighbors": 15,
+        "n_neighbors": 2,
         "algorithm": "auto",
         "weights": "uniform"
       }
@@ -32,7 +31,7 @@
     }
   },
   "learning_process": {
-    "input": "DataSet1",
+    "input": "DataSetNClassRandom",
     "split": "traintest20",
     "algorithm": "knn-base"
   }

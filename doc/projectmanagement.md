@@ -7,26 +7,29 @@
 4. Pushed in git
 
 ## TODO
+* Visualization : Improve process : use bokeh server and dynamic interface. Refactor workflow
 * Log management
 * Regularization
 * Model evaluation (complete)
 * Random seed global
 * Error Management - Make the system robust
-* Reorganize Dataset and Input : concept are too similar and not well defined
 * Configuration : add config about the program behavior (log dir, ...)
-* split supervised_learning_workflow to separate data from workflow. Data should be using in visualization_workflow
 * Version management : https://github.com/aebrahim/python-git-version ?
-* Visualization : Improve process : use bokeh server and dynamic interface. Refactor workflow
+* Document tests inside code
+* Remove warning during importlib in Utils
+* Invert parameters of assertions in tests
+* use a design pattern for persistence of mlsurvey.models
 
 ## Current
-* Visualization of probabilities
+* split supervised_learning_workflow to separate data from workflow. Data should be using in visualization_workflow
+* Reorganize Dataset and Data : concept are too similar and not well defined
 
 ## Done
 * Git repository : local
 * Basic architecture
 * Make a mlsurvey package including all classes
 * BUG : datasetfactory pas sur d'ajouter des factory automatiquement
-* Input data : Moons, circles, linearly separable
+* Data data : Moons, circles, linearly separable
 * Git repository : gitlab
 * Result management : input data
 * Visualizing input from file
@@ -43,7 +46,7 @@
 * Multiple-learning workflow : use concurent learning processes
 * Complete Visualization : load directory and display data, score and config
 * Bug : package management. submodule dataset not correctly handled (mls.XX instead of mls.datasets.XX)
-
+* Visualization of probabilities
 
 
 

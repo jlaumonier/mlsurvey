@@ -46,21 +46,23 @@ class VisualizationWorkflow(LearningWorkflow):
         Display with bokeh. This methode is garbage for testing and MUST be refactored
         """
 
-        x_train = self.slw.data_train.x
-        x_test = self.slw.data_test.x
-        xx, yy = mls.Utils.make_meshgrid(x_test[:, 0], x_test[:, 1])
+        x = self.slw.context.data.x
+        x_train = self.slw.context.data_train.x
+        x_test = self.slw.context.data_test.x
+        xx, yy = mls.Utils.make_meshgrid(x[:, 0], x[:, 1])
         color_list = ['#0000FF', '#FF0000']
-        colors_train = [color_list[y] for y in self.slw.data_train.y]
-        colors_test = [color_list[y] for y in self.slw.data_test.y]
+        # colors = [color_list[y] for y in self.slw.data.y]
+        colors_train = [color_list[y] for y in self.slw.context.data_train.y]
+        colors_test = [color_list[y] for y in self.slw.context.data_test.y]
         self.figure = figure(x_range=(xx.min(), xx.max()), y_range=(yy.min(), yy.max()))
 
-        self.scoreText = Paragraph(text="""Score : """ + str(self.slw.score))
+        self.scoreText = Paragraph(text="""Score : """ + str(self.slw.context.score))
         self.configText = Div(text=json2html.convert(json.dumps(self.slw.config.data)))
 
-        if hasattr(self.slw.classifier, "decision_function"):
-            z = self.slw.classifier.decision_function(np.c_[xx.ravel(), yy.ravel()])
+        if hasattr(self.slw.context.classifier, "decision_function"):
+            z = self.slw.context.classifier.decision_function(np.c_[xx.ravel(), yy.ravel()])
         else:
-            z = self.slw.classifier.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
+            z = self.slw.context.classifier.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
 
         color_mapper = LinearColorMapper(
             palette=cc.rainbow,

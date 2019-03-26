@@ -1,19 +1,21 @@
 # Concepts
 
-1. Input : for classification : x, y
-1. Algorithm : 
-    1. Operation : Init, set Hyperparameters, Learn
-    1. Defintion
-        1. Predictor family
-        1. Loss function
-        1. Optimization method
-1. Hyperparameters
+1. Context of a supervised learning
+    1. Data : for classification : x, y
+    1. Algorithm : 
+        1. Operation : Init, set Hyperparameters, Learn
+        1. Defintion
+            1. Predictor family
+            1. Loss function
+            1. Optimization method
+        1. Hyperparameters
+    1. Datasets
 1. Result : results of the algorithm
 1. Visualization with bokeh
 
 # Datasets
 
-Sone datasets are defined : Iris (REF), N-class Random data (REF) based on scikit learn.
+Some datasets are defined : Iris (REF), N-class Random data (REF) based on scikit learn.
 DataSetFactory can be used to create a DataSet from the name of the dataset
 A DataSet can be affected to an input to feed the algorithm
 Some parameters are defined for some datasets. Not all parameters defined in sckitlearn can be used

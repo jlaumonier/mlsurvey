@@ -1,0 +1,8 @@
+{
+  "algorithm-family": "knn",
+  "hyperparameters": {
+    "n_neighbors": 15,
+    "algorithm": "auto",
+    "weights": "uniform"
+  }
+}

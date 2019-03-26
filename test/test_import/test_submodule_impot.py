@@ -16,6 +16,7 @@ class TestCompleteImport(unittest.TestCase):
 
     def test_import_error(self):
         try:
+            # This line makes a unresolved reference warning but that's what i want to test the packaging
             _ = mls.DataSet('type')
             self.assertTrue(False)
         except AttributeError:

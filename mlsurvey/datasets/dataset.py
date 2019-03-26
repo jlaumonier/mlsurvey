@@ -8,8 +8,6 @@ class DataSet:
         initialize the dataset
         :param t: type of the dataset (usually the name of the class or the name of the function called)
         """
-        self.x = []
-        self.y = []
         self.params = {}
         self.t = t
 
@@ -21,6 +19,14 @@ class DataSet:
         if params is None:
             params = {}
         self.params = params
+
+    def to_dict(self):
+        """
+        transform the dataset into a dictionary {'type': .., 'parameters': {...} }
+        :return: the dictionary
+        """
+        result = {'type': self.t, 'parameters': self.params}
+        return result
 
     @abstractmethod
     def generate(self):

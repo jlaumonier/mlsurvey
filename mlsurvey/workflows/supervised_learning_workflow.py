@@ -15,20 +15,15 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         """
         super().__init__()
         self.config = mls.Config(config_file, config=config)
+        self.data_preparation = StandardScaler()
+        self.context = mls.models.Context()
+        self.log = mls.Logging()
         self.task_terminated_get_data = False
         self.task_terminated_prepare_data = False
         self.task_terminated_split_data = False
         self.task_terminated_learn = False
         self.task_terminated_evaluate = False
         self.task_terminated_persistence = False
-        self.data = mls.datasets.DataSet('default')
-        self.data_preparation = StandardScaler()
-        self.data_train = mls.Input()
-        self.data_test = mls.Input()
-        self.algorithm = None
-        self.classifier = None
-        self.score = 0.0
-        self.log = mls.Logging()
 
     def set_terminated(self):
         """ set the workflow as terminated if all tasks are terminated"""
@@ -44,15 +39,16 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         Initialize and generate the dataset from configuration learning_process.input
         """
         dataset_name = self.config.data['learning_process']['input']
-        data_params = self.config.data['datasets'][dataset_name]['parameters']
-        self.data = mls.datasets.DataSetFactory.create_dataset(self.config.data['datasets'][dataset_name]['type'])
-        self.data.set_generation_parameters(data_params)
-        self.data.generate()
+        dataset_params = self.config.data['datasets'][dataset_name]['parameters']
+        dataset_type = self.config.data['datasets'][dataset_name]['type']
+        self.context.dataset = mls.datasets.DataSetFactory.create_dataset(dataset_type)
+        self.context.dataset.set_generation_parameters(dataset_params)
+        self.context.data.x, self.context.data.y = self.context.dataset.generate()
         self.task_terminated_get_data = True
 
     def task_prepare_data(self):
         """ Prepare the data. At that time, prepared with StandardScaler()"""
-        self.data.x = self.data_preparation.fit_transform(self.data.x)
+        self.context.data.x = self.data_preparation.fit_transform(self.context.data.x)
         self.task_terminated_prepare_data = True
 
     def task_split_data(self):
@@ -62,26 +58,26 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         split_name = self.config.data['learning_process']['split']
         split_param = self.config.data['splits'][split_name]['parameters']
         if self.config.data['splits'][split_name]['type'] == 'traintest':
-            (self.data_train.x,
-             self.data_test.x,
-             self.data_train.y,
-             self.data_test.y) = train_test_split(self.data.x,
-                                                  self.data.y,
-                                                  test_size=split_param['test_size'],
-                                                  random_state=split_param['random_state'],
-                                                  shuffle=split_param['shuffle'])
+            (self.context.data_train.x,
+             self.context.data_test.x,
+             self.context.data_train.y,
+             self.context.data_test.y) = train_test_split(self.context.data.x,
+                                                          self.context.data.y,
+                                                          test_size=split_param['test_size'],
+                                                          random_state=split_param['random_state'],
+                                                          shuffle=split_param['shuffle'])
             self.task_terminated_split_data = True
 
     def task_learn(self):
         """ learn the classifier with train data"""
         algorithm_name = self.config.data['learning_process']['algorithm']
-        algorithm = mls.Algorithm(self.config.data['algorithms'][algorithm_name])
-        self.classifier = algorithm.learn(self.data_train.x, self.data_train.y)
+        self.context.algorithm = mls.models.Algorithm(self.config.data['algorithms'][algorithm_name])
+        self.context.classifier = self.context.algorithm.learn(self.context.data_train.x, self.context.data_train.y)
         self.task_terminated_learn = True
 
     def task_evaluate(self):
         """ calculate the score of the classifier with test data """
-        self.score = self.classifier.score(self.data_test.x, self.data_test.y)
+        self.context.score = self.context.classifier.score(self.context.data_test.x, self.context.data_test.y)
         self.task_terminated_evaluate = True
 
     def task_persist(self):
@@ -89,11 +85,7 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         save all aspects of the learning into files (config, data sets, classifier, evaluation)
         """
         self.log.save_dict_as_json('config.json', self.config.data)
-        inputs = {'train': self.data_train, 'test': self.data_test}
-        self.log.save_input(inputs)
-        self.log.save_classifier(self.classifier)
-        evaluation = {'score': self.score}
-        self.log.save_dict_as_json('evaluation.json', evaluation)
+        self.context.save(self.log)
         self.task_terminated_persistence = True
 
     def load_data_classifier(self, directory):
@@ -103,12 +95,7 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         """
         self.config = mls.Config('config.json', directory)
         self.log = mls.Logging(directory, base_dir='')
-        inputs = self.log.load_input('input.json')
-        self.data_train = inputs['train']
-        self.data_test = inputs['test']
-        self.classifier = self.log.load_classifier()
-        evaluation = self.log.load_json_as_dict('evaluation.json')
-        self.score = evaluation['score']
+        self.context.load(self.log)
 
     def run(self):
         """

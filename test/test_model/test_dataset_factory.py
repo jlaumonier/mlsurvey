@@ -32,11 +32,11 @@ class TestDataSetFactory(unittest.TestCase):
         mls.datasets.DataSetFactory.add_factory('NClassRandomClassificationWithNoise',
                                                 mls.datasets.NClassRandomClassificationWithNoise.Factory)
         data = dataset_factory.create_dataset('NClassRandomClassificationWithNoise')
-        data.generate()
+        (x, y) = data.generate()
         self.assertEqual('NClassRandomClassificationWithNoise', data.t)
-        self.assertEqual(100, data.x.shape[0])
-        self.assertEqual(2, data.x.shape[1])
-        self.assertEqual(100, data.y.shape[0])
+        self.assertEqual(100, x.shape[0])
+        self.assertEqual(2, x.shape[1])
+        self.assertEqual(100, y.shape[0])
 
     def test_create_dataset_factory_not_exists_generic_created(self):
         dataset_factory = mls.datasets.DataSetFactory()
@@ -47,3 +47,13 @@ class TestDataSetFactory(unittest.TestCase):
         data = dataset_factory.create_dataset('NotExistedFactory')
         self.assertIsInstance(data, mls.datasets.GenericDataSet)
         self.assertEqual('NotExistedFactory', data.t)
+
+    def test_create_dataset_from_dict_created(self):
+        source = {'type': 'load_iris', "parameters": {'param1': 1, 'param2': 3, 'return_X_y': False}}
+        dataset_factory = mls.datasets.DataSetFactory()
+        mls.datasets.DataSetFactory.add_factory('generic',
+                                                mls.datasets.GenericDataSet.Factory)
+        params = {'param1': 1, 'param2': 3, 'return_X_y': False}
+        dataset = dataset_factory.create_dataset_from_dict(source)
+        self.assertEqual(dataset.t, 'load_iris')
+        self.assertDictEqual(dataset.params, params)

@@ -1,5 +1,6 @@
 import unittest
 
+import numpy as np
 import sklearn.neighbors as neighbors
 
 import mlsurvey as mls
@@ -38,3 +39,10 @@ class TestUtils(unittest.TestCase):
         to_import = 'sklearn.neighbors.KNeighborsClassifier'
         classdef = mls.Utils.import_from_dotted_path(to_import)
         self.assertEqual(neighbors.KNeighborsClassifier, classdef)
+
+    def test_make_meshgrid(self):
+        x = np.array([1, 2])
+        y = np.array([3, 4])
+        xx, yy = mls.Utils.make_meshgrid(x, y, h=.5)
+        self.assertListEqual(xx[0].tolist(), [0, 0.5, 1, 1.5, 2, 2.5])
+        self.assertListEqual(yy[0].tolist(), [2, 2, 2, 2, 2, 2])

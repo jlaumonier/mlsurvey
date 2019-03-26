@@ -42,8 +42,7 @@ class Logging:
         data = self.load_json_as_dict(filename)
         result = {}
         for k, v in data.items():
-            i = mls.Input()
-            i.from_dict(v)
+            i = mls.models.Data.from_dict(v)
             result[k] = i
         return result
 

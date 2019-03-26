@@ -11,7 +11,8 @@ class GenericDataSet(DataSet):
 
     def __init__(self, t):
         """
-        :param t: type of the dataset
+        Initialize the generic dataset,
+        :param t: type of the dataset, a function name into sklearn.datasets
         """
         super().__init__(t)
         self.types = {'load_iris': ['load_iris', {'return_X_y': True}]}
@@ -33,11 +34,16 @@ class GenericDataSet(DataSet):
         self.params = new_params
 
     def generate(self):
+        """
+        Generate data from parameters and type
+        :return: (x, y) : data and label
+        """
         if self.t in self.types.keys():
             make_dataset = getattr(datasets, self.types[self.t][0])
         else:
             make_dataset = getattr(datasets, self.t)
-        (self.x, self.y) = make_dataset(**self.params)
+        x, y = make_dataset(**self.params)
+        return x, y
 
     class Factory:
         @staticmethod
