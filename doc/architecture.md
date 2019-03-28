@@ -53,3 +53,9 @@ and splits.
 From a log directory with config.json, evaluation.json, input.json and model.joblib, the visusalization process
 create an html page to display dataset, classification, configuration and score of the learning process.
 
+# Fairness process
+
+At this time, fairness process work only on data and not on classifier, which is not really correct since fairness 
+should be calculated on prediction vs data. However, no calculation is done :-S since I do not know if I implement it
+or just use a fairness library such as AIF360
+

@@ -5,3 +5,4 @@ joblib
 bokeh
 json2html
 colorcet
+pandas

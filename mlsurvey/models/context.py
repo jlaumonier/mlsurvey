@@ -5,7 +5,7 @@ import mlsurvey as mls
 
 class Context:
 
-    def __init__(self):
+    def __init__(self, eval_type):
         self.id = uuid.uuid1()
         self.dataset = mls.datasets.DataSet('generic')
         self.data = mls.models.Data()
@@ -13,16 +13,16 @@ class Context:
         self.data_test = mls.models.Data()
         self.algorithm = None
         self.classifier = None
-        self.score = 0.0
+        self.evaluation = eval_type()
 
     def save(self, log):
         log.save_dict_as_json('dataset.json', self.dataset.to_dict())
         inputs = {'data': self.data, 'train': self.data_train, 'test': self.data_test}
         log.save_input(inputs)
-        log.save_dict_as_json('algorithm.json', self.algorithm.to_dict())
-        log.save_classifier(self.classifier)
-        evaluation = {'score': self.score}
-        log.save_dict_as_json('evaluation.json', evaluation)
+        if self.algorithm is not None:
+            log.save_dict_as_json('algorithm.json', self.algorithm.to_dict())
+            log.save_classifier(self.classifier)
+        log.save_dict_as_json('evaluation.json', self.evaluation.to_dict())
 
     def load(self, log):
         dataset_dict = log.load_json_as_dict('dataset.json')
@@ -34,5 +34,5 @@ class Context:
         algorithm_dict = log.load_json_as_dict('algorithm.json')
         self.algorithm = mls.models.Algorithm.from_dict(algorithm_dict)
         self.classifier = log.load_classifier()
-        evaluation = log.load_json_as_dict('evaluation.json')
-        self.score = evaluation['score']
+        evaluation_dict = log.load_json_as_dict('evaluation.json')
+        self.evaluation = mls.models.EvaluationFactory.create_instance_from_dict(evaluation_dict)

@@ -7,22 +7,26 @@
 4. Pushed in git
 
 ## TODO
+* Error Management - Make the system robust
 * Visualization : Improve process : use bokeh server and dynamic interface. Refactor workflow
 * Log management
 * Regularization
 * Model evaluation (complete)
 * Random seed global
-* Error Management - Make the system robust
 * Configuration : add config about the program behavior (log dir, ...)
 * Version management : https://github.com/aebrahim/python-git-version ?
 * Document tests inside code
-* Remove warning during importlib in Utils
+* Bug : Remove warning during importlib in Utils
 * Invert parameters of assertions in tests
 * use a design pattern for persistence of mlsurvey.models
+* Reorganize workflow inheritance and attribute (e.g. config)
+* Doc website
+* Create generic factory
+* Fairness utils : make the calculation of conditional proba more robust (more test)
+* Fairness : rethinking the workflow to integrate supervised learning workflow
 
 ## Current
-* split supervised_learning_workflow to separate data from workflow. Data should be using in visualization_workflow
-* Reorganize Dataset and Data : concept are too similar and not well defined
+* Fairness workflow
 
 ## Done
 * Git repository : local
@@ -47,6 +51,8 @@
 * Complete Visualization : load directory and display data, score and config
 * Bug : package management. submodule dataset not correctly handled (mls.XX instead of mls.datasets.XX)
 * Visualization of probabilities
+* split supervised_learning_workflow to separate data from workflow. Data should be using in visualization_workflow
+* Reorganize Dataset and Data : concept are too similar and not well defined
 
 
 

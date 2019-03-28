@@ -7,16 +7,16 @@ from .learning_workflow import LearningWorkflow
 
 class SupervisedLearningWorkflow(LearningWorkflow):
 
-    def __init__(self, config_file='config.json', config=None):
+    def __init__(self, config_file='config.json', config=None, config_directory='config/'):
         """
         Initialized the supervised learning workflow
         :param config_file: config file for initializing the workflow, Used if config is None
         :param config: dictionary for config. If set, replace config file
         """
         super().__init__()
-        self.config = mls.Config(config_file, config=config)
+        self.config = mls.Config(config_file, config=config, directory=config_directory)
         self.data_preparation = StandardScaler()
-        self.context = mls.models.Context()
+        self.context = mls.models.Context(eval_type=mls.models.EvaluationSupervised)
         self.log = mls.Logging()
         self.task_terminated_get_data = False
         self.task_terminated_prepare_data = False
@@ -77,7 +77,8 @@ class SupervisedLearningWorkflow(LearningWorkflow):
 
     def task_evaluate(self):
         """ calculate the score of the classifier with test data """
-        self.context.score = self.context.classifier.score(self.context.data_test.x, self.context.data_test.y)
+        self.context.evaluation.score = self.context.classifier.score(self.context.data_test.x,
+                                                                      self.context.data_test.y)
         self.task_terminated_evaluate = True
 
     def task_persist(self):

@@ -23,7 +23,7 @@ class VisualizationWorkflow(LearningWorkflow):
         """
         super().__init__()
         self.source_directory = directory
-        self.slw = mls.workflows.SupervisedLearningWorkflow()
+        self.slw = mls.workflows.SupervisedLearningWorkflow(config_directory=directory)
         self.task_terminated_load_data = False
         self.task_terminated_display_data = False
         self.figure = None
@@ -56,7 +56,7 @@ class VisualizationWorkflow(LearningWorkflow):
         colors_test = [color_list[y] for y in self.slw.context.data_test.y]
         self.figure = figure(x_range=(xx.min(), xx.max()), y_range=(yy.min(), yy.max()))
 
-        self.scoreText = Paragraph(text="""Score : """ + str(self.slw.context.score))
+        self.scoreText = Paragraph(text="""Score : """ + str(self.slw.context.evaluation.score))
         self.configText = Div(text=json2html.convert(json.dumps(self.slw.config.data)))
 
         if hasattr(self.slw.context.classifier, "decision_function"):

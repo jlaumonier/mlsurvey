@@ -6,15 +6,15 @@ from .learning_workflow import LearningWorkflow
 
 class MultipleLearningWorkflow(LearningWorkflow):
 
-    def __init__(self, config_file='config.json'):
+    def __init__(self, config_file='config.json', config_directory='config/'):
         """
         Initialized the multiple learning workflow
         :param config_file: config file for initializing the workflow, Used if config is None
         """
-        super().__init__()
+        super().__init__(config_directory=config_directory)
         self.task_terminated_expand_config = False
         self.task_terminated_run_each_config = False
-        self.config = mls.Config(config_file)
+        self.config = mls.Config(config_file, directory=self.config_directory)
         self.expanded_config = []
         self.slw = []
 
