@@ -185,23 +185,6 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertEqual('086cb297d5a8d9207ae369343727568a', mls.Utils.md5_file(slw.log.directory + 'evaluation.json'))
         self.assertTrue(slw.task_terminated_persistence)
 
-    def test_load_data_classifier_loaded(self):
-        slw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
-        directory = os.path.dirname(__file__)
-        slw.load_data_classifier(os.path.join(directory, '../files/slw/'))
-        self.assertTrue('DataSet1', slw.config.data['learning_process']['input'])
-        self.assertEqual(100, len(slw.context.data.x))
-        self.assertEqual(100, len(slw.context.data.y))
-        self.assertEqual(20, len(slw.context.data_test.x))
-        self.assertEqual(20, len(slw.context.data_test.y))
-        self.assertEqual(80, len(slw.context.data_train.x))
-        self.assertEqual(80, len(slw.context.data_train.y))
-        self.assertIsInstance(slw.context.algorithm, mls.models.Algorithm)
-        self.assertEqual(slw.context.algorithm.hyperparameters['n_neighbors'], 15)
-        self.assertEqual(slw.context.algorithm.algorithm_family, 'knn')
-        self.assertIsInstance(slw.context.classifier, neighbors.KNeighborsClassifier)
-        self.assertEqual(0.95, slw.context.evaluation.score)
-
     def test_run_all_step_should_be_executed(self):
         slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json', config_directory=self.cd)
         self.assertFalse(slw.terminated)

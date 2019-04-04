@@ -19,7 +19,7 @@ class Logging:
         if dir_name is None:
             dir_name = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
         self.dir_name = dir_name
-        self.directory = self.base_dir + dir_name + '/'
+        self.directory = os.path.join(self.base_dir, dir_name, '')
         if not os.path.exists(self.directory):
             os.makedirs(self.directory)
 

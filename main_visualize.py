@@ -1,11 +1,9 @@
-import sys
-
 import mlsurvey as mls
 
 
 def main():
-    vw = mls.workflows.VisualizationWorkflow(directory=sys.argv[1])
-    vw.run()
+    app_interface = mls.visualize.UserInterface('logs/')
+    app_interface.run()
 
 
 if __name__ == "__main__":

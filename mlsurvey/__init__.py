@@ -1,5 +1,6 @@
 from . import datasets
 from . import models
+from . import visualize
 from . import workflows
 from .config import Config
 from .fairness_utils import FairnessUtils

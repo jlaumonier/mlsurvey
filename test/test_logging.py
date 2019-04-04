@@ -22,7 +22,8 @@ class TestLogging(unittest.TestCase):
 
     def test_init_log_directory_create_with_fixed_name(self):
         dir_name = 'testing/'
-        _ = mls.Logging(dir_name=dir_name)
+        log = mls.Logging(dir_name=dir_name)
+        self.assertEqual(log.directory, 'logs/' + dir_name)
         self.assertTrue(os.path.isdir('logs/' + dir_name))
 
     def test_save_inputs_input_saved(self):

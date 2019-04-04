@@ -1,13 +1,10 @@
-import json
-
-import colorcet as cc
+import colorlover as cl
+import dash_core_components as dcc
+import dash_dangerously_set_inner_html as ddsih
+import dash_html_components as html
+import json2table
 import numpy as np
-from bokeh.io import output_file
-from bokeh.layouts import row
-from bokeh.models import LinearColorMapper, ColorBar, AdaptiveTicker
-from bokeh.models.widgets import Paragraph, Div
-from bokeh.plotting import figure, save
-from json2html import *
+import plotly.graph_objs as go
 
 import mlsurvey as mls
 from .learning_workflow import LearningWorkflow
@@ -23,7 +20,9 @@ class VisualizationWorkflow(LearningWorkflow):
         """
         super().__init__()
         self.source_directory = directory
-        self.slw = mls.workflows.SupervisedLearningWorkflow(config_directory=directory)
+        self.config = None
+        self.context = mls.models.Context(eval_type=mls.models.EvaluationSupervised)
+        self.log = mls.Logging(self.source_directory, base_dir='')
         self.task_terminated_load_data = False
         self.task_terminated_display_data = False
         self.figure = None
@@ -38,53 +37,126 @@ class VisualizationWorkflow(LearningWorkflow):
         """
         Load data, config, classifier and statistic from directory
         """
-        self.slw.load_data_classifier(self.source_directory)
+        self.config = mls.Config('config.json', self.source_directory)
+        self.context.load(self.log)
         self.task_terminated_load_data = True
 
     def task_display_data(self):
         """
-        Display with bokeh. This methode is garbage for testing and MUST be refactored
+        Display with dash.
         """
 
-        x = self.slw.context.data.x
-        x_train = self.slw.context.data_train.x
-        x_test = self.slw.context.data_test.x
-        xx, yy = mls.Utils.make_meshgrid(x[:, 0], x[:, 1])
-        color_list = ['#0000FF', '#FF0000']
-        # colors = [color_list[y] for y in self.slw.data.y]
-        colors_train = [color_list[y] for y in self.slw.context.data_train.y]
-        colors_test = [color_list[y] for y in self.slw.context.data_test.y]
-        self.figure = figure(x_range=(xx.min(), xx.max()), y_range=(yy.min(), yy.max()))
+        x = self.context.data.x
+        x_train = self.context.data_train.x
+        y_train = self.context.data_train.y
+        x_test = self.context.data_test.x
+        y_test = self.context.data_test.y
+        mesh_step = .3
+        xx, yy = mls.Utils.make_meshgrid(x[:, 0], x[:, 1], mesh_step)
 
-        self.scoreText = Paragraph(text="""Score : """ + str(self.slw.context.evaluation.score))
-        self.configText = Div(text=json2html.convert(json.dumps(self.slw.config.data)))
+        bright_cscale = [[0, '#FF0000'], [1, '#0000FF']]
 
-        if hasattr(self.slw.context.classifier, "decision_function"):
-            z = self.slw.context.classifier.decision_function(np.c_[xx.ravel(), yy.ravel()])
+        colorscale_zip = zip(np.arange(0, 1.01, 1 / 8),
+                             cl.scales['9']['div']['RdBu'])
+        cscale = list(map(list, colorscale_zip))
+
+        if hasattr(self.context.classifier, "decision_function"):
+            z = self.context.classifier.decision_function(np.c_[xx.ravel(), yy.ravel()])
         else:
-            z = self.slw.context.classifier.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
+            z = self.context.classifier.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
 
-        color_mapper = LinearColorMapper(
-            palette=cc.rainbow,
-            low=z.min(),
-            high=z.max()
+        scaled_threshold = 0.5 * (z.max() - z.min()) + z.min()
+        r = max(abs(scaled_threshold - z.min()),
+                abs(scaled_threshold - z.max()))
+
+        layout = go.Layout(
+            xaxis=dict(
+                ticks='',
+                showticklabels=False,
+                showgrid=False,
+                zeroline=False,
+            ),
+            yaxis=dict(
+                ticks='',
+                showticklabels=False,
+                showgrid=False,
+                zeroline=False,
+            ),
+            hovermode='closest',
+            legend=dict(x=0, y=-0.01, orientation="h"),
+            margin=dict(l=0, r=0, t=0, b=0),
         )
-        z = z.reshape(xx.shape)
-        dh = yy.max() - yy.min()
-        dw = xx.max() - xx.min()
-        self.figure.image(image=[z], color_mapper=color_mapper,
-                          dh=[dh], dw=[dw], x=[xx.min()], y=[yy.min()], global_alpha=0.5)
 
-        self.figure.circle(x_train[:, 0], x_train[:, 1], color=colors_train, fill_alpha=1.0, size=10)
-        self.figure.cross(x_test[:, 0], x_test[:, 1], color=colors_test, fill_alpha=1.0, size=10)
+        trace0 = go.Contour(
+            x=np.arange(xx.min(), xx.max(), mesh_step),
+            y=np.arange(yy.min(), yy.max(), mesh_step),
+            z=z.reshape(xx.shape),
+            zmin=scaled_threshold - r,
+            zmax=scaled_threshold + r,
+            hoverinfo='none',
+            showscale=False,
+            contours=dict(
+                showlines=False
+            ),
+            colorscale=cscale,
+            opacity=0.9
+        )
 
-        color_bar = ColorBar(color_mapper=color_mapper, ticker=AdaptiveTicker(),
-                             label_standoff=12, border_line_color=None, location=(0, 0))
+        # Plot the threshold
+        trace1 = go.Contour(
+            x=np.arange(xx.min(), xx.max(), mesh_step),
+            y=np.arange(yy.min(), yy.max(), mesh_step),
+            z=z.reshape(xx.shape),
+            showscale=False,
+            hoverinfo='none',
+            contours=dict(
+                showlines=False,
+                type='constraint',
+                operation='=',
+                value=scaled_threshold,
+            ),
+            name=f'Threshold ({scaled_threshold:.3f})',
+            line=dict(
+                color='#222222'
+            )
+        )
 
-        self.figure.add_layout(color_bar, 'right')
-        page_layout = row(children=[self.configText, self.figure, self.scoreText], sizing_mode='stretch_both')
-        output_file(self.slw.log.directory + 'result.html', title='Result of learning')
-        save(page_layout)
+        trace2 = go.Scatter(
+            x=x_train[:, 0],
+            y=x_train[:, 1],
+            mode='markers',
+            name=f'Training Data)',
+            marker=dict(
+                size=10,
+                color=y_train,
+                colorscale=bright_cscale,
+                line=dict(
+                    width=1
+                )
+            )
+        )
+
+        trace3 = go.Scatter(
+            x=x_test[:, 0],
+            y=x_test[:, 1],
+            mode='markers',
+            name=f'Test Data (accuracy={self.context.evaluation.score:.3f})',
+            marker=dict(
+                size=10,
+                symbol='cross',
+                color=y_test,
+                colorscale=bright_cscale,
+                line=dict(
+                    width=1
+                ),
+            )
+        )
+        data = [trace0, trace1, trace2, trace3]
+        f = go.Figure(data=data, layout=layout)
+        self.figure = dcc.Graph(id='graph', figure=f)
+        self.scoreText = html.P('Score : ' + str(self.context.evaluation.score))
+        # This line makes a cannot find reference warning
+        self.configText = html.Div([ddsih.DangerouslySetInnerHTML(json2table.convert(self.config.data))])
         self.task_terminated_display_data = True
 
     def run(self):

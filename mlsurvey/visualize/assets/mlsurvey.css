@@ -1,0 +1,19 @@
+table {
+  border: 1px solid #1C6EA4;
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+  padding: 0px;
+}
+table td {
+  border: 1px solid #AAAAAA;
+  padding: 3px 3px 3px 3px;
+}
+table th {
+  border: 1px solid #AAAAAA;
+  background: #CFCFCF;
+  padding: 3px 3px 3px 3px;
+}
+table tbody td {
+  font-size: 13px;
+}

@@ -89,15 +89,6 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         self.context.save(self.log)
         self.task_terminated_persistence = True
 
-    def load_data_classifier(self, directory):
-        """
-        load all aspects of the learning from files (config, data sets, classifier, evaluation)
-        :param directory: directory where the files are stored
-        """
-        self.config = mls.Config('config.json', directory)
-        self.log = mls.Logging(directory, base_dir='')
-        self.context.load(self.log)
-
     def run(self):
         """
         Run all tasks

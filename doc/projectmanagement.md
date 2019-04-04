@@ -8,7 +8,7 @@
 
 ## TODO
 * Error Management - Make the system robust
-* Visualization : Improve process : use bokeh server and dynamic interface. Refactor workflow
+* Generate a "full" config file for sci-kit-learn
 * Log management
 * Regularization
 * Model evaluation (complete)
@@ -26,7 +26,8 @@
 * Fairness : rethinking the workflow to integrate supervised learning workflow
 
 ## Current
-* Fairness workflow
+* Visualization : Improve process : use dash  and dynamic interface. Refactor workflow
+* Bug : empty log directory during visualization
 
 ## Done
 * Git repository : local
@@ -53,6 +54,7 @@
 * Visualization of probabilities
 * split supervised_learning_workflow to separate data from workflow. Data should be using in visualization_workflow
 * Reorganize Dataset and Data : concept are too similar and not well defined
+* Fairness workflow
 
 
 

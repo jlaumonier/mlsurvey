@@ -60,7 +60,10 @@
     }
   },
   "learning_process": {
-    "input": "DataSetNClassRandom",
+    "input": [
+      "DataSetNClassRandom",
+      "DataSetCircle"
+    ],
     "split": "traintest20",
     "algorithm": [
       "knn-base",
