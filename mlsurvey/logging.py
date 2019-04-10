@@ -13,7 +13,7 @@ class Logging:
         """
         initialize machine learning logging by creating dir_name/ in base_dir/
         :param dir_name: name of the log directory for this instance
-        :param base_dir: name of the base directory for all loggingl
+        :param base_dir: name of the base directory for all logging
         """
         self.base_dir = base_dir
         if dir_name is None:

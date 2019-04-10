@@ -20,6 +20,38 @@ class TestAlgorithm(unittest.TestCase):
         self.assertEqual(config['hyperparameters']['algorithm'], algo.hyperparameters['algorithm'])
         self.assertEqual(config['hyperparameters']['weights'], algo.hyperparameters['weights'])
 
+    def test_init_no_algorithm_family_parameter_should_not_init(self):
+        config = {
+            'toto': 'module.Test',
+            'hyperparameters': {
+                'n_neighbors': 3,
+                'algorithm': 'auto',
+                'weights': 'uniform'
+            }
+        }
+        algo = None
+        try:
+            algo = mls.models.Algorithm(config)
+            self.assertTrue(False)
+        except mls.exceptions.ConfigError:
+            self.assertIsNone(algo)
+
+    def test_init_no_hyperparameters_parameter_should_not_init(self):
+        config = {
+            'algorithm-family': 'module.Test',
+            'toto': {
+                'n_neighbors': 3,
+                'algorithm': 'auto',
+                'weights': 'uniform'
+            }
+        }
+        algo = None
+        try:
+            algo = mls.models.Algorithm(config)
+            self.assertTrue(False)
+        except mls.exceptions.ConfigError:
+            self.assertIsNone(algo)
+
     def test_learn_generic_algorithm_knn_should_learn(self):
         config = {
             'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
@@ -36,6 +68,31 @@ class TestAlgorithm(unittest.TestCase):
         classif = algo.learn(data.x, data.y)
         score = classif.score(data.x, data.y)
         self.assertEqual(1.0, score)
+
+    def test_learn_generic_algorithm_unknown_algorithm(self):
+        """
+        :test : mlsurvey.models.Algorithm.learn()
+        :condition : unknown algorithm
+        :main_result : raise ConfigError
+        """
+        config = {
+            'algorithm-family': 'sklearn.neighbors.UnknownClass',
+            'hyperparameters': {
+                'n_neighbors': 3,
+                'algorithm': 'auto',
+                'weights': 'uniform'
+            }
+        }
+        dataset = mls.datasets.DataSetFactory.create_dataset('make_circles')
+        data = mls.models.Data()
+        data.x, data.y = dataset.generate()
+        algo = mls.models.Algorithm(config)
+        classif = None
+        try:
+            classif = algo.learn(data.x, data.y)
+            self.assertTrue(False)
+        except mls.exceptions.ConfigError:
+            self.assertIsNone(classif)
 
     def test_to_dict_algo_saved(self):
         config = {

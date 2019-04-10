@@ -8,6 +8,10 @@ from .dataset_factory import DataSetFactory
 class NClassRandomClassificationWithNoise(DataSet):
 
     def generate(self):
+        """
+        Generate data of make_classification from parameters
+        :return: (x, y) : data and label
+        """
         n_samples = self.params.get('n_samples', 100)
         shuffle = self.params.get('shuffle', True)
         noise = self.params.get('noise', 0)

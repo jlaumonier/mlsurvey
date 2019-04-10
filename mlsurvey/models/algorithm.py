@@ -4,13 +4,27 @@ import mlsurvey as mls
 class Algorithm:
 
     def __init__(self, config):
-        """Initialize the algorithm class"""
-        self.algorithm_family = config['algorithm-family']
-        self.hyperparameters = config['hyperparameters']
+        """
+        Initialize the algorithm class using the config
+        :param config dictionary containing keys 'algorithm-family' and 'hyperparamters'.
+        The config 'algorithm-family' is the name of the class defining the algorithm (e.g. sklearn.svm.SVC)
+        the config 'hyperparamters' is a dictionary used to initialize the class
+        Raise a mlsurvey.exceptions.ConfigError if keys are not found in config
+        """
+        self.algorithm_family = None
+        self.hyperparameters = None
+        try:
+            self.algorithm_family = config['algorithm-family']
+            self.hyperparameters = config['hyperparameters']
+        except KeyError as e:
+            raise mls.exceptions.ConfigError(e)
 
     def learn(self, x, y):
         """learn a classifier from input x and y"""
-        classifier_class = mls.Utils.import_from_dotted_path(self.algorithm_family)
+        try:
+            classifier_class = mls.Utils.import_from_dotted_path(self.algorithm_family)
+        except AttributeError as e:
+            raise mls.exceptions.ConfigError(e)
         classifier = classifier_class(**self.hyperparameters)
         classifier.fit(x, y)
         return classifier

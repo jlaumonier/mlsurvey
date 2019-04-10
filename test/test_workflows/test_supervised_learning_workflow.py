@@ -35,6 +35,26 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertIsInstance(slw.context, mls.models.Context)
         self.assertIsInstance(slw.log, mls.Logging)
 
+    def test_init_config_file_not_exists_should_be_not_terminated(self):
+        """
+        :test : mlsurvey.workflows.SupervisedLearningWorkflow()
+        :condition : config file not exists
+        :main_result : init is not terminated
+        """
+        slw = mls.workflows.SupervisedLearningWorkflow('multiple_config_not_exist.json', config_directory=self.cd)
+        self.assertIsInstance(slw, mls.workflows.SupervisedLearningWorkflow)
+        self.assertFalse(slw.task_terminated_init)
+
+    def test_init_config_file_not_a_json_file_should_stop(self):
+        """
+        :test : mlsurvey.workflows.SupervisedLearningWorkflow()
+        :condition : config file is not a json file
+        :main_result : init is not terminated
+        """
+        slw = mls.workflows.SupervisedLearningWorkflow('config_loaded_not_json.json', config_directory=self.cd)
+        self.assertIsInstance(slw, mls.workflows.SupervisedLearningWorkflow)
+        self.assertFalse(slw.task_terminated_init)
+
     def test_init_SL_workflow_should_initialized_with_config(self):
         c = {'testconfig': 'config loaded'}
         slw = mls.workflows.SupervisedLearningWorkflow(config=c)
@@ -42,6 +62,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
 
     def test_set_terminated_all_terminated(self):
         slw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
+        slw.task_terminated_init = True
         slw.task_terminated_get_data = True
         slw.task_terminated_prepare_data = True
         slw.task_terminated_split_data = True
@@ -51,8 +72,21 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.set_terminated()
         self.assertTrue(slw.terminated)
 
+    def test_set_terminated_all_terminated_but_init(self):
+        mlw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
+        mlw.task_terminated_init = False
+        mlw.task_terminated_get_data = True
+        mlw.task_terminated_prepare_data = True
+        mlw.task_terminated_split_data = True
+        mlw.task_terminated_learn = True
+        mlw.task_terminated_evaluate = True
+        mlw.task_terminated_persistence = True
+        mlw.set_terminated()
+        self.assertFalse(mlw.terminated)
+
     def test_set_terminated_all_terminated_but_get_data(self):
         slw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
+        slw.task_terminated_init = True
         slw.task_terminated_get_data = False
         slw.task_terminated_prepare_data = True
         slw.task_terminated_split_data = True
@@ -64,6 +98,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
 
     def test_set_terminated_all_terminated_but_prepare_data(self):
         slw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
+        slw.task_terminated_init = True
         slw.task_terminated_get_data = True
         slw.task_terminated_prepare_data = False
         slw.task_terminated_split_data = True
@@ -75,6 +110,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
 
     def test_set_terminated_all_terminated_but_split_data(self):
         slw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
+        slw.task_terminated_init = True
         slw.task_terminated_get_data = True
         slw.task_terminated_prepare_data = True
         slw.task_terminated_split_data = False
@@ -86,6 +122,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
 
     def test_set_terminated_all_terminated_but_learn(self):
         slw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
+        slw.task_terminated_init = True
         slw.task_terminated_get_data = True
         slw.task_terminated_prepare_data = True
         slw.task_terminated_split_data = True
@@ -97,6 +134,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
 
     def test_set_terminated_all_terminated_but_evaluate(self):
         slw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
+        slw.task_terminated_init = True
         slw.task_terminated_get_data = True
         slw.task_terminated_prepare_data = True
         slw.task_terminated_split_data = True
@@ -108,6 +146,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
 
     def test_set_terminated_all_terminated_but_persistence(self):
         slw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
+        slw.task_terminated_init = True
         slw.task_terminated_get_data = True
         slw.task_terminated_prepare_data = True
         slw.task_terminated_split_data = True

@@ -6,7 +6,7 @@ from .dataset_factory import DataSetFactory
 
 class GenericDataSet(DataSet):
     """
-    Generic Dataset generation. Call a method, defined in the config file, to generate a dataset.
+    Generic Dataset generation. Call a method, from config file, to generate a dataset.
     """
 
     def __init__(self, t):
@@ -35,7 +35,9 @@ class GenericDataSet(DataSet):
 
     def generate(self):
         """
-        Generate data from parameters and type
+        Generate data from parameters and type.
+        Raise an AttributeError if self.t is not a valid function name of sklearn.datasets
+        Raise a TypeError if one parameter in self.params is not expected by the function
         :return: (x, y) : data and label
         """
         if self.t in self.types.keys():

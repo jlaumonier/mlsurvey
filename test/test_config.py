@@ -31,3 +31,27 @@ class TestConfig(unittest.TestCase):
         c = {'testconfig': 'config loaded'}
         config = mls.Config(config=c)
         self.assertEqual('config loaded', config.data['testconfig'])
+
+    def test_init_config_file_not_exists(self):
+        """
+        :test : mlsurvey.Config()
+        :condition : Config file not exist
+        :main_result : raise FileNotFoundError
+        """
+        try:
+            _ = mls.Config('config_loaded_not_exists.json')
+            self.assertTrue(False)
+        except FileNotFoundError:
+            self.assertTrue(True)
+
+    def test_init_config_file_not_json(self):
+        """
+        :test : mlsurvey.Config()
+        :condition : config file is not a json file
+        :main_result : raise ConfigError
+        """
+        try:
+            _ = mls.Config('config_loaded_not_json.json')
+            self.assertTrue(False)
+        except mls.exceptions.ConfigError:
+            self.assertTrue(True)

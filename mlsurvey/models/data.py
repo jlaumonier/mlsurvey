@@ -1,5 +1,7 @@
 import numpy as np
 
+import mlsurvey as mls
+
 
 class Data:
 
@@ -20,8 +22,12 @@ class Data:
         """
         Transform a dictionary containing 'data.x' and 'data.y' to the input object
         :param d: source dictionary
+        Raise mlsurvey.exception.ModelError if data.x or data.y is not present
         """
         result = Data()
-        result.x = np.array(d['data.x'])
-        result.y = np.array(d['data.y'])
+        try:
+            result.x = np.array(d['data.x'])
+            result.y = np.array(d['data.y'])
+        except KeyError as e:
+            raise mls.exceptions.ModelError(e)
         return result

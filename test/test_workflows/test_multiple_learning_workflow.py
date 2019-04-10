@@ -24,15 +24,45 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
         self.assertFalse(mlw.task_terminated_expand_config)
         self.assertFalse(mlw.task_terminated_run_each_config)
 
+    def test_init_config_file_not_exists_should_be_not_terminated(self):
+        """
+        :test : mlsurvey.workflows.MultipleLearningWorkflow()
+        :condition : config file not exists
+        :main_result : init is not terminated
+        """
+        mlw = mls.workflows.MultipleLearningWorkflow('multiple_config_not_exist.json', config_directory=self.cd)
+        self.assertIsInstance(mlw, mls.workflows.MultipleLearningWorkflow)
+        self.assertFalse(mlw.task_terminated_init)
+
+    def test_init_config_file_not_a_json_file_should_stop(self):
+        """
+        :test : mlsurvey.workflows.MultipleLearningWorkflow()
+        :condition : config file is not a json file
+        :main_result : init is not terminated
+        """
+        mlw = mls.workflows.MultipleLearningWorkflow('config_loaded_not_json.json', config_directory=self.cd)
+        self.assertIsInstance(mlw, mls.workflows.MultipleLearningWorkflow)
+        self.assertFalse(mlw.task_terminated_init)
+
     def test_set_terminated_all_terminated(self):
         mlw = mls.workflows.MultipleLearningWorkflow(config_directory=self.cd)
+        mlw.task_terminated_init = True
         mlw.task_terminated_expand_config = True
         mlw.task_terminated_run_each_config = True
         mlw.set_terminated()
         self.assertTrue(mlw.terminated)
 
+    def test_set_terminated_all_terminated_but_init(self):
+        mlw = mls.workflows.MultipleLearningWorkflow(config_directory=self.cd)
+        mlw.task_terminated_init = False
+        mlw.task_terminated_expand_config = True
+        mlw.task_terminated_run_each_config = True
+        mlw.set_terminated()
+        self.assertFalse(mlw.terminated)
+
     def test_set_terminated_all_terminated_but_expand_config(self):
         mlw = mls.workflows.MultipleLearningWorkflow(config_directory=self.cd)
+        mlw.task_terminated_init = True
         mlw.task_terminated_expand_config = False
         mlw.task_terminated_run_each_config = True
         mlw.set_terminated()
@@ -40,6 +70,7 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
 
     def test_set_terminated_all_terminated_but_run_each_config(self):
         mlw = mls.workflows.MultipleLearningWorkflow(config_directory=self.cd)
+        mlw.task_terminated_init = True
         mlw.task_terminated_expand_config = True
         mlw.task_terminated_run_each_config = False
         mlw.set_terminated()
@@ -102,3 +133,14 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
 
         # all tasks are finished
         self.assertTrue(mlw.terminated)
+
+    def test_run_all_step_init_not_terminated_should_not_be_executed(self):
+        """
+        :test : mlsurvey.workflows.MultipleLearningWorkflow.run()
+        :condition : config file not exists
+        :main_result : should not run
+        """
+        mlw = mls.workflows.MultipleLearningWorkflow('multiple_config_not_exist.json', config_directory=self.cd)
+        self.assertFalse(mlw.terminated)
+        mlw.run()
+        self.assertFalse(mlw.terminated)

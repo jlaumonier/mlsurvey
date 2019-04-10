@@ -14,7 +14,10 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         :param config: dictionary for config. If set, replace config file
         """
         super().__init__()
-        self.config = mls.Config(config_file, config=config, directory=config_directory)
+        try:
+            self.config = mls.Config(config_file, config=config, directory=config_directory)
+        except (FileNotFoundError, mls.exceptions.ConfigError):
+            self.task_terminated_init = False
         self.data_preparation = StandardScaler()
         self.context = mls.models.Context(eval_type=mls.models.EvaluationSupervised)
         self.log = mls.Logging()
@@ -27,7 +30,8 @@ class SupervisedLearningWorkflow(LearningWorkflow):
 
     def set_terminated(self):
         """ set the workflow as terminated if all tasks are terminated"""
-        self.terminated = (self.task_terminated_get_data
+        self.terminated = (self.task_terminated_init
+                           & self.task_terminated_get_data
                            & self.task_terminated_prepare_data
                            & self.task_terminated_split_data
                            & self.task_terminated_learn

@@ -7,9 +7,9 @@
 4. Pushed in git
 
 ## TODO
-* Error Management - Make the system robust
 * Generate a "full" config file for sci-kit-learn
 * Log management
+* Rename Logging class to "FilesOperation"-ish class
 * Regularization
 * Model evaluation (complete)
 * Random seed global
@@ -24,10 +24,10 @@
 * Create generic factory
 * Fairness utils : make the calculation of conditional proba more robust (more test)
 * Fairness : rethinking the workflow to integrate supervised learning workflow
+* Defining and validating a json schema for config files
 
 ## Current
-* Visualization : Improve process : use dash  and dynamic interface. Refactor workflow
-* Bug : empty log directory during visualization
+* Error Management - Make the system robust
 
 ## Done
 * Git repository : local
@@ -55,6 +55,9 @@
 * split supervised_learning_workflow to separate data from workflow. Data should be using in visualization_workflow
 * Reorganize Dataset and Data : concept are too similar and not well defined
 * Fairness workflow
+* Visualization : Improve process : use dash  and dynamic interface. Refactor workflow
+* Bug : empty log directory during visualization
+
 
 
 

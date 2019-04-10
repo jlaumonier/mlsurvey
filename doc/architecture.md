@@ -65,3 +65,10 @@ At this time, fairness process work only on data and not on classifier, which is
 should be calculated on prediction vs data. However, no calculation is done :-S since I do not know if I implement it
 or just use a fairness library such as AIF360
 
+# Error management
+
+Three exceptions are used
+1. ConfigError : Raised when an error occurs related to the content of the config files
+1. ModelError: Raised during models processing
+1. WorkflowError : Raised during workflow treatment
+

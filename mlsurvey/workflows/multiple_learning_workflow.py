@@ -14,13 +14,17 @@ class MultipleLearningWorkflow(LearningWorkflow):
         super().__init__(config_directory=config_directory)
         self.task_terminated_expand_config = False
         self.task_terminated_run_each_config = False
-        self.config = mls.Config(config_file, directory=self.config_directory)
+        try:
+            self.config = mls.Config(config_file, directory=self.config_directory)
+        except (FileNotFoundError, mls.exceptions.ConfigError):
+            self.task_terminated_init = False
         self.expanded_config = []
         self.slw = []
 
     def set_terminated(self):
         """ set the workflow as terminated if all tasks are terminated"""
-        self.terminated = (self.task_terminated_expand_config
+        self.terminated = (self.task_terminated_init
+                           & self.task_terminated_expand_config
                            & self.task_terminated_run_each_config)
 
     def task_expand_config(self):
@@ -79,11 +83,12 @@ class MultipleLearningWorkflow(LearningWorkflow):
 
     def run(self):
         """
-        Run the workflow :
+        Run the workflow only if the initialization was done correctly:
         - Expand configs
         - run each config
         - terminated the workflow
         """
-        self.task_expand_config()
-        self.task_run_each_config()
-        self.set_terminated()
+        if self.task_terminated_init:
+            self.task_expand_config()
+            self.task_run_each_config()
+            self.set_terminated()

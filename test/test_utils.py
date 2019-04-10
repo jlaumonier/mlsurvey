@@ -12,6 +12,18 @@ class TestUtils(unittest.TestCase):
         md5 = mls.Utils.md5_file('files/test_md5.txt')
         self.assertEqual('70a4b9f4707d258f559f91615297a3ec', md5)
 
+    def test_md5_file_not_exists(self):
+        """
+        :test : mlsurvey.Utils.md5_file()
+        :condition : unknown file
+        :main_result : raise FileNotFoundError
+        """
+        try:
+            _ = mls.Utils.md5_file('files/test_md5_unknown.txt')
+            self.assertTrue(False)
+        except FileNotFoundError:
+            self.assertTrue(True)
+
     def test_dict_generator_cartesian_product(self):
         source = {"element1": ["A", "B", "C"], "element2": [1, 2], "element3": [True, False], "element4": 12}
         result = list(mls.Utils.dict_generator_cartesian_product(source))
@@ -28,6 +40,18 @@ class TestUtils(unittest.TestCase):
         expected_first_dict = {"element1": "test"}
         self.assertDictEqual(expected_first_dict, result[0])
 
+    def test_dict_generator_cartesian_product_none(self):
+        """
+       :test : mlsurvey.Utils.dict_generator_cartesian_product()
+       :condition : source contains None
+       :main_result : result contains None also
+       """
+        source = {"element1": None}
+        result = list(mls.Utils.dict_generator_cartesian_product(source))
+        self.assertEqual(1, len(result))
+        expected_first_dict = {"element1": None}
+        self.assertDictEqual(expected_first_dict, result[0])
+
     def test_dict_generator_cartesian_product_empty(self):
         source = {}
         result = list(mls.Utils.dict_generator_cartesian_product(source))
@@ -39,6 +63,19 @@ class TestUtils(unittest.TestCase):
         to_import = 'sklearn.neighbors.KNeighborsClassifier'
         classdef = mls.Utils.import_from_dotted_path(to_import)
         self.assertEqual(neighbors.KNeighborsClassifier, classdef)
+
+    def test_import_from_dotted_path_not_exists(self):
+        """
+        :test : mlsurvey.Utils.import_from_dotted_path()
+        :condition : unknown module and class
+        :main_result : AttributeError
+        """
+        to_import = 'sklearn.neighbors.UnknownClass'
+        try:
+            _ = mls.Utils.import_from_dotted_path(to_import)
+            self.assertTrue(False)
+        except AttributeError:
+            self.assertTrue(True)
 
     def test_make_meshgrid(self):
         x = np.array([1, 2])

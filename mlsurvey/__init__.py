@@ -1,4 +1,5 @@
 from . import datasets
+from . import exceptions
 from . import models
 from . import visualize
 from . import workflows

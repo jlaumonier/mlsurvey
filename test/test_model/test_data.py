@@ -28,3 +28,25 @@ class TestData(unittest.TestCase):
         self.assertEqual(2, d.x.shape[1])
         self.assertEqual(2, d.x.shape[0])
         self.assertEqual(2, d.y.shape[0])
+
+    def test_from_dict_datax_not_present(self):
+        """ maybe this should be test using a json schema validator """
+        input_dict = {'d.x': [[1, 2], [3, 4]], 'data.y': [0, 1]}
+        d = None
+        try:
+            d = mls.models.Data.from_dict(input_dict)
+            self.assertTrue(False)
+        except mls.exceptions.ModelError:
+            self.assertIsNone(d)
+            self.assertTrue(True)
+
+    def test_from_dict_datay_not_present(self):
+        """ maybe this should be test using a json schema validator """
+        input_dict = {'data.x': [[1, 2], [3, 4]], 'd.y': [0, 1]}
+        d = None
+        try:
+            d = mls.models.Data.from_dict(input_dict)
+            self.assertTrue(False)
+        except mls.exceptions.ModelError:
+            self.assertIsNone(d)
+            self.assertTrue(True)

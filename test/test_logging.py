@@ -26,6 +26,18 @@ class TestLogging(unittest.TestCase):
         self.assertEqual(log.directory, 'logs/' + dir_name)
         self.assertTrue(os.path.isdir('logs/' + dir_name))
 
+    def test_init_log_directory_dir_exists(self):
+        """
+        :test : mlsurvey.Logging()
+        :condition : Directory already exists
+        :main_result : no error
+        """
+        base_dir = 'files/'
+        dir_name = 'slw'
+        self.assertTrue(os.path.isdir(base_dir + dir_name))
+        _ = mls.Logging(base_dir=base_dir, dir_name=dir_name)
+        self.assertTrue(True)
+
     def test_save_inputs_input_saved(self):
         dir_name = 'testing/'
         d_data = mls.datasets.DataSetFactory.create_dataset('make_moons')

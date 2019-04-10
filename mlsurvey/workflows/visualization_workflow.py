@@ -155,7 +155,7 @@ class VisualizationWorkflow(LearningWorkflow):
         f = go.Figure(data=data, layout=layout)
         self.figure = dcc.Graph(id='graph', figure=f)
         self.scoreText = html.P('Score : ' + str(self.context.evaluation.score))
-        # This line makes a cannot find reference warning
+        # This line makes a cannot find reference warning and i do not know why and how i can fix it
         self.configText = html.Div([ddsih.DangerouslySetInnerHTML(json2table.convert(self.config.data))])
         self.task_terminated_display_data = True
 

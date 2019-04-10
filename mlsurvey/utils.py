@@ -12,6 +12,7 @@ class Utils:
         """
         Calculate the md5 of a file
         thanks Andres Torres https://www.pythoncentral.io/hashing-files-with-python/
+        Raise FileNotFoundError if the file does not exist
         """
         blocksize = 65536
         hasher = hashlib.md5()
@@ -54,8 +55,8 @@ class Utils:
 
         Parameters
         ----------
-        x: data to base x-axis meshgrid on
-        y: data to base y-axis meshgrid on
+        x: data to base x-axis meshgrid on (type numpy.ndarray)
+        y: data to base y-axis meshgrid on (type numpy.ndarray)
         h: stepsize for meshgrid, optional
 
         Returns

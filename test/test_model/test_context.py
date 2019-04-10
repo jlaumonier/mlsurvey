@@ -30,6 +30,19 @@ class TestContext(unittest.TestCase):
         context = mls.models.Context(eval_type=mls.models.EvaluationSupervised)
         self.assertIsInstance(context.evaluation, mls.models.EvaluationSupervised)
 
+    def test_init_unknown_eval_type(self):
+        """
+        :test : mlsurvey.models.Context()
+        :condition : unknown evaluation
+        :main_result : raise AttributeError
+        """
+        try:
+            # This line makes a unresolved reference warning but that's what i want to test the context
+            _ = mls.models.Context(eval_type=mls.models.UnknownEvaluation)
+            self.assertTrue(False)
+        except AttributeError:
+            self.assertTrue(True)
+
     def test_save_context(self):
         context = mls.models.Context(eval_type=mls.models.EvaluationSupervised)
         config_algo = {
