@@ -8,3 +8,4 @@ dash
 dash_dangerously_set_inner_html
 colorlover
 plotly
+tqdm

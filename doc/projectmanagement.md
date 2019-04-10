@@ -27,7 +27,7 @@
 * Defining and validating a json schema for config files
 
 ## Current
-* Error Management - Make the system robust
+* progress bar for multiple learning workflow
 
 ## Done
 * Git repository : local
@@ -57,6 +57,7 @@
 * Fairness workflow
 * Visualization : Improve process : use dash  and dynamic interface. Refactor workflow
 * Bug : empty log directory during visualization
+* Error Management - Make the system robust
 
 
 
