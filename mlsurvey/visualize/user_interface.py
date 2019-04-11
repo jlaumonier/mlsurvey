@@ -12,6 +12,7 @@ class UserInterface:
 
     def __init__(self, directory):
         self.analyse_logs = mls.visualize.AnalyzeLogs(directory)
+        self.analyse_logs.store_config()
 
     @staticmethod
     def update(value):

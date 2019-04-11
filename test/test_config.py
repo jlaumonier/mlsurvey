@@ -55,3 +55,43 @@ class TestConfig(unittest.TestCase):
             self.assertTrue(False)
         except mls.exceptions.ConfigError:
             self.assertTrue(True)
+
+    def test_compactt_should_compact(self):
+        """
+        :test : mlsurvey.Config.transform()
+        :condition : config file format to compacted config format
+        :main_result : transformation ok
+        """
+        base_config = {'algorithms': {'knn-base': {'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
+                                                   'hyperparameters': {'algorithm': 'auto',
+                                                                       'n_neighbors': 2,
+                                                                       'weights': 'uniform'}}},
+                       'datasets': {'DataSetNClassRandom': {'parameters': {'n_samples': 100,
+                                                                           'noise': 0,
+                                                                           'random_state': 0,
+                                                                           'shuffle': True},
+                                                            'type': 'NClassRandomClassificationWithNoise'}},
+                       'learning_process': {'algorithm': 'knn-base',
+                                            'input': 'DataSetNClassRandom',
+                                            'split': 'traintest20'},
+                       'splits': {'traintest20': {'parameters': {'random_state': 0,
+                                                                 'shuffle': True,
+                                                                 'test_size': 20},
+                                                  'type': 'traintest'}}}
+        expected_config = {
+            'learning_process': {'algorithm': {'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
+                                               'hyperparameters': {'algorithm': 'auto',
+                                                                   'n_neighbors': 2,
+                                                                   'weights': 'uniform'}},
+                                 'input': {'parameters': {'n_samples': 100,
+                                                          'noise': 0,
+                                                          'random_state': 0,
+                                                          'shuffle': True},
+                                           'type': 'NClassRandomClassificationWithNoise'},
+                                 'split': {'parameters': {'random_state': 0,
+                                                          'shuffle': True,
+                                                          'test_size': 20},
+                                           'type': 'traintest'}}
+        }
+        actual_config_result = mls.Config.compact(base_config)
+        self.assertDictEqual(actual_config_result, expected_config)

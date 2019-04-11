@@ -7,9 +7,14 @@
 4. Pushed in git
 
 ## TODO
+* Supervised Learning : use compact config instead of full config
+* Visualization : interface query to nosql database 
+* Visualization : interface display one result
+* Allowing tuple in config hyperparameters (e.g. hidden_layer_sizes for MLPClassifier)
 * Generate a "full" config file for sci-kit-learn
 * Log management
 * Rename Logging class to "FilesOperation"-ish class
+* Visualization : interface display multiple results
 * Regularization
 * Model evaluation (complete)
 * Random seed global
@@ -27,7 +32,7 @@
 * Defining and validating a json schema for config files
 
 ## Current
-* progress bar for multiple learning workflow
+* Visualization : all config into nosql database
 
 ## Done
 * Git repository : local
@@ -58,6 +63,7 @@
 * Visualization : Improve process : use dash  and dynamic interface. Refactor workflow
 * Bug : empty log directory during visualization
 * Error Management - Make the system robust
+* progress bar for multiple learning workflow
 
 
 

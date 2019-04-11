@@ -48,6 +48,16 @@
         "kernel": "rbf",
         "gamma": "auto"
       }
+    },
+    "nn-base": {
+      "algorithm-family": "sklearn.neural_network.MLPClassifier",
+      "hyperparameters": {
+        "activation": [
+          "relu",
+          "tanh"
+        ],
+        "max_iter": 2000
+      }
     }
   },
   "splits": {
@@ -68,7 +78,8 @@
     "split": "traintest20",
     "algorithm": [
       "knn-base",
-      "smv-base"
+      "smv-base",
+      "nn-base"
     ]
   }
 }

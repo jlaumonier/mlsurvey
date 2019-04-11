@@ -1,0 +1,7 @@
+{
+  "algorithm-family": "sklearn.neural_network.MLPClassifier",
+  "hyperparameters": {
+    "activation": "tanh",
+    "max_iter": 2000
+  }
+}
