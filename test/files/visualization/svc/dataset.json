@@ -1,0 +1,8 @@
+{
+  "type": "make_blobs",
+  "parameters": {
+    "n_samples": 100,
+    "shuffle": true,
+    "random_state": 0
+  }
+}

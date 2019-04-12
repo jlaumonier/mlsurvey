@@ -13,6 +13,8 @@
 * Allowing tuple in config hyperparameters (e.g. hidden_layer_sizes for MLPClassifier)
 * Generate a "full" config file for sci-kit-learn
 * Log management
+* Bug : Visualization workflow crash when dataset has more than 2 dimensions (e.g. load_iris)
+* Bug : Visualization workflow does not handle correctly more than 2 classes
 * Rename Logging class to "FilesOperation"-ish class
 * Regularization
 * Model evaluation (complete)
@@ -30,8 +32,7 @@
 * Defining and validating a json schema for config files
 
 ## Current
-* Visualization : interface display one result
-* Visualization : interface display multiple results
+* Bug : Visualization workflow crash for more than 2 classes with algorithm with decision_boundary
 
 ## Done
 * Git repository : local
@@ -64,6 +65,8 @@
 * Error Management - Make the system robust
 * progress bar for multiple learning workflow
 * Visualization : all config into nosql database
+* Visualization : interface display one result
+* Visualization : interface display multiple results
 
 
 

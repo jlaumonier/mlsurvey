@@ -47,6 +47,7 @@ class VisualizationWorkflow(LearningWorkflow):
         """
 
         x = self.context.data.x
+        y = self.context.data.y
         x_train = self.context.data_train.x
         y_train = self.context.data_train.y
         x_test = self.context.data_test.x
@@ -62,6 +63,8 @@ class VisualizationWorkflow(LearningWorkflow):
 
         if hasattr(self.context.classifier, "decision_function"):
             z = self.context.classifier.decision_function(np.c_[xx.ravel(), yy.ravel()])
+            if z.ndim > 1:
+                z = z[:, 1]
         else:
             z = self.context.classifier.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
 

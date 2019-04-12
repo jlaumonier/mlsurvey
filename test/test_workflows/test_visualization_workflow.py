@@ -15,7 +15,9 @@ class TestVisualizationWorkflow(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         directory = os.path.dirname(__file__)
-        cls.directory = os.path.join(directory, '../files/visualization/')
+        cls.directory = os.path.join(directory, '../files/visualization/base/')
+        cls.directory_blobs = os.path.join(directory, '../files/visualization/blobs/')
+        cls.directory_svc = os.path.join(directory, '../files/visualization/svc/')
 
     @classmethod
     def tearDownClass(cls):
@@ -71,6 +73,22 @@ class TestVisualizationWorkflow(unittest.TestCase):
 
     def test_task_display_data_figure_generated(self):
         vw = mls.workflows.VisualizationWorkflow(directory=self.directory)
+        vw.task_load_data()
+        vw.task_display_data()
+        self.assertIsInstance(vw.figure, dcc.Graph)
+        self.assertIsInstance(vw.scoreText, html.P)
+        self.assertIsInstance(vw.configText, html.Div)
+
+    def test_task_display_data_blobs_figure_generated(self):
+        vw = mls.workflows.VisualizationWorkflow(directory=self.directory_blobs)
+        vw.task_load_data()
+        vw.task_display_data()
+        self.assertIsInstance(vw.figure, dcc.Graph)
+        self.assertIsInstance(vw.scoreText, html.P)
+        self.assertIsInstance(vw.configText, html.Div)
+
+    def test_task_display_data_svc_figure_generated(self):
+        vw = mls.workflows.VisualizationWorkflow(directory=self.directory_svc)
         vw.task_load_data()
         vw.task_display_data()
         self.assertIsInstance(vw.figure, dcc.Graph)

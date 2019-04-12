@@ -5,8 +5,7 @@
       "parameters": {
         "n_samples": [
           100,
-          1000,
-          10000
+          1000
         ],
         "shuffle": true,
         "noise": 0,
@@ -16,7 +15,10 @@
     "DataSetCircle": {
       "type": "make_circles",
       "parameters": {
-        "n_samples": 100,
+        "n_samples": [
+          100,
+          1000
+        ],
         "shuffle": true,
         "noise": 0,
         "random_state": 0,
@@ -24,8 +26,19 @@
       }
     },
     "DataSetIris": {
-      "type": "Iris",
+      "type": "load_iris",
       "parameters": {}
+    },
+    "DataSetBlobs": {
+      "type": "make_blobs",
+      "parameters": {
+        "n_samples": [
+          100,
+          1000
+        ],
+        "shuffle": true,
+        "random_state": 0
+      }
     }
   },
   "algorithms": {
@@ -73,7 +86,9 @@
   "learning_process": {
     "input": [
       "DataSetNClassRandom",
-      "DataSetCircle"
+      "DataSetCircle",
+      "DataSetIris",
+      "DataSetBlobs"
     ],
     "split": "traintest20",
     "algorithm": [
