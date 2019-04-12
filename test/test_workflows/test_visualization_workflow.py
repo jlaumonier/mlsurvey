@@ -26,11 +26,11 @@ class TestVisualizationWorkflow(unittest.TestCase):
 
     def test_init_should_init(self):
         vw = mls.workflows.VisualizationWorkflow(directory=self.directory)
-        self.assertEqual(vw.source_directory, self.directory)
+        self.assertEqual(self.directory, vw.source_directory)
         self.assertIsNone(vw.config)
         self.assertIsInstance(vw.context, mls.models.Context)
         self.assertIsInstance(vw.log, mls.Logging)
-        self.assertEqual(vw.log.directory, self.directory)
+        self.assertEqual(self.directory, vw.log.directory)
         self.assertIsNone(vw.figure)
         self.assertIsNone(vw.scoreText)
         self.assertIsNone(vw.configText)
@@ -66,8 +66,8 @@ class TestVisualizationWorkflow(unittest.TestCase):
         self.assertEqual(20, len(vw.context.data_test.y))
         self.assertEqual(80, len(vw.context.data_train.x))
         self.assertEqual(80, len(vw.context.data_train.y))
-        self.assertEqual(vw.context.algorithm.hyperparameters['n_neighbors'], 2)
-        self.assertEqual(vw.context.algorithm.algorithm_family, 'sklearn.neighbors.KNeighborsClassifier')
+        self.assertEqual(2, vw.context.algorithm.hyperparameters['n_neighbors'])
+        self.assertEqual('sklearn.neighbors.KNeighborsClassifier', vw.context.algorithm.algorithm_family)
         self.assertIsInstance(vw.context.classifier, neighbors.KNeighborsClassifier)
         self.assertEqual(1.00, vw.context.evaluation.score)
 

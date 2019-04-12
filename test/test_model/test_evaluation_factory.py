@@ -33,7 +33,7 @@ class TestEvaluationFactory(unittest.TestCase):
                                                  mls.models.EvaluationSupervised.Factory)
         evaluation = evaluation_factory.create_instance('EvaluationSupervised')
         self.assertIsInstance(evaluation, mls.models.EvaluationSupervised)
-        self.assertEqual(evaluation.score, 0.0)
+        self.assertEqual(0.0, evaluation.score)
 
     def test_create_evaluation_from_dict_created(self):
         source = {'type': 'EvaluationSupervised', 'score': 0.55}
@@ -42,4 +42,4 @@ class TestEvaluationFactory(unittest.TestCase):
                                                  mls.models.EvaluationSupervised.Factory)
         evaluation = evaluation_factory.create_instance_from_dict(source)
         self.assertIsInstance(evaluation, mls.models.EvaluationSupervised)
-        self.assertEqual(evaluation.score, 0.55)
+        self.assertEqual(0.55, evaluation.score)

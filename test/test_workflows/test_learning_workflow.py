@@ -9,10 +9,10 @@ class TestLearningWorkflow(unittest.TestCase):
         lw = mls.workflows.LearningWorkflow()
         self.assertFalse(lw.terminated)
         self.assertTrue(lw.task_terminated_init)
-        self.assertEqual(lw.config_directory, 'config/')
+        self.assertEqual('config/', lw.config_directory)
 
     def test_init_with_confdir_should_init(self):
         lw = mls.workflows.LearningWorkflow(config_directory='test/')
         self.assertFalse(lw.terminated)
         self.assertTrue(lw.task_terminated_init)
-        self.assertEqual(lw.config_directory, 'test/')
+        self.assertEqual('test/', lw.config_directory)

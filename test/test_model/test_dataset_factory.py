@@ -55,5 +55,5 @@ class TestDataSetFactory(unittest.TestCase):
                                                 mls.datasets.GenericDataSet.Factory)
         params = {'param1': 1, 'param2': 3, 'return_X_y': False}
         dataset = dataset_factory.create_dataset_from_dict(source)
-        self.assertEqual(dataset.t, 'load_iris')
-        self.assertDictEqual(dataset.params, params)
+        self.assertEqual('load_iris', dataset.t)
+        self.assertDictEqual(params, dataset.params)

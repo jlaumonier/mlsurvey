@@ -15,7 +15,7 @@ class TestAlgorithm(unittest.TestCase):
             }
         }
         algo = mls.models.Algorithm(config)
-        self.assertEqual('module.Test', algo.algorithm_family)
+        self.assertEqual(config['algorithm-family'], algo.algorithm_family)
         self.assertEqual(config['hyperparameters']['n_neighbors'], algo.hyperparameters['n_neighbors'])
         self.assertEqual(config['hyperparameters']['algorithm'], algo.hyperparameters['algorithm'])
         self.assertEqual(config['hyperparameters']['weights'], algo.hyperparameters['weights'])
@@ -105,7 +105,7 @@ class TestAlgorithm(unittest.TestCase):
         }
         algo = mls.models.Algorithm(config)
         d = algo.to_dict()
-        self.assertEqual(d, config)
+        self.assertEqual(config, d)
 
     def test_from_dict_algo_loaded(self):
         config = {
@@ -117,7 +117,7 @@ class TestAlgorithm(unittest.TestCase):
             }
         }
         algo = mls.models.Algorithm.from_dict(config)
-        self.assertEqual('module.Test', algo.algorithm_family)
+        self.assertEqual(config['algorithm-family'], algo.algorithm_family)
         self.assertEqual(config['hyperparameters']['n_neighbors'], algo.hyperparameters['n_neighbors'])
         self.assertEqual(config['hyperparameters']['algorithm'], algo.hyperparameters['algorithm'])
         self.assertEqual(config['hyperparameters']['weights'], algo.hyperparameters['weights'])

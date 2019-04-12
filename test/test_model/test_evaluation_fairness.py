@@ -16,7 +16,7 @@ class TestEvaluationFairness(unittest.TestCase):
         evf.probability = np.array([0.7, 0.3])
         expected = {'type': 'EvaluationFairness', 'probability': [0.7, 0.3]}
         result = evf.to_dict()
-        self.assertDictEqual(result, expected)
+        self.assertDictEqual(expected, result)
 
     def test_from_dict(self):
         source = {'type': 'EvaluationFairness', 'probability': [0.7, 0.3]}

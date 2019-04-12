@@ -22,7 +22,7 @@ class TestGenericDataSet(unittest.TestCase):
         data = mls.datasets.GenericDataSet('load_iris')
         params = {'param1': 1, 'param2': 3, 'return_X_y': False}
         data.set_generation_parameters(params)
-        self.assertDictEqual(data.params, params)
+        self.assertDictEqual(params, data.params)
 
     def test_generate_generic_dataset_moon_is_generated(self):
         data = mls.datasets.DataSetFactory.create_dataset('make_moons')
@@ -108,7 +108,7 @@ class TestGenericDataSet(unittest.TestCase):
         expected = {'type': 'load_iris', "parameters": {'param1': 1, 'param2': 3, 'return_X_y': False}}
         dataset.set_generation_parameters(params)
         j = dataset.to_dict()
-        self.assertDictEqual(j, expected)
+        self.assertDictEqual(expected, j)
 
 
 class TestNClassRandomClassificationWithNoise(unittest.TestCase):

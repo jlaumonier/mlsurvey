@@ -14,10 +14,10 @@ class TestEvaluationSupervised(unittest.TestCase):
         evs.score = 0.85
         expected = {'type': 'EvaluationSupervised', 'score': evs.score}
         result = evs.to_dict()
-        self.assertDictEqual(result, expected)
+        self.assertDictEqual(expected, result)
 
     def test_from_dict(self):
         source = {'type': 'EvaluationSupervised', 'score': 0.85}
         evs = mls.models.EvaluationSupervised()
         evs.from_dict(source)
-        self.assertEqual(evs.score, 0.85)
+        self.assertEqual(0.85, evs.score)

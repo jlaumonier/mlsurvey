@@ -20,12 +20,12 @@ class TestAnalyzeLogs(unittest.TestCase):
         expected_list_full_dir = [os.path.join(self.directory, 'directory1'),
                                   os.path.join(self.directory, 'directory2'),
                                   os.path.join(self.directory, 'directory3')]
-        self.assertEqual(analyse_logs.directory, self.directory)
+        self.assertEqual(self.directory, analyse_logs.directory)
         self.assertEqual(len(analyse_logs.list_dir), len(analyse_logs.list_full_dir))
         self.assertListEqual(analyse_logs.list_dir, expected_list_dir)
         self.assertListEqual(analyse_logs.list_full_dir, expected_list_full_dir)
         self.assertIsInstance(analyse_logs.db, tdb.database.TinyDB)
-        self.assertEqual(len(analyse_logs.db.all()), 0)
+        self.assertEqual(0, len(analyse_logs.db.all()))
 
     def test_store_config_should_fill_database(self):
         """
@@ -54,8 +54,8 @@ class TestAnalyzeLogs(unittest.TestCase):
                                            'type': 'traintest'}},
             'location': os.path.join(self.directory, 'directory1')
         }
-        self.assertEqual(len(analyse_logs.db.all()), 3)
-        self.assertListEqual(r, [expected_result])
+        self.assertEqual(3, len(analyse_logs.db.all()))
+        self.assertListEqual([expected_result], r)
 
     def test_store_config_should_answer_query1(self):
         """
@@ -68,7 +68,7 @@ class TestAnalyzeLogs(unittest.TestCase):
         q = tdb.Query()
         r = analyse_logs.db.search(
             q.learning_process.input.type == 'NClassRandomClassificationWithNoise')
-        self.assertEqual(len(r), 3)
+        self.assertEqual(3, len(r))
 
     def test_store_config_should_answer_query2(self):
         """
@@ -83,4 +83,4 @@ class TestAnalyzeLogs(unittest.TestCase):
         r = analyse_logs.db.search(
             (q.learning_process.input.parameters.n_samples == 100)
             | (q.learning_process.input.parameters.n_samples == 10000))
-        self.assertEqual(len(r), 3)
+        self.assertEqual(3, len(r))

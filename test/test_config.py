@@ -98,4 +98,4 @@ class TestConfig(unittest.TestCase):
                                            'type': 'traintest'}}
         }
         actual_config_result = mls.Config.compact(base_config)
-        self.assertDictEqual(actual_config_result, expected_config)
+        self.assertDictEqual(expected_config, actual_config_result)

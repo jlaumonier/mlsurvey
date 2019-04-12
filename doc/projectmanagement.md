@@ -23,16 +23,15 @@
 * Version management : https://github.com/aebrahim/python-git-version ?
 * Document tests inside code
 * Bug : Remove warning during importlib in Utils
-* Invert parameters of assertions in tests
 * use a design pattern for persistence of mlsurvey.models
 * Reorganize workflow inheritance and attribute (e.g. config)
 * Doc website
 * Create generic factory
-* Fairness utils : make the calculation of conditional proba more robust (more test)l
+* Fairness utils : make the calculation of conditional proba more robust (more test)
 * Defining and validating a json schema for config files
 
 ## Current
-* Bug : Visualization workflow crash for more than 2 classes with algorithm with decision_boundary
+* Invert parameters of assertions in tests assertEqual (expected, actual)
 
 ## Done
 * Git repository : local
@@ -67,6 +66,7 @@
 * Visualization : all config into nosql database
 * Visualization : interface display one result
 * Visualization : interface display multiple results
+* Bug : Visualization workflow crash for more than 2 classes with algorithm with decision_boundary
 
 
 

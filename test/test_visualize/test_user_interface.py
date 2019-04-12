@@ -14,6 +14,6 @@ class TestUserInterface(unittest.TestCase):
     def test_init_should_init(self):
         app_interface = mls.visualize.UserInterface(self.directory)
         self.assertIsInstance(app_interface.analyse_logs, mls.visualize.AnalyzeLogs)
-        self.assertEqual(len(app_interface.analyse_logs.db.all()), 3)
+        self.assertEqual(3, len(app_interface.analyse_logs.db.all()))
         self.assertIsInstance(app_interface.search_interface, mls.visualize.SearchInterface)
         self.assertIsInstance(app_interface.detail_interface, mls.visualize.DetailInterface)

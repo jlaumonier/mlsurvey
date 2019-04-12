@@ -18,12 +18,12 @@ class TestLogging(unittest.TestCase):
         log = mls.Logging()
         self.assertIsNotNone(log.dir_name)
         self.assertTrue(os.path.isdir(log.base_dir + log.dir_name + '/'))
-        self.assertEqual(log.directory, log.base_dir + log.dir_name + '/')
+        self.assertEqual(log.base_dir + log.dir_name + '/', log.directory)
 
     def test_init_log_directory_create_with_fixed_name(self):
         dir_name = 'testing/'
         log = mls.Logging(dir_name=dir_name)
-        self.assertEqual(log.directory, 'logs/' + dir_name)
+        self.assertEqual('logs/' + dir_name, log.directory)
         self.assertTrue(os.path.isdir('logs/' + dir_name))
 
     def test_init_log_directory_dir_exists(self):

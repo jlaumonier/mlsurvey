@@ -64,7 +64,7 @@ class TestFairnessWorkflow(unittest.TestCase):
         fw = mls.workflows.FairnessWorkflow(config_directory=self.cd)
         fw.task_get_data()
         self.assertIsInstance(fw.context.dataset, mls.datasets.GenericDataSet)
-        self.assertEqual(fw.context.dataset.t, 'make_circles')
+        self.assertEqual('make_circles', fw.context.dataset.t)
         self.assertIsNotNone(fw.context.data)
         self.assertEqual(100, len(fw.context.data.x))
         self.assertEqual(100, len(fw.context.data.y))
