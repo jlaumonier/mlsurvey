@@ -31,7 +31,7 @@
 * Defining and validating a json schema for config files
 
 ## Current
-* Invert parameters of assertions in tests assertEqual (expected, actual)
+
 
 ## Done
 * Git repository : local
@@ -67,6 +67,7 @@
 * Visualization : interface display one result
 * Visualization : interface display multiple results
 * Bug : Visualization workflow crash for more than 2 classes with algorithm with decision_boundary
+* Invert parameters of assertions in tests assertEqual (expected, actual)
 
 
 

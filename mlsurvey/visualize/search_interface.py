@@ -45,7 +45,7 @@ class SearchInterface:
         """Layout of the search page"""
         d = [{'Algorithm': 0, 'AlgoParams': 0, 'Dataset': 0, 'DSParams': 0, 'Directory': 0}]
         c = ['Algorithm', 'AlgoParams', 'Dataset', 'DSParams', 'Directory']
-        return html.Div([
+        return html.Div(children=[
             html.Button('Search', id='search-button-id'),
             dash_table.DataTable(id='search-results-id',
                                  columns=[{"name": i, "id": i} for i in c],
@@ -60,7 +60,8 @@ class SearchInterface:
                                  navigation="page",
                                  selected_rows=[],
                                  style_as_list_view=True,
-                                 style_cell={'textAlign': 'left'})])
+                                 style_cell={'textAlign': 'left', 'font-size': '0.9em'})],
+            className='twelve columns')
 
     def define_callback(self, dash_app):
         """define the callbacks on the page"""

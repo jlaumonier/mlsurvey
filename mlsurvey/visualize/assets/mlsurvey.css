@@ -1,9 +1,11 @@
 table {
-  border: 0px;
+  border:solid #6cab47 1px;
   width: 100%;
   text-align: center;
   border-collapse: collapse;
   padding: 3px 3px 3px 3px;
+  border-radius:6px;
+  -moz-border-radius:6px;
 }
 table td {
   border: 0px;
