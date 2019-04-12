@@ -47,7 +47,6 @@ class VisualizationWorkflow(LearningWorkflow):
         """
 
         x = self.context.data.x
-        y = self.context.data.y
         x_train = self.context.data_train.x
         y_train = self.context.data_train.y
         x_test = self.context.data_test.x
