@@ -15,3 +15,5 @@ class TestUserInterface(unittest.TestCase):
         app_interface = mls.visualize.UserInterface(self.directory)
         self.assertIsInstance(app_interface.analyse_logs, mls.visualize.AnalyzeLogs)
         self.assertEqual(len(app_interface.analyse_logs.db.all()), 3)
+        self.assertIsInstance(app_interface.search_interface, mls.visualize.SearchInterface)
+        self.assertIsInstance(app_interface.detail_interface, mls.visualize.DetailInterface)

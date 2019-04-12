@@ -1,17 +1,18 @@
 table {
-  border: 1px solid #1C6EA4;
+  border: 0px;
   width: 100%;
-  text-align: left;
+  text-align: center;
   border-collapse: collapse;
-  padding: 0px;
+  padding: 3px 3px 3px 3px;
 }
 table td {
-  border: 1px solid #AAAAAA;
+  border: 0px;
+  background: #C8DEC9;
   padding: 3px 3px 3px 3px;
 }
 table th {
-  border: 1px solid #AAAAAA;
-  background: #CFCFCF;
+  border: 0px;
+  background: #93CB95;
   padding: 3px 3px 3px 3px;
 }
 table tbody td {

@@ -7,14 +7,13 @@
 4. Pushed in git
 
 ## TODO
-* Supervised Learning : use compact config instead of full config
 * Visualization : interface query to nosql database 
-* Visualization : interface display one result
+* Fairness : rethinking the workflow to integrate supervised learning workflow
+* Supervised Learning : use compact config instead of full config
 * Allowing tuple in config hyperparameters (e.g. hidden_layer_sizes for MLPClassifier)
 * Generate a "full" config file for sci-kit-learn
 * Log management
 * Rename Logging class to "FilesOperation"-ish class
-* Visualization : interface display multiple results
 * Regularization
 * Model evaluation (complete)
 * Random seed global
@@ -27,12 +26,12 @@
 * Reorganize workflow inheritance and attribute (e.g. config)
 * Doc website
 * Create generic factory
-* Fairness utils : make the calculation of conditional proba more robust (more test)
-* Fairness : rethinking the workflow to integrate supervised learning workflow
+* Fairness utils : make the calculation of conditional proba more robust (more test)l
 * Defining and validating a json schema for config files
 
 ## Current
-* Visualization : all config into nosql database
+* Visualization : interface display one result
+* Visualization : interface display multiple results
 
 ## Done
 * Git repository : local
@@ -64,6 +63,7 @@
 * Bug : empty log directory during visualization
 * Error Management - Make the system robust
 * progress bar for multiple learning workflow
+* Visualization : all config into nosql database
 
 
 

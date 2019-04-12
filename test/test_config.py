@@ -22,6 +22,10 @@ class TestConfig(unittest.TestCase):
         config = mls.Config('config_loaded.json', 'files/')
         self.assertEqual('config loaded', config.data['testconfig'])
 
+    def test_load_config_from_other_directory_without_end_slash(self):
+        config = mls.Config('config_loaded.json', 'files')
+        self.assertEqual('config loaded', config.data['testconfig'])
+
     def test_load_multiple_config_config_loaded(self):
         config = mls.Config('multiple_config.json')
         self.assertEqual('NClassRandomClassificationWithNoise', config.data['datasets']['DataSet1']['type'])

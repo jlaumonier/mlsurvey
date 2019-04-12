@@ -51,7 +51,8 @@ and splits.
 # Visualization
 
 The main_visualize.py program read the logs/ directory and open a web page (using dahs and flask) to visualize 
-learning results. The web ui uses the visualization process to generate the visualization component.
+all learning results as a table after clicking the 'Search' button. The user can choose one or more result to displav them.
+Each time the user select one result, the web ui uses the visualization process to generate the visualization component.
 
 ## Visualization process
 
