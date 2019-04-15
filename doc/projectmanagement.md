@@ -7,7 +7,6 @@
 4. Pushed in git
 
 ## TODO
-* Visualization : interface query to nosql database 
 * Fairness : rethinking the workflow to integrate supervised learning workflow
 * Supervised Learning : use compact config instead of full config
 * Allowing tuple in config hyperparameters (e.g. hidden_layer_sizes for MLPClassifier)
@@ -31,7 +30,7 @@
 * Defining and validating a json schema for config files
 
 ## Current
-
+* Visualization : basic interface query to nosql database 
 
 ## Done
 * Git repository : local

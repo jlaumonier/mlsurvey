@@ -22,8 +22,10 @@ class TestAnalyzeLogs(unittest.TestCase):
                                   os.path.join(self.directory, 'directory3')]
         self.assertEqual(self.directory, analyse_logs.directory)
         self.assertEqual(len(analyse_logs.list_dir), len(analyse_logs.list_full_dir))
-        self.assertListEqual(analyse_logs.list_dir, expected_list_dir)
-        self.assertListEqual(analyse_logs.list_full_dir, expected_list_full_dir)
+        self.assertListEqual(expected_list_dir, analyse_logs.list_dir)
+        self.assertListEqual(expected_list_full_dir, analyse_logs.list_full_dir)
+        self.assertListEqual([], analyse_logs.algorithms_list)
+        self.assertListEqual([], analyse_logs.datasets_list)
         self.assertIsInstance(analyse_logs.db, tdb.database.TinyDB)
         self.assertEqual(0, len(analyse_logs.db.all()))
 
@@ -84,3 +86,39 @@ class TestAnalyzeLogs(unittest.TestCase):
             (q.learning_process.input.parameters.n_samples == 100)
             | (q.learning_process.input.parameters.n_samples == 10000))
         self.assertEqual(3, len(r))
+
+    def test_store_config_should_fill_list(self):
+        """
+        :test : mlsurvey.visualize.Analyse_logs.store_config()
+        :condition : config files present in self.directory
+        :main_result : fill_lists has been called
+        """
+        analyse_logs = mls.visualize.AnalyzeLogs(self.directory)
+        analyse_logs.store_config()
+        self.assertEqual(4, len(analyse_logs.algorithms_list))
+        self.assertEqual(2, len(analyse_logs.datasets_list))
+
+    def test_fill_lists_should_fill(self):
+        """
+        :test : mlsurvey.visualize.Analyse_logs.fill_lists()
+        :condition : config files present in self.directory
+        :main_result : algorithms_list and datasets_list filled with possibles choices
+        """
+        doc1 = {'learning_process': {'algorithm': {'algorithm-family': 'Algorithm 1'},
+                                     'input': {'type': 'Dataset 1'},
+                                     'split': {'type': 'traintest'}}}
+        doc2 = {'learning_process': {'algorithm': {'algorithm-family': 'Algorithm 2'},
+                                     'input': {'type': 'Dataset 1'},
+                                     'split': {'type': 'traintest'}}}
+        doc3 = {'learning_process': {'algorithm': {'algorithm-family': 'Algorithm 2'},
+                                     'input': {'type': 'Dataset 1'},
+                                     'split': {'type': 'traintest'}}}
+        expected_algorithms_list = ['.', 'Algorithm 1', 'Algorithm 2']
+        expected_datasets_list = ['.', 'Dataset 1']
+        analyse_logs = mls.visualize.AnalyzeLogs(self.directory)
+        analyse_logs.db.insert(doc1)
+        analyse_logs.db.insert(doc2)
+        analyse_logs.db.insert(doc3)
+        analyse_logs.fill_lists()
+        self.assertListEqual(expected_algorithms_list, analyse_logs.algorithms_list)
+        self.assertListEqual(expected_datasets_list, analyse_logs.datasets_list)

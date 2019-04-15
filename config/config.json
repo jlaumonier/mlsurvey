@@ -87,7 +87,6 @@
     "input": [
       "DataSetNClassRandom",
       "DataSetCircle",
-      "DataSetIris",
       "DataSetBlobs"
     ],
     "split": "traintest20",

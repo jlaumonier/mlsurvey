@@ -1,5 +1,7 @@
+import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
+import tinydb as tdb
 from dash.dependencies import Input, Output
 
 import mlsurvey as mls
@@ -10,11 +12,14 @@ class SearchInterface:
     def __init__(self, analyse_logs):
         self.analyse_logs = analyse_logs
 
-    def search(self, n_clicks):
+    def search(self, n_clicks, value_algo, value_ds):
         """Callback when the user click on the 'Search' button"""
         result = []
         if n_clicks is not None:
-            search_result = self.analyse_logs.db.all()
+            query = tdb.Query()
+            search_result = self.analyse_logs.db.search(
+                query.learning_process.algorithm['algorithm-family'].matches(value_algo)
+                & query.learning_process.input.type.matches(value_ds))
             for res in search_result:
                 one_row = {'Algorithm': res['learning_process']['algorithm']['algorithm-family'],
                            'AlgoParams': str(res['learning_process']['algorithm']['hyperparameters']),
@@ -40,12 +45,28 @@ class SearchInterface:
                 result.append(one_result)
         return result
 
-    @staticmethod
-    def get_layout():
+    def get_layout(self):
         """Layout of the search page"""
         d = [{'Algorithm': 0, 'AlgoParams': 0, 'Dataset': 0, 'DSParams': 0, 'Directory': 0}]
         c = ['Algorithm', 'AlgoParams', 'Dataset', 'DSParams', 'Directory']
+        options_algorithms = [{'label': a, 'value': a} for a in self.analyse_logs.algorithms_list]
+        options_datasets = [{'label': d, 'value': d} for d in self.analyse_logs.datasets_list]
         return html.Div(children=[
+            dcc.Dropdown(id='search-algo-dd-id',
+                         options=options_algorithms,
+                         className='three columns',
+                         value=options_algorithms[0]['value'],
+                         searchable=False,
+                         clearable=False,
+                         placeholder="Algorithm"),
+            dcc.Dropdown(id='search-dataset-dd-id',
+                         options=options_datasets,
+                         className='three columns',
+                         value=options_datasets[0]['value'],
+                         searchable=False,
+                         clearable=False,
+                         placeholder="Dataset"
+                         ),
             html.Button('Search', id='search-button-id'),
             dash_table.DataTable(id='search-results-id',
                                  columns=[{"name": i, "id": i} for i in c],
@@ -60,14 +81,15 @@ class SearchInterface:
                                  navigation="page",
                                  selected_rows=[],
                                  style_as_list_view=True,
-                                 style_cell={'textAlign': 'left', 'font-size': '0.9em'})],
-            className='twelve columns')
+                                 style_cell={'textAlign': 'left', 'font-size': '0.9em'})], className='twelve columns')
 
     def define_callback(self, dash_app):
         """define the callbacks on the page"""
         dash_app.callback(
             Output(component_id='search-results-id', component_property='data'),
-            [Input(component_id='search-button-id', component_property='n_clicks')])(self.search)
+            [Input(component_id='search-button-id', component_property='n_clicks'),
+             Input(component_id='search-algo-dd-id', component_property='value'),
+             Input(component_id='search-dataset-dd-id', component_property='value')])(self.search)
 
         dash_app.callback(
             Output(component_id='visualize-id',
