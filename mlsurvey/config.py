@@ -20,10 +20,22 @@ class Config:
             with open(full_path, 'r') as json_config_file:
                 try:
                     self.data = json.load(json_config_file)
+                    self.data = mls.Utils.transform_dict(self.data)
                 except json.JSONDecodeError as e:
                     raise mls.exceptions.ConfigError(e)
         else:
-            self.data = config
+            self.data = mls.Utils.transform_dict(config)
+
+    @property
+    def data(self):
+        return self.__data__
+
+    @data.setter
+    def data(self, d):
+        """
+        setter to insure self.data is always python-ready
+        """
+        self.__data__ = mls.Utils.transform_dict(d)
 
     @staticmethod
     def compact(config):

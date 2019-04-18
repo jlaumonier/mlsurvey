@@ -35,6 +35,11 @@ The results can be loaded be the supervised learning workflow and can be show by
 The configuration of the learning process is defined in the config/config.json and can be loaded and accessed 
 from the mlsurvey.Config class. Each element in the learning_process section can be a list to launch multiple learning.
 
+The config file in json may contains any type and tuple with the following form 
+{'__type__': '__tuple__', '__value__' : '(1,2,3,4)'}. While loading the config file, the class Config insure that the 
+tuple-dict-form are transformed to a real python tuple
+
+
 # Learning process
 
 The supervised learning process follow this structure :

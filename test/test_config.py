@@ -8,33 +8,50 @@ class TestConfig(unittest.TestCase):
     def test_load_config_config_loaded(self):
         config = mls.Config('config_loaded.json')
         self.assertEqual('config loaded', config.data['testconfig'])
+        self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_load_config_default_config_loaded(self):
         config = mls.Config()
         self.assertEqual('config loaded', config.data['testconfig'])
+        self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_get_dataset_dataset_config_obtained(self):
         config = mls.Config('complete_config_loaded.json')
         self.assertEqual('NClassRandomClassificationWithNoise', config.data['datasets']['DataSet1']['type'])
         self.assertEqual(100, config.data['datasets']['DataSet1']['parameters']['n_samples'])
+        self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_load_config_from_other_directory(self):
         config = mls.Config('config_loaded.json', 'files/')
         self.assertEqual('config loaded', config.data['testconfig'])
+        self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_load_config_from_other_directory_without_end_slash(self):
         config = mls.Config('config_loaded.json', 'files')
         self.assertEqual('config loaded', config.data['testconfig'])
+        self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_load_multiple_config_config_loaded(self):
         config = mls.Config('multiple_config.json')
         self.assertEqual('NClassRandomClassificationWithNoise', config.data['datasets']['DataSet1']['type'])
         self.assertListEqual(['DataSet1', 'DataSet2', 'DataSet3'], config.data['learning_process']['input'])
+        self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
+
+    def test_load_config_file_not_python_ready_config_loaded(self):
+        config = mls.Config('full_multiple_config.json')
+        self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_init_config_with_dictionary(self):
         c = {'testconfig': 'config loaded'}
         config = mls.Config(config=c)
         self.assertEqual('config loaded', config.data['testconfig'])
+        self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
+
+    def test_init_config_with_dictionary_not_python_ready(self):
+        c = {'testconfig': {"__type__": "__tuple__", "__value__": "(1, 2, 3)"}}
+        config = mls.Config(config=c)
+        self.assertTupleEqual((1, 2, 3), config.data['testconfig'])
+        self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_init_config_file_not_exists(self):
         """
@@ -60,9 +77,9 @@ class TestConfig(unittest.TestCase):
         except mls.exceptions.ConfigError:
             self.assertTrue(True)
 
-    def test_compactt_should_compact(self):
+    def test_compact_should_compact(self):
         """
-        :test : mlsurvey.Config.transform()
+        :test : mlsurvey.Config.compact()
         :condition : config file format to compacted config format
         :main_result : transformation ok
         """

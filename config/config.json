@@ -69,7 +69,17 @@
           "relu",
           "tanh"
         ],
-        "max_iter": 2000
+        "max_iter": 2000,
+        "hidden_layer_sizes": [
+          {
+            "__type__": "__tuple__",
+            "__value__": "(30, 15, 7)"
+          },
+          {
+            "__type__": "__tuple__",
+            "__value__": "(20, 10, 5)"
+          }
+        ]
       }
     }
   },

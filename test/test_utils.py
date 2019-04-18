@@ -83,3 +83,111 @@ class TestUtils(unittest.TestCase):
         xx, yy = mls.Utils.make_meshgrid(x, y, h=.5)
         self.assertListEqual(xx[0].tolist(), [0, 0.5, 1, 1.5, 2, 2.5])
         self.assertListEqual(yy[0].tolist(), [2, 2, 2, 2, 2, 2])
+
+    def test_transform_dict_tuple_should_transform(self):
+        """
+        :test : mlsurvey.Util.transform_dict()
+        :condition : dictionary contains one __tuple__
+        :main_result : transformation into tuple
+        """
+        base_dictionary = {'test': {'__type__': '__tuple__', '__value__': '(1, 2, 3)'},
+                           'nottuple': {'t': 1},
+                           'nottupleeither': 'string'}
+        expected_dictionary = {'test': (1, 2, 3),
+                               'nottuple': {'t': 1},
+                               'nottupleeither': 'string'}
+        result = mls.Utils.transform_dict(base_dictionary)
+        self.assertDictEqual(expected_dictionary, result)
+
+    def test_transform_dict_not_tuple_should_raise_error(self):
+        """
+        :test : mlsurvey.Util.transform_dict()
+        :condition : dictionary contains one __tuple__ where __value__ is not a tuple as string
+        :main_result : raise a TypeError
+        """
+        base_dictionary = {'test': {'__type__': '__tuple__', '__value__': '234'}}
+        try:
+            _ = mls.Utils.transform_dict(base_dictionary)
+            self.assertTrue(False)
+        except TypeError:
+            self.assertTrue(True)
+
+    def test_transform_dict_tuple_nested_should_transform(self):
+        """
+        :test : mlsurvey.Util.transform_dict()
+        :condition : dictionary contains __tuple__ with nested dictionaries
+        :main_result : transformation into tuples and lists
+        """
+        base_dictionary = {'test': {'__type__': '__tuple__', '__value__': '(1, 2, 3)'},
+                           'nottuple': {'a': {'__type__': '__tuple__', '__value__': '(1, 2, 3)'},
+                                        'b': {'c': 1,
+                                              'd': {'__type__': '__tuple__', '__value__': '(1, 2, 3)'}}},
+                           'nottupleeither': 'string'}
+        expected_dictionary = {'test': (1, 2, 3),
+                               'nottuple': {'a': (1, 2, 3),
+                                            'b': {'c': 1,
+                                                  'd': (1, 2, 3)}},
+                               'nottupleeither': 'string'}
+        result = mls.Utils.transform_dict(base_dictionary)
+        self.assertDictEqual(expected_dictionary, result)
+
+    def test_transform_dict_list_of_tuple_nested_should_transform(self):
+        """
+        :test : mlsurvey.Utils.transform_dict()
+        :condition : dictionary contains lists of __tuple__ and __list__ with nested dictionaries
+        :main_result : transformation into tuples and lists
+        """
+        base_dictionary = {'test': [{'__type__': '__tuple__', '__value__': '(1, 2, 3)'},
+                                    {'__type__': '__tuple__', '__value__': '(4, 5, 6)'}],
+                           'nottuple': {'a': {'__type__': '__tuple__', '__value__': '(1, 2, 3)'},
+                                        'b': {'c': 1,
+                                              'd': [{'__type__': '__tuple__', '__value__': '(1, 2, 3)'},
+                                                    {'__type__': '__tuple__', '__value__': '(4, 5, 6)'}]}},
+                           'nottupleeither': 'string'}
+        expected_dictionary = {'test': [(1, 2, 3), (4, 5, 6)],
+                               'nottuple': {'a': (1, 2, 3),
+                                            'b': {'c': 1,
+                                                  'd': [(1, 2, 3), (4, 5, 6)]}},
+                               'nottupleeither': 'string'}
+        result = mls.Utils.transform_dict(base_dictionary)
+        self.assertDictEqual(expected_dictionary, result)
+
+    def test_check_dict_python_ready_should_be_ready(self):
+        """
+        :test : mlsurvey.Utils.check_dict_python_ready()
+        :condition : dictionary does not contains '__type__': '__tuple__'
+        :main result : dictionary is python-ready
+        """
+        base_dictionary = {'test': [(1, 2, 3), (4, 5, 6)],
+                           'nottuple': {'a': (1, 2, 3),
+                                        'b': {'c': 1,
+                                              'd': [[1, 2, 3], [4, 5, 6]]}},
+                           'nottupleeither': 'string'}
+        result = mls.Utils.check_dict_python_ready(base_dictionary)
+        self.assertTrue(result)
+
+    def test_check_dict_python_ready_should_not_be_ready(self):
+        """
+        :test : mlsurvey.Utils.check_dict_python_ready()
+        :condition : dictionary does contains '__type__': '__tuple__'
+        :main result : dictionary is not python-ready
+        """
+        base_dictionary = {'test': [{'__type__': '__tuple__', '__value__': '(1, 2, 3)'},
+                                    {'__type__': '__tuple__', '__value__': '(4, 5, 6)'}],
+                           'nottuple': {'a': {'__type__': '__tuple__', '__value__': '(1, 2, 3)'},
+                                        'b': {'c': 1}},
+                           'nottupleeither': 'string'}
+        result = mls.Utils.check_dict_python_ready(base_dictionary)
+        self.assertFalse(result)
+
+    def test_check_dict_python_ready_should_not_be_ready_with_list_only(self):
+        """
+        :test : mlsurvey.Utils.check_dict_python_ready()
+        :condition : dictionary does contains '__type__': '__tuple__' into list
+        :main result : dictionary is not python-ready
+        """
+        base_dictionary = {'test': [{'__type__': '__tuple__', '__value__': '(1, 2, 3)'},
+                                    {'__type__': '__tuple__', '__value__': '(4, 5, 6)'}],
+                           'nottupleeither': 'string'}
+        result = mls.Utils.check_dict_python_ready(base_dictionary)
+        self.assertFalse(result)

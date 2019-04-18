@@ -97,7 +97,7 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
     def test_task_expand_config_all_should_have_expanded(self):
         mlw = mls.workflows.MultipleLearningWorkflow('full_multiple_config.json', config_directory=self.cd)
         mlw.task_expand_config()
-        self.assertEqual(36, len(mlw.expanded_config))
+        self.assertEqual(72, len(mlw.expanded_config))
         lp0 = {"input": "DataSet1", "split": "traintest20", "algorithm": "knn-base"}
         ds0 = {"type": "make_classification",
                "parameters": {
@@ -107,8 +107,13 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
                    "random_state": 0
                }
                }
+        al32 = {"algorithm-family": "sklearn.neural_network.MLPClassifier",
+                "hyperparameters": {
+                    "hidden_layer_sizes": (1, 2, 3)}
+                }
         self.assertDictEqual(lp0, mlw.expanded_config[0]['learning_process'])
         self.assertDictEqual(ds0, mlw.expanded_config[0]['datasets']['DataSet1'])
+        self.assertDictEqual(al32, mlw.expanded_config[32]['algorithms']['nn-multiple-layer-choice'])
         self.assertEqual(1, len(mlw.expanded_config[0]['datasets']))
 
     def test_run_each_config_all_should_be_ran(self):

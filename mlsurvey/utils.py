@@ -1,3 +1,4 @@
+import ast
 import hashlib
 import importlib
 import itertools
@@ -68,3 +69,60 @@ class Utils:
         xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
                              np.arange(y_min, y_max, h))
         return xx, yy
+
+    @classmethod
+    def transform_dict(cls, dictionary: dict):
+        """
+        Transform a dictionary containing dictionary such as
+            { "__type__": "__tuple__", "__value__": "(1, 2, 3)"}
+            or { "__type__": "__list__", "__value__": "[1, 2, 3]"}
+            to dictionary containing the real type (tuple or list)
+        :param dictionary: dictionary containing __tuple__ or __list__ values
+        :return: dictionary containing the real type
+        """
+
+        def change_one_dict_element(value):
+            if '__type__' in value:
+                if value['__type__'] == '__tuple__':
+                    result_element = ast.literal_eval(value['__value__'])
+                    if not isinstance(result_element, tuple):
+                        raise TypeError(v['__value__'] + " is not a tuple")
+                else:
+                    result_element = Utils.transform_dict(value)
+            else:
+                result_element = Utils.transform_dict(value)
+            return result_element
+
+        result = dictionary.copy()
+        result.values()
+        for k, v in result.items():
+            if isinstance(v, dict):
+                result[k] = change_one_dict_element(v)
+            if isinstance(v, list):
+                result[k] = []
+                for e in v:
+                    if isinstance(e, dict):
+                        result[k].append(change_one_dict_element(e))
+                    else:
+                        result[k].append(e)
+        return result
+
+    @classmethod
+    def check_dict_python_ready(cls, dictionary):
+        """
+        Check if a dictionary (and nested) does not contains a __type__ key,
+        which means is not ready to be handle by python
+        :param dictionary: the dictionary to check
+        :return: False if the dictionary contains one __type__ key, True otherwise
+        """
+        result = True
+        for k, v in dictionary.items():
+            if not isinstance(v, list):
+                v = [v]
+            for e in v:
+                if isinstance(e, dict):
+                    if '__type__' in e:
+                        result = False
+                    else:
+                        result = result & Utils.check_dict_python_ready(e)
+        return result
