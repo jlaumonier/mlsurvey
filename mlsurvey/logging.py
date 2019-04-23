@@ -49,13 +49,13 @@ class Logging:
     def save_dict_as_json(self, filename, d):
         """ save a dictionary into a json file"""
         with open(self.directory + filename, 'w') as outfile:
-            json.dump(d, outfile)
+            json.dump(mls.Utils.transform_to_json(d), outfile)
         outfile.close()
 
     def load_json_as_dict(self, filename):
         """ load a dictionary from a json file"""
         with open(self.directory + filename, 'r') as infile:
-            data = json.load(infile)
+            data = mls.Utils.transform_to_dict(json.load(infile))
         return data
 
     def save_classifier(self, classifier):

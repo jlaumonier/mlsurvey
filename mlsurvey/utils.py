@@ -71,13 +71,12 @@ class Utils:
         return xx, yy
 
     @classmethod
-    def transform_dict(cls, dictionary: dict):
+    def transform_to_dict(cls, dictionary: dict):
         """
         Transform a dictionary containing dictionary such as
             { "__type__": "__tuple__", "__value__": "(1, 2, 3)"}
-            or { "__type__": "__list__", "__value__": "[1, 2, 3]"}
-            to dictionary containing the real type (tuple or list)
-        :param dictionary: dictionary containing __tuple__ or __list__ values
+            to dictionary containing the real type (tuple)
+        :param dictionary: dictionary containing __tuple__ values
         :return: dictionary containing the real type
         """
 
@@ -88,13 +87,12 @@ class Utils:
                     if not isinstance(result_element, tuple):
                         raise TypeError(v['__value__'] + " is not a tuple")
                 else:
-                    result_element = Utils.transform_dict(value)
+                    result_element = Utils.transform_to_dict(value)
             else:
-                result_element = Utils.transform_dict(value)
+                result_element = Utils.transform_to_dict(value)
             return result_element
 
         result = dictionary.copy()
-        result.values()
         for k, v in result.items():
             if isinstance(v, dict):
                 result[k] = change_one_dict_element(v)
@@ -106,6 +104,38 @@ class Utils:
                     else:
                         result[k].append(e)
         return result
+
+    @classmethod
+    def transform_to_json(cls, dictionary):
+        """
+        Transform a dictionary containing tuple to dictionary such as
+            { "__type__": "__tuple__", "__value__": "(1, 2, 3)"}
+        :param dictionary: dictionary containing tuple
+        :return: dictionary containing __tuple__ values
+        """
+
+        def change_one_dict_element(value):
+            result_element = {'__type__': '__tuple__', '__value__': value.__str__()}
+            return result_element
+
+        result = dictionary.copy()
+        for k, v in result.items():
+            if isinstance(v, tuple):
+                result[k] = change_one_dict_element(v)
+            if isinstance(v, dict):
+                result[k] = Utils.transform_to_json(v)
+            if isinstance(v, list):
+                result[k] = []
+                for e in v:
+                    if isinstance(e, tuple):
+                        result[k].append(change_one_dict_element(e))
+                    else:
+                        if isinstance(e, dict):
+                            result[k].append(Utils.transform_to_json(e))
+                        else:
+                            result[k].append(e)
+        return result
+
 
     @classmethod
     def check_dict_python_ready(cls, dictionary):

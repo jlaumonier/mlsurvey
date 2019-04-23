@@ -17,14 +17,14 @@ class Config:
         """
         if config is None:
             full_path = os.path.join(directory, name)
+
             with open(full_path, 'r') as json_config_file:
                 try:
                     self.data = json.load(json_config_file)
-                    self.data = mls.Utils.transform_dict(self.data)
                 except json.JSONDecodeError as e:
                     raise mls.exceptions.ConfigError(e)
         else:
-            self.data = mls.Utils.transform_dict(config)
+            self.data = config
 
     @property
     def data(self):
@@ -35,7 +35,7 @@ class Config:
         """
         setter to insure self.data is always python-ready
         """
-        self.__data__ = mls.Utils.transform_dict(d)
+        self.__data__ = mls.Utils.transform_to_dict(d)
 
     @staticmethod
     def compact(config):

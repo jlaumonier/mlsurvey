@@ -76,11 +76,26 @@ class TestLogging(unittest.TestCase):
         self.assertTrue(os.path.isfile(log.directory + 'dict.json'))
         self.assertEqual('a82076220e033c1ed3469d173d715df2', mls.Utils.md5_file(log.directory + 'dict.json'))
 
+    def test_save_json_with_tuple_file_saves(self):
+        dir_name = 'testing/'
+        log = mls.Logging(dir_name)
+        d = {'testA': [[1, 2], [3, 4]], 'testB': 'Text', 'testC': (1, 3, 5)}
+        log.save_dict_as_json('dict.json', d)
+        self.assertTrue(os.path.isfile(log.directory + 'dict.json'))
+        self.assertEqual('bf557710f7a993fd2bf6ef547b402634', mls.Utils.md5_file(log.directory + 'dict.json'))
+
     def test_load_json_dict_loaded(self):
         dir_name = 'files/'
         log = mls.Logging(dir_name, base_dir='../test/')
         result = log.load_json_as_dict('dict.json')
         expected = {'testA': [[1, 2], [3, 4]], 'testB': 'Text'}
+        self.assertDictEqual(expected, result)
+
+    def test_load_json_with_tuple_dict_loaded(self):
+        dir_name = 'files/'
+        log = mls.Logging(dir_name, base_dir='../test/')
+        result = log.load_json_as_dict('dict_with_tuple.json')
+        expected = {'testA': [[1, 2], [3, 4]], 'testB': 'Text', 'testC': (1, 3, 5)}
         self.assertDictEqual(expected, result)
 
     def test_save_classifier(self):

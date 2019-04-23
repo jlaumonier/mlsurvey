@@ -13,7 +13,7 @@
 * Log management
 * Bug : Visualization workflow crash when dataset has more than 2 dimensions (e.g. load_iris)
 * Bug : Visualization workflow does not handle correctly more than 2 classes
-* Rename Logging class to "FilesOperation"-ish class
+* Rename Logging class to "FilesOperation"-ish class. Make it used by the Config class to read the json file
 * Regularization
 * Model evaluation (complete)
 * Random seed global
@@ -29,7 +29,7 @@
 * Defining and validating a json schema for config files
 
 ## Current
-* Allowing tuple in config hyperparameters (e.g. hidden_layer_sizes for MLPClassifier)
+* save tuple in config
 
 ## Done
 * Git repository : local
@@ -67,6 +67,7 @@
 * Bug : Visualization workflow crash for more than 2 classes with algorithm with decision_boundary
 * Invert parameters of assertions in tests assertEqual (expected, actual)
 * Visualization : basic interface query to nosql database 
+* Allowing tuple in config hyperparameters (e.g. hidden_layer_sizes for MLPClassifier)
 
 
 
