@@ -5,8 +5,10 @@ joblib
 json2table
 pandas
 dash
+dash_core_components
 dash_dangerously_set_inner_html
 colorlover
 plotly
 tqdm
 tinydb
+liac-arff

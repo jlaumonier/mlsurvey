@@ -8,10 +8,10 @@
 
 ## TODO
 * Change config format to introduction definition section for non compact format
+* Use panda dataframe into Data() and Dataset() (big changes...)
 * Fairness : rethinking the workflow to integrate supervised learning workflow
 * Generate a "full" config file for sci-kit-learn
 * Log management
-* Bug : Visualization workflow crash when dataset has more than 2 dimensions (e.g. load_iris)
 * Bug : Visualization workflow does not handle correctly more than 2 classes
 * Rename Logging class to "FilesOperation"-ish class. Make it used by the Config class to read the json file
 * Regularization
@@ -29,7 +29,8 @@
 * Defining and validating a json schema for config files
 
 ## Current
-* save tuple in config
+* using german credit dataset
+* Bug : Visualization workflow crash when dataset has more than 2 dimensions (e.g. load_iris)
 
 ## Done
 * Git repository : local
@@ -68,6 +69,7 @@
 * Invert parameters of assertions in tests assertEqual (expected, actual)
 * Visualization : basic interface query to nosql database 
 * Allowing tuple in config hyperparameters (e.g. hidden_layer_sizes for MLPClassifier)
+* save tuple in config
 
 
 

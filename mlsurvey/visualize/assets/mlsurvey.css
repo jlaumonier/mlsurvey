@@ -20,3 +20,7 @@ table th {
 table tbody td {
   font-size: 13px;
 }
+
+.one_result {
+ overflow: auto;
+ margin: 10px 10px 10px 10px;}

@@ -1,0 +1,7 @@
+{
+  "type": "FileDataSet",
+  "parameters": {
+    "directory": "dataset/german_credit_data",
+    "filename": "credit-g.arff"
+  }
+}

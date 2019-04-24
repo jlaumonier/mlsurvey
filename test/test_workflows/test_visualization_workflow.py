@@ -18,6 +18,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
         cls.directory = os.path.join(directory, '../files/visualization/base/')
         cls.directory_blobs = os.path.join(directory, '../files/visualization/blobs/')
         cls.directory_svc = os.path.join(directory, '../files/visualization/svc/')
+        cls.directory_germancredit = os.path.join(directory, '../files/visualization/germancredit/')
 
     @classmethod
     def tearDownClass(cls):
@@ -92,6 +93,19 @@ class TestVisualizationWorkflow(unittest.TestCase):
         vw.task_load_data()
         vw.task_display_data()
         self.assertIsInstance(vw.figure, dcc.Graph)
+        self.assertIsInstance(vw.scoreText, html.P)
+        self.assertIsInstance(vw.configText, html.Div)
+
+    def test_task_display_data_more_2_dimensions(self):
+        """
+        :test : mlsurvey.workflows.VisualizationWorkflow.task_display_data()
+        :condition : dataset has more than 2 dimensions
+        :main_result : figure is not defined
+        """
+        vw = mls.workflows.VisualizationWorkflow(directory=self.directory_germancredit)
+        vw.task_load_data()
+        vw.task_display_data()
+        self.assertIsNone(vw.figure)
         self.assertIsInstance(vw.scoreText, html.P)
         self.assertIsInstance(vw.configText, html.Div)
 

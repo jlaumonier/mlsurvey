@@ -41,11 +41,7 @@ class VisualizationWorkflow(LearningWorkflow):
         self.context.load(self.log)
         self.task_terminated_load_data = True
 
-    def task_display_data(self):
-        """
-        Display with dash.
-        """
-
+    def __display_2d_figure__(self):
         x = self.context.data.x
         x_train = self.context.data_train.x
         y_train = self.context.data_train.y
@@ -156,6 +152,14 @@ class VisualizationWorkflow(LearningWorkflow):
         data = [trace0, trace1, trace2, trace3]
         f = go.Figure(data=data, layout=layout)
         self.figure = dcc.Graph(id='graph' + self.source_directory, figure=f)
+
+    def task_display_data(self):
+        """
+        Display with dash.
+        """
+        if self.context.data.x.shape[1] == 2:
+            self.__display_2d_figure__()
+
         self.scoreText = html.P('Score : ' + str(self.context.evaluation.score))
         compact_config = mls.Config.compact(self.config.data)
         # This line makes a cannot find reference warning and i do not know why and how i can fix it

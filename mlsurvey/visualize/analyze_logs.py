@@ -40,7 +40,7 @@ class AnalyzeLogs:
         self.algorithms_list = list(set(a))
         self.algorithms_list.sort()
         self.algorithms_list.insert(0, '.')
-        d = [doc['learning_process']['input']['type'] for doc in all_doc]
+        d = [doc['learning_process']['input']['l'] for doc in all_doc]
         self.datasets_list = list(set(d))
         self.datasets_list.sort()
         self.datasets_list.insert(0, '.')

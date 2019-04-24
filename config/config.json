@@ -39,6 +39,13 @@
         "shuffle": true,
         "random_state": 0
       }
+    },
+    "DataSetGermanCredit": {
+      "type": "FileDataSet",
+      "parameters": {
+        "directory": "dataset/german_credit_data",
+        "filename": "credit-g.arff"
+      }
     }
   },
   "algorithms": {
@@ -97,7 +104,9 @@
     "input": [
       "DataSetNClassRandom",
       "DataSetCircle",
-      "DataSetBlobs"
+      "DataSetIris",
+      "DataSetBlobs",
+      "DataSetGermanCredit"
     ],
     "split": "traintest20",
     "algorithm": [

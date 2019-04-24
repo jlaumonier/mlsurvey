@@ -136,7 +136,6 @@ class Utils:
                             result[k].append(e)
         return result
 
-
     @classmethod
     def check_dict_python_ready(cls, dictionary):
         """
