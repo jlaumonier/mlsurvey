@@ -3,6 +3,7 @@ import shutil
 import unittest
 import uuid
 
+import numpy as np
 import sklearn.neighbors as neighbors
 
 import mlsurvey as mls
@@ -66,7 +67,7 @@ class TestContext(unittest.TestCase):
         self.assertTrue(os.path.isfile(log.directory + 'model.joblib'))
         self.assertEqual('4dc6000a33a1ca18a3aaedb7f9802955', mls.Utils.md5_file(log.directory + 'model.joblib'))
         self.assertTrue(os.path.isfile(log.directory + 'evaluation.json'))
-        self.assertEqual('6295378c214948496a72d5de81cb8dcc', mls.Utils.md5_file(log.directory + 'evaluation.json'))
+        self.assertEqual('c8a8c328f655178bdfd600a7710cf8e1', mls.Utils.md5_file(log.directory + 'evaluation.json'))
 
     def test_save_context_no_algorithm_neither_classifier_should_save(self):
         context = mls.models.Context(eval_type=mls.models.EvaluationSupervised)
@@ -78,7 +79,7 @@ class TestContext(unittest.TestCase):
         self.assertTrue(os.path.isfile(log.directory + 'input.json'))
         self.assertEqual('a504b11fff5b641f340f193dcd641139', mls.Utils.md5_file(log.directory + 'input.json'))
         self.assertTrue(os.path.isfile(log.directory + 'evaluation.json'))
-        self.assertEqual('6295378c214948496a72d5de81cb8dcc', mls.Utils.md5_file(log.directory + 'evaluation.json'))
+        self.assertEqual('c8a8c328f655178bdfd600a7710cf8e1', mls.Utils.md5_file(log.directory + 'evaluation.json'))
 
     def test_load_context(self):
         context = mls.models.Context(eval_type=mls.models.EvaluationSupervised)
@@ -102,3 +103,4 @@ class TestContext(unittest.TestCase):
         self.assertIsInstance(context.classifier, neighbors.KNeighborsClassifier)
         self.assertIsInstance(context.evaluation, mls.models.EvaluationSupervised)
         self.assertEqual(0.95, context.evaluation.score)
+        np.testing.assert_array_equal(np.array([[1, 2], [3, 4]]), context.evaluation.confusion_matrix)

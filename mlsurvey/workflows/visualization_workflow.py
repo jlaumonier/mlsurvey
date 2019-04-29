@@ -4,6 +4,7 @@ import dash_dangerously_set_inner_html as ddsih
 import dash_html_components as html
 import json2table
 import numpy as np
+import plotly.figure_factory as ff
 import plotly.graph_objs as go
 
 import mlsurvey as mls
@@ -28,6 +29,7 @@ class VisualizationWorkflow(LearningWorkflow):
         self.figure = None
         self.scoreText = None
         self.configText = None
+        self.confusionMatrixFigure = None
 
     def set_terminated(self):
         self.terminated = (self.task_terminated_load_data
@@ -153,12 +155,25 @@ class VisualizationWorkflow(LearningWorkflow):
         f = go.Figure(data=data, layout=layout)
         self.figure = dcc.Graph(id='graph' + self.source_directory, figure=f)
 
+    def __display_confusion_matrix__(self):
+        x = [i for i in set(self.context.data.y)]
+        f = ff.create_annotated_heatmap(self.context.evaluation.confusion_matrix,
+                                        colorscale='Greens',
+                                        showscale=True,
+                                        reversescale=True,
+                                        x=x,
+                                        y=x
+                                        )
+        self.confusionMatrixFigure = dcc.Graph(id='cm' + self.source_directory, figure=f)
+
     def task_display_data(self):
         """
         Display with dash.
         """
         if self.context.data.x.shape[1] == 2:
             self.__display_2d_figure__()
+
+        self.__display_confusion_matrix__()
 
         self.scoreText = html.P('Score : ' + str(self.context.evaluation.score))
         compact_config = mls.Config.compact(self.config.data)

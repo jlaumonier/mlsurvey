@@ -1,3 +1,4 @@
+from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
@@ -83,6 +84,8 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         """ calculate the score of the classifier with test data """
         self.context.evaluation.score = self.context.classifier.score(self.context.data_test.x,
                                                                       self.context.data_test.y)
+        y_pred = self.context.classifier.predict(self.context.data_test.x)
+        self.context.evaluation.confusion_matrix = confusion_matrix(self.context.data_test.y, y_pred)
         self.task_terminated_evaluate = True
 
     def task_persist(self):

@@ -27,10 +27,10 @@
 * Create generic factory
 * Fairness utils : make the calculation of conditional proba more robust (more test)
 * Defining and validating a json schema for config files
+* Bug Scikit learning : use a predict() on classifier change the joblib saved file (before and after predict()). Write small test program  
 
 ## Current
-* using german credit dataset
-* Bug : Visualization workflow crash when dataset has more than 2 dimensions (e.g. load_iris)
+* Adding confusion matrix
 
 ## Done
 * Git repository : local
@@ -70,6 +70,8 @@
 * Visualization : basic interface query to nosql database 
 * Allowing tuple in config hyperparameters (e.g. hidden_layer_sizes for MLPClassifier)
 * save tuple in config
+* using german credit dataset
+* Bug : Visualization workflow crash when dataset has more than 2 dimensions (e.g. load_iris)
 
 
 

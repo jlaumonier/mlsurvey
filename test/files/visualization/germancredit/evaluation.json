@@ -1,4 +1,14 @@
 {
   "type": "EvaluationSupervised",
-  "score": 0.85
+  "score": 0.85,
+  "confusion_matrix": [
+    [
+      3,
+      2
+    ],
+    [
+      1,
+      14
+    ]
+  ]
 }

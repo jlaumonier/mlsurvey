@@ -39,14 +39,16 @@ class SearchInterface:
                 directory = derived_virtual_data[idx]['Directory']
                 vw = mls.workflows.VisualizationWorkflow(directory)
                 vw.run()
+                evaluation_result = html.Div(children=[html.Div(vw.scoreText),
+                                                       html.Div(vw.confusionMatrixFigure)])
                 if vw.figure is None:
                     one_result = html.Div(children=[html.Div(vw.configText, className='six columns'),
-                                                    html.Div(vw.scoreText, className='six columns')],
+                                                    html.Div(evaluation_result, className='six columns')],
                                           className='one_result')
                 else:
-                    one_result = html.Div(children=[html.Div(vw.configText, className='six columns'),
-                                                    html.Div(vw.figure, className='four columns'),
-                                                    html.Div(vw.scoreText, className='two columns')],
+                    one_result = html.Div(children=[html.Div(vw.configText, className='five columns'),
+                                                    html.Div(vw.figure, className='three columns'),
+                                                    html.Div(evaluation_result, className='four columns')],
                                           className='one_result')
                 result.append(one_result)
         return result

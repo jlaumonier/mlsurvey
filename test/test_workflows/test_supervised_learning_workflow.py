@@ -2,6 +2,7 @@ import os
 import shutil
 import unittest
 
+import numpy as np
 from sklearn import neighbors
 from sklearn.preprocessing import StandardScaler
 
@@ -200,7 +201,9 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.task_split_data()
         slw.task_learn()
         slw.task_evaluate()
+        expected_cm = np.array([[13, 0], [1, 6]])
         self.assertEqual(0.95, slw.context.evaluation.score)
+        np.testing.assert_array_equal(expected_cm, slw.context.evaluation.confusion_matrix)
         self.assertTrue(slw.task_terminated_evaluate)
 
     def test_task_persist_data_classifier_should_have_been_saved(self):
@@ -219,9 +222,9 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(slw.log.directory + 'algorithm.json'))
         self.assertEqual('1697475bd77100f5a9c8806c462cbd0b', mls.Utils.md5_file(slw.log.directory + 'algorithm.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'model.joblib'))
-        self.assertEqual('ab69d79bc10e6456b689455ff420d21f', mls.Utils.md5_file(slw.log.directory + 'model.joblib'))
+        self.assertEqual('3d9a6ce6b6e74dd99883c82e02e29807', mls.Utils.md5_file(slw.log.directory + 'model.joblib'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'evaluation.json'))
-        self.assertEqual('086cb297d5a8d9207ae369343727568a', mls.Utils.md5_file(slw.log.directory + 'evaluation.json'))
+        self.assertEqual('3880646a29148f80a36efd2eb14e8814', mls.Utils.md5_file(slw.log.directory + 'evaluation.json'))
         self.assertTrue(slw.task_terminated_persistence)
 
     def test_run_all_step_should_be_executed(self):

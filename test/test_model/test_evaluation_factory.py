@@ -1,5 +1,7 @@
 import unittest
 
+import numpy as np
+
 import mlsurvey as mls
 
 
@@ -36,10 +38,12 @@ class TestEvaluationFactory(unittest.TestCase):
         self.assertEqual(0.0, evaluation.score)
 
     def test_create_evaluation_from_dict_created(self):
-        source = {'type': 'EvaluationSupervised', 'score': 0.55}
+        expected_cm = np.array([[1, 2], [3, 4]])
+        source = {'type': 'EvaluationSupervised', 'score': 0.55, 'confusion_matrix': expected_cm.tolist()}
         evaluation_factory = mls.models.EvaluationFactory()
         mls.models.EvaluationFactory.add_factory('EvaluationSupervised',
                                                  mls.models.EvaluationSupervised.Factory)
         evaluation = evaluation_factory.create_instance_from_dict(source)
         self.assertIsInstance(evaluation, mls.models.EvaluationSupervised)
         self.assertEqual(0.55, evaluation.score)
+        np.testing.assert_array_equal(expected_cm, evaluation.confusion_matrix)
