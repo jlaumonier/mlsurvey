@@ -63,7 +63,7 @@ Each time the user select one result, the web ui uses the visualization process 
 
 From a log directory with config.json, evaluation.json, input.json and model.joblib, the visualization process
 create dash component for config, graph and evaluation to display dataset, classification, configuration 
-and score of the learning process.
+and score of the learning process. Test data are also displayed with the true label and the predicted labels
 
 # Fairness process
 

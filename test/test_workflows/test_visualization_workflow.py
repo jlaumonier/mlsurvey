@@ -4,6 +4,7 @@ import unittest
 
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_table
 import numpy as np
 from sklearn import neighbors
 
@@ -37,6 +38,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
         self.assertIsNone(vw.scoreText)
         self.assertIsNone(vw.configText)
         self.assertIsNone(vw.confusionMatrixFigure)
+        self.assertIsNone(vw.data_test_table)
 
     def test_set_terminated_all_terminated(self):
         vw = mls.workflows.VisualizationWorkflow(directory=self.directory)
@@ -65,10 +67,13 @@ class TestVisualizationWorkflow(unittest.TestCase):
         self.assertTrue('DataSet1', vw.config.data['learning_process']['input'])
         self.assertEqual(100, len(vw.context.data.x))
         self.assertEqual(100, len(vw.context.data.y))
+        self.assertEqual(100, len(vw.context.data.y_pred))
         self.assertEqual(20, len(vw.context.data_test.x))
         self.assertEqual(20, len(vw.context.data_test.y))
+        self.assertEqual(20, len(vw.context.data_test.y_pred))
         self.assertEqual(80, len(vw.context.data_train.x))
         self.assertEqual(80, len(vw.context.data_train.y))
+        self.assertEqual(80, len(vw.context.data_train.y_pred))
         self.assertEqual(2, vw.context.algorithm.hyperparameters['n_neighbors'])
         self.assertEqual('sklearn.neighbors.KNeighborsClassifier', vw.context.algorithm.algorithm_family)
         self.assertIsInstance(vw.context.classifier, neighbors.KNeighborsClassifier)
@@ -83,6 +88,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
         self.assertIsInstance(vw.scoreText, html.P)
         self.assertIsInstance(vw.confusionMatrixFigure, dcc.Graph)
         self.assertIsInstance(vw.configText, html.Div)
+        self.assertIsInstance(vw.data_test_table, dash_table.DataTable)
 
     def test_task_display_data_blobs_figure_generated(self):
         vw = mls.workflows.VisualizationWorkflow(directory=self.directory_blobs)
@@ -92,6 +98,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
         self.assertIsInstance(vw.scoreText, html.P)
         self.assertIsInstance(vw.confusionMatrixFigure, dcc.Graph)
         self.assertIsInstance(vw.configText, html.Div)
+        self.assertIsInstance(vw.data_test_table, dash_table.DataTable)
 
     def test_task_display_data_svc_figure_generated(self):
         vw = mls.workflows.VisualizationWorkflow(directory=self.directory_svc)
@@ -101,6 +108,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
         self.assertIsInstance(vw.scoreText, html.P)
         self.assertIsInstance(vw.confusionMatrixFigure, dcc.Graph)
         self.assertIsInstance(vw.configText, html.Div)
+        self.assertIsInstance(vw.data_test_table, dash_table.DataTable)
 
     def test_task_display_data_more_2_dimensions(self):
         """
@@ -115,6 +123,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
         self.assertIsInstance(vw.scoreText, html.P)
         self.assertIsInstance(vw.confusionMatrixFigure, dcc.Graph)
         self.assertIsInstance(vw.configText, html.Div)
+        self.assertIsInstance(vw.data_test_table, dash_table.DataTable)
 
     def test_run_all_step_should_be_executed(self):
         vw = mls.workflows.VisualizationWorkflow(directory=self.directory)

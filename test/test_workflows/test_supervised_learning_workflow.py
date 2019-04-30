@@ -164,6 +164,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertIsNotNone(slw.context.data)
         self.assertEqual(100, len(slw.context.data.x))
         self.assertEqual(100, len(slw.context.data.y))
+        self.assertEqual(0, len(slw.context.data.y_pred))
         self.assertTrue(slw.task_terminated_get_data)
 
     def test_task_prepare_data_data_should_be_prepared(self):
@@ -180,10 +181,14 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertEqual(100, len(slw.context.data.x))
         slw.task_split_data()
         self.assertEqual(100, len(slw.context.data.x))
+        self.assertEqual(100, len(slw.context.data.y))
+        self.assertEqual(0, len(slw.context.data.y_pred))
         self.assertEqual(20, len(slw.context.data_test.x))
         self.assertEqual(20, len(slw.context.data_test.y))
+        self.assertEqual(0, len(slw.context.data_test.y_pred))
         self.assertEqual(80, len(slw.context.data_train.x))
         self.assertEqual(80, len(slw.context.data_train.y))
+        self.assertEqual(0, len(slw.context.data_train.y_pred))
         self.assertTrue(slw.task_terminated_split_data)
 
     def test_task_learn_classifier_should_have_learn(self):
@@ -204,6 +209,9 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         expected_cm = np.array([[13, 0], [1, 6]])
         self.assertEqual(0.95, slw.context.evaluation.score)
         np.testing.assert_array_equal(expected_cm, slw.context.evaluation.confusion_matrix)
+        self.assertEqual(100, len(slw.context.data.y_pred))
+        self.assertEqual(80, len(slw.context.data_train.y_pred))
+        self.assertEqual(20, len(slw.context.data_test.y_pred))
         self.assertTrue(slw.task_terminated_evaluate)
 
     def test_task_persist_data_classifier_should_have_been_saved(self):
@@ -218,11 +226,11 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(slw.log.directory + 'dataset.json'))
         self.assertEqual('66eafcadd6773bcf132096486a57263a', mls.Utils.md5_file(slw.log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'input.json'))
-        self.assertEqual('e6838d8be15c6567169bd3a9e4a3b290', mls.Utils.md5_file(slw.log.directory + 'input.json'))
+        self.assertEqual('1f430bca4679a1bf58ad7e3e0c725ce0', mls.Utils.md5_file(slw.log.directory + 'input.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'algorithm.json'))
         self.assertEqual('1697475bd77100f5a9c8806c462cbd0b', mls.Utils.md5_file(slw.log.directory + 'algorithm.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'model.joblib'))
-        self.assertEqual('3d9a6ce6b6e74dd99883c82e02e29807', mls.Utils.md5_file(slw.log.directory + 'model.joblib'))
+        self.assertEqual('82bae63f9ff57daa4b8cd24ff7ede713', mls.Utils.md5_file(slw.log.directory + 'model.joblib'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'evaluation.json'))
         self.assertEqual('3880646a29148f80a36efd2eb14e8814', mls.Utils.md5_file(slw.log.directory + 'evaluation.json'))
         self.assertTrue(slw.task_terminated_persistence)

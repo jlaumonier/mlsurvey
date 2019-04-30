@@ -7,8 +7,8 @@ class DetailInterface:
     @staticmethod
     def get_layout():
         result = html.Div(children=[
-            html.Div(children='''
-                 Visualization of results
+            html.H2(children='''
+                 Results
              '''),
             dcc.Loading(
                 id="loading",

@@ -55,7 +55,7 @@ class TestLogging(unittest.TestCase):
         inputs = {'data': i_data, 'train': i_train, 'test': i_test}
         log.save_input(inputs)
         self.assertTrue(os.path.isfile(log.directory + 'input.json'))
-        self.assertEqual('8c49ab773ad380d4680471b0c6df8e92', mls.Utils.md5_file(log.directory + 'input.json'))
+        self.assertEqual('b2aaedbccdaae18d955ba3962696b737', mls.Utils.md5_file(log.directory + 'input.json'))
 
     def test_load_input_input_loaded(self):
         dir_name = 'files/'
@@ -64,9 +64,11 @@ class TestLogging(unittest.TestCase):
         i = results['test']
         self.assertEqual(5.1, i.x[0, 0])
         self.assertEqual(0, i.y[0])
+        self.assertEqual(1, i.y_pred[0])
         self.assertEqual(2, i.x.shape[1])
         self.assertEqual(150, i.x.shape[0])
         self.assertEqual(150, i.y.shape[0])
+        self.assertEqual(150, i.y_pred.shape[0])
 
     def test_save_json_file_saves(self):
         dir_name = 'testing/'

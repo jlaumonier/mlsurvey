@@ -1,5 +1,5 @@
 {
-  "algorithm-family": "knn",
+  "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
   "hyperparameters": {
     "n_neighbors": 15,
     "algorithm": "auto",

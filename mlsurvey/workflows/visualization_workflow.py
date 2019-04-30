@@ -2,6 +2,7 @@ import colorlover as cl
 import dash_core_components as dcc
 import dash_dangerously_set_inner_html as ddsih
 import dash_html_components as html
+import dash_table
 import json2table
 import numpy as np
 import plotly.figure_factory as ff
@@ -30,6 +31,7 @@ class VisualizationWorkflow(LearningWorkflow):
         self.scoreText = None
         self.configText = None
         self.confusionMatrixFigure = None
+        self.data_test_table = None
 
     def set_terminated(self):
         self.terminated = (self.task_terminated_load_data
@@ -156,15 +158,28 @@ class VisualizationWorkflow(LearningWorkflow):
         self.figure = dcc.Graph(id='graph' + self.source_directory, figure=f)
 
     def __display_confusion_matrix__(self):
-        x = [i for i in set(self.context.data.y)]
+        x = ['Pred ' + str(i) for i in set(self.context.data.y)]
+        y = ['True ' + str(i) for i in set(self.context.data.y)]
         f = ff.create_annotated_heatmap(self.context.evaluation.confusion_matrix,
                                         colorscale='Greens',
                                         showscale=True,
                                         reversescale=True,
                                         x=x,
-                                        y=x
+                                        y=y
                                         )
         self.confusionMatrixFigure = dcc.Graph(id='cm' + self.source_directory, figure=f)
+
+    def __display_data_test_table__(self):
+        merged_data = self.context.data_test.merge_all()
+        columns = [{"name": str(i), "id": str(i)} for i in range(merged_data.shape[1])]
+        data = []
+        for d in merged_data:
+            one_row = {str(k): v for (k, v) in enumerate(d)}
+            data.append(one_row)
+        id_table = 'data_test_table' + str(self.context.id)
+        self.data_test_table = dash_table.DataTable(id=id_table,
+                                                    columns=columns,
+                                                    data=data)
 
     def task_display_data(self):
         """
@@ -174,6 +189,7 @@ class VisualizationWorkflow(LearningWorkflow):
             self.__display_2d_figure__()
 
         self.__display_confusion_matrix__()
+        self.__display_data_test_table__()
 
         self.scoreText = html.P('Score : ' + str(self.context.evaluation.score))
         compact_config = mls.Config.compact(self.config.data)

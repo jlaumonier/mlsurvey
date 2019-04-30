@@ -28,9 +28,13 @@
 * Fairness utils : make the calculation of conditional proba more robust (more test)
 * Defining and validating a json schema for config files
 * Bug Scikit learning : use a predict() on classifier change the joblib saved file (before and after predict()). Write small test program  
+* Analyse if y_pred is in a correct location (Data)
+* Regenerate/rethinking the test files (md5 or other database ?)
+* Bug : Dash display blank page when all results are deselected
 
 ## Current
-* Adding confusion matrix
+* Generate, save and display predicted y for test. 
+* Improve the confusion matrix visual (which dimension is true and predicted)
 
 ## Done
 * Git repository : local
@@ -72,6 +76,7 @@
 * save tuple in config
 * using german credit dataset
 * Bug : Visualization workflow crash when dataset has more than 2 dimensions (e.g. load_iris)
+* Adding confusion matrix
 
 
 

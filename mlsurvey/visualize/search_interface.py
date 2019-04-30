@@ -34,7 +34,6 @@ class SearchInterface:
         """Callback when the user select one row in the result table"""
         result = []
         if derived_virtual_selected_rows is not None and len(derived_virtual_selected_rows) != 0:
-            result = []
             for idx in derived_virtual_selected_rows:
                 directory = derived_virtual_data[idx]['Directory']
                 vw = mls.workflows.VisualizationWorkflow(directory)
@@ -51,6 +50,7 @@ class SearchInterface:
                                                     html.Div(evaluation_result, className='four columns')],
                                           className='one_result')
                 result.append(one_result)
+                result.append(vw.data_test_table)
         return result
 
     def get_layout(self):

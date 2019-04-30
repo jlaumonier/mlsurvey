@@ -84,8 +84,11 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         """ calculate the score of the classifier with test data """
         self.context.evaluation.score = self.context.classifier.score(self.context.data_test.x,
                                                                       self.context.data_test.y)
-        y_pred = self.context.classifier.predict(self.context.data_test.x)
-        self.context.evaluation.confusion_matrix = confusion_matrix(self.context.data_test.y, y_pred)
+        self.context.data.y_pred = self.context.classifier.predict(self.context.data.x)
+        self.context.data_train.y_pred = self.context.classifier.predict(self.context.data_train.x)
+        self.context.data_test.y_pred = self.context.classifier.predict(self.context.data_test.x)
+        self.context.evaluation.confusion_matrix = confusion_matrix(self.context.data_test.y,
+                                                                    self.context.data_test.y_pred)
         self.task_terminated_evaluate = True
 
     def task_persist(self):
