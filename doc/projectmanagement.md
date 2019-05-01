@@ -33,8 +33,7 @@
 * Bug : Dash display blank page when all results are deselected
 
 ## Current
-* Generate, save and display predicted y for test. 
-* Improve the confusion matrix visual (which dimension is true and predicted)
+* Adding show/hide sections
 
 ## Done
 * Git repository : local
@@ -77,6 +76,8 @@
 * using german credit dataset
 * Bug : Visualization workflow crash when dataset has more than 2 dimensions (e.g. load_iris)
 * Adding confusion matrix
+* Generate, save and display predicted y for test. 
+* Improve the confusion matrix visual (which dimension is true and predicted)
 
 
 

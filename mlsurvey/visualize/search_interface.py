@@ -38,6 +38,8 @@ class SearchInterface:
                 directory = derived_virtual_data[idx]['Directory']
                 vw = mls.workflows.VisualizationWorkflow(directory)
                 vw.run()
+                data_test_section = html.Details(children=[html.Summary('Test Data'),
+                                                           vw.data_test_table])
                 evaluation_result = html.Div(children=[html.Div(vw.scoreText),
                                                        html.Div(vw.confusionMatrixFigure)])
                 if vw.figure is None:
@@ -50,7 +52,7 @@ class SearchInterface:
                                                     html.Div(evaluation_result, className='four columns')],
                                           className='one_result')
                 result.append(one_result)
-                result.append(vw.data_test_table)
+                result.append(data_test_section)
         return result
 
     def get_layout(self):
@@ -59,37 +61,42 @@ class SearchInterface:
         c = ['Algorithm', 'AlgoParams', 'Dataset', 'DSParams', 'Directory']
         options_algorithms = [{'label': a, 'value': a} for a in self.analyse_logs.algorithms_list]
         options_datasets = [{'label': d, 'value': d} for d in self.analyse_logs.datasets_list]
-        return html.Div(children=[
-            dcc.Dropdown(id='search-algo-dd-id',
-                         options=options_algorithms,
-                         className='three columns',
-                         value=options_algorithms[0]['value'],
-                         searchable=False,
-                         clearable=False,
-                         placeholder="Algorithm"),
-            dcc.Dropdown(id='search-dataset-dd-id',
-                         options=options_datasets,
-                         className='three columns',
-                         value=options_datasets[0]['value'],
-                         searchable=False,
-                         clearable=False,
-                         placeholder="Dataset"
-                         ),
-            html.Button('Search', id='search-button-id'),
-            dash_table.DataTable(id='search-results-id',
-                                 columns=[{"name": i, "id": i} for i in c],
-                                 data=d,
-                                 row_selectable='multi',
-                                 pagination_mode='fe',
-                                 pagination_settings={
-                                     "displayed_pages": 1,
-                                     "current_page": 0,
-                                     "page_size": 10,
-                                 },
-                                 navigation="page",
-                                 selected_rows=[],
-                                 style_as_list_view=True,
-                                 style_cell={'textAlign': 'left', 'font-size': '0.9em'})], className='twelve columns')
+        search_section = html.Div(id='search-section',
+                                  children=[dcc.Dropdown(id='search-algo-dd-id',
+                                                         options=options_algorithms,
+                                                         className='three columns',
+                                                         value=options_algorithms[0]['value'],
+                                                         searchable=False,
+                                                         clearable=False,
+                                                         placeholder="Algorithm"),
+                                            dcc.Dropdown(id='search-dataset-dd-id',
+                                                         options=options_datasets,
+                                                         className='three columns',
+                                                         value=options_datasets[0]['value'],
+                                                         searchable=False,
+                                                         clearable=False,
+                                                         placeholder="Dataset"
+                                                         ),
+                                            html.Button('Search', id='search-button-id'),
+                                            dash_table.DataTable(id='search-results-id',
+                                                                 columns=[{"name": i, "id": i} for i in c],
+                                                                 data=d,
+                                                                 row_selectable='multi',
+                                                                 pagination_mode='fe',
+                                                                 pagination_settings={
+                                                                     "displayed_pages": 1,
+                                                                     "current_page": 0,
+                                                                     "page_size": 10,
+                                                                 },
+                                                                 navigation="page",
+                                                                 selected_rows=[],
+                                                                 style_as_list_view=True,
+                                                                 style_cell={'textAlign': 'left',
+                                                                             'font-size': '0.9em'})],
+                                  className='twelve columns')
+
+        return html.Details(children=[html.Summary('Search'), search_section],
+                            open=True)
 
     def define_callback(self, dash_app):
         """define the callbacks on the page"""
