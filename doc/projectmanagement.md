@@ -7,6 +7,8 @@
 4. Pushed in git
 
 ## TODO
+* Regenerate/rethinking the test files (md5 or other database ?)
+* Bug : joblib md5 depends on the version of python/joblib... :S search other method to test the save file
 * Change config format to introduction definition section for non compact format
 * Use panda dataframe into Data() and Dataset() (big changes...)
 * Fairness : rethinking the workflow to integrate supervised learning workflow
@@ -29,11 +31,11 @@
 * Defining and validating a json schema for config files
 * Bug Scikit learning : use a predict() on classifier change the joblib saved file (before and after predict()). Write small test program  
 * Analyse if y_pred is in a correct location (Data)
-* Regenerate/rethinking the test files (md5 or other database ?)
-* Bug : Dash display blank page when all results are deselected
+* dash adding dcc.Loading. Warning, this provokes bug in display (update option, blank page)
 
 ## Current
-* Adding show/hide sections
+* Adding display options to interface
+* Bug : Dash display blank page when all results are deselected : remove Loading component
 
 ## Done
 * Git repository : local
@@ -78,6 +80,7 @@
 * Adding confusion matrix
 * Generate, save and display predicted y for test. 
 * Improve the confusion matrix visual (which dimension is true and predicted)
+* Adding show/hide sections
 
 
 

@@ -30,29 +30,43 @@ class SearchInterface:
         return result
 
     @staticmethod
-    def select_result(derived_virtual_data, derived_virtual_selected_rows):
+    def select_result(derived_virtual_data, derived_virtual_selected_rows, options):
         """Callback when the user select one row in the result table"""
         result = []
+        display_config = 'block' if 'CFG' in options else 'none'
+        display_figure = 'block' if 'FIG' in options else 'none'
+        display_data_test_table = True if 'DTA_TEST_TBL' in options else False
         if derived_virtual_selected_rows is not None and len(derived_virtual_selected_rows) != 0:
             for idx in derived_virtual_selected_rows:
                 directory = derived_virtual_data[idx]['Directory']
                 vw = mls.workflows.VisualizationWorkflow(directory)
                 vw.run()
+
                 data_test_section = html.Details(children=[html.Summary('Test Data'),
                                                            vw.data_test_table])
                 evaluation_result = html.Div(children=[html.Div(vw.scoreText),
                                                        html.Div(vw.confusionMatrixFigure)])
                 if vw.figure is None:
-                    one_result = html.Div(children=[html.Div(vw.configText, className='six columns'),
+                    one_result = html.Div(children=[html.Div(vw.configText,
+                                                             className='six columns',
+                                                             style={'display': display_config}),
                                                     html.Div(evaluation_result, className='six columns')],
                                           className='one_result')
                 else:
-                    one_result = html.Div(children=[html.Div(vw.configText, className='five columns'),
-                                                    html.Div(vw.figure, className='three columns'),
+                    one_result = html.Div(children=[html.Div(vw.configText,
+                                                             className='five columns',
+                                                             style={'display': display_config}),
+                                                    html.Div(vw.figure,
+                                                             className='three columns',
+                                                             style={'display': display_figure}),
                                                     html.Div(evaluation_result, className='four columns')],
                                           className='one_result')
                 result.append(one_result)
-                result.append(data_test_section)
+
+                if display_data_test_table:
+                    result.append(data_test_section)
+
+                result.append(html.Hr())
         return result
 
     def get_layout(self):
@@ -94,9 +108,24 @@ class SearchInterface:
                                                                  style_cell={'textAlign': 'left',
                                                                              'font-size': '0.9em'})],
                                   className='twelve columns')
+        options_section = html.Div(id='option-section',
+                                   children=[
+                                       dcc.Checklist(
+                                           id='options-checklist',
+                                           options=[
+                                               {'label': 'Configuration table', 'value': 'CFG'},
+                                               {'label': 'Data Separation figure', 'value': 'FIG'},
+                                               {'label': 'Data test table', 'value': 'DTA_TEST_TBL'}],
+                                           values=['CFG', 'FIG'],
+                                           style={'display': 'inline'})
+                                   ],
+                                   className='twelve columns')
 
-        return html.Details(children=[html.Summary('Search'), search_section],
-                            open=True)
+        search_detail = html.Details(children=[html.Summary('Search'), search_section],
+                                     open=True)
+        options_detail = html.Details(children=[html.Summary('Display options'), options_section],
+                                      open=False)
+        return html.Div(children=[search_detail, options_detail])
 
     def define_callback(self, dash_app):
         """define the callbacks on the page"""
@@ -112,4 +141,6 @@ class SearchInterface:
             [Input(component_id='search-results-id',
                    component_property='derived_virtual_data'),
              Input(component_id='search-results-id',
-                   component_property='derived_virtual_selected_rows')])(self.select_result)
+                   component_property='derived_virtual_selected_rows'),
+             Input(component_id='options-checklist',
+                   component_property='values')])(self.select_result)

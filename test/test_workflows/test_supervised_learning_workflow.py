@@ -230,7 +230,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(slw.log.directory + 'algorithm.json'))
         self.assertEqual('1697475bd77100f5a9c8806c462cbd0b', mls.Utils.md5_file(slw.log.directory + 'algorithm.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'model.joblib'))
-        self.assertEqual('82bae63f9ff57daa4b8cd24ff7ede713', mls.Utils.md5_file(slw.log.directory + 'model.joblib'))
+        self.assertEqual('f692fa120e705050370ed146e68104fa', mls.Utils.md5_file(slw.log.directory + 'model.joblib'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'evaluation.json'))
         self.assertEqual('3880646a29148f80a36efd2eb14e8814', mls.Utils.md5_file(slw.log.directory + 'evaluation.json'))
         self.assertTrue(slw.task_terminated_persistence)
