@@ -1,41 +1,48 @@
 # Backlog
 
-# Done definition
+## Done definition
 1. Code 
 2. Unit test
 3. Documentation
 4. Pushed in git
 
+## Notes for TODO
+* B is Bug
+* F is functionality
+* T is technical debt
+* A is Architecture
+
 ## TODO
-* Regenerate/rethinking the test files (md5 or other database ?)
-* Bug : joblib md5 depends on the version of python/joblib... :S search other method to test the save file
-* Change config format to introduction definition section for non compact format
-* Use panda dataframe into Data() and Dataset() (big changes...)
-* Fairness : rethinking the workflow to integrate supervised learning workflow
-* Generate a "full" config file for sci-kit-learn
-* Log management
-* Bug : Visualization workflow does not handle correctly more than 2 classes
-* Rename Logging class to "FilesOperation"-ish class. Make it used by the Config class to read the json file
-* Regularization
-* Model evaluation (complete)
-* Random seed global
-* Configuration : add config about the program behavior (log dir, ...)
-* Version management : https://github.com/aebrahim/python-git-version ?
-* Document tests inside code
-* Bug : Remove warning during importlib in Utils
-* use a design pattern for persistence of mlsurvey.models
-* Reorganize workflow inheritance and attribute (e.g. config)
-* Doc website
-* Create generic factory
-* Fairness utils : make the calculation of conditional proba more robust (more test)
-* Defining and validating a json schema for config files
-* Bug Scikit learning : use a predict() on classifier change the joblib saved file (before and after predict()). Write small test program  
-* Analyse if y_pred is in a correct location (Data)
-* dash adding dcc.Loading. Warning, this provokes bug in display (update option, blank page)
+* F : Change config format to introduction definition section for non compact format
+* F : Use panda dataframe into Data() and Dataset() (big changes...)
+* F : Fairness : rethinking the workflow to integrate supervised learning workflow
+* F : Generate a "full" config file for sci-kit-learn
+* F : Log management
+* B : Visualization workflow does not handle correctly more than 2 classes
+* T : Rename Logging class to "FilesOperation"-ish class. Make it used by the Config class to read the json file
+* F : Regularization
+* F : Model evaluation (complete)
+* F : Random seed global
+* F : Configuration : add config about the program behavior (log dir, ...)
+* T : Version management : https://github.com/aebrahim/python-git-version ?
+* T : Document tests inside code
+* B : Remove warning during importlib in Utils
+* T : use a design pattern for persistence of mlsurvey.models
+* T : Reorganize workflow inheritance and attribute (e.g. config)
+* T : Doc website
+* F : Create generic factory
+* T : Fairness utils : make the calculation of conditional proba more robust (more test)
+* F : Defining and validating a json schema for config files
+* B : Scikit learning : use a predict() on classifier change the joblib saved file (before and after predict()). Write small test program  
+* A : Analyse if y_pred is in a correct location (Data)
+* F : dash adding dcc.Loading. Warning, this provokes bug in display (update option, blank page)
+* B : joblib md5 depends on the version of python/joblib... :S search other method to test the save file. Not simple
+        See https://datascience.stackexchange.com/questions/33527/scikit-learn-decision-tree-in-production
+        https://github.com/scikit-learn/scikit-learn/issues/11041
+        https://www.andrey-melentyev.com/model-interoperability.html
 
 ## Current
-* Adding display options to interface
-* Bug : Dash display blank page when all results are deselected : remove Loading component
+* A : Regenerate/rethinking the test files (md5 or other database ?)
 
 ## Done
 * Git repository : local
@@ -81,6 +88,8 @@
 * Generate, save and display predicted y for test. 
 * Improve the confusion matrix visual (which dimension is true and predicted)
 * Adding show/hide sections
+* Adding display options to interface
+* Bug : Dash display blank page when all results are deselected : remove Loading component
 
 
 

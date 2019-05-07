@@ -3,26 +3,27 @@
     "DataSetNClassRandom": {
       "type": "NClassRandomClassificationWithNoise",
       "parameters": {
-        "n_samples": [
-          100,
-          1000
-        ],
+        "n_samples": 100,
         "shuffle": true,
-        "noise": 0,
+        "noise": 0.2,
         "random_state": 0
       }
     },
     "DataSetCircle": {
       "type": "make_circles",
       "parameters": {
-        "n_samples": [
-          100,
-          1000
-        ],
+        "n_samples": 100,
         "shuffle": true,
-        "noise": 0,
+        "noise": 0.1,
         "random_state": 0,
-        "factor": 0.3
+        "factor": 0.5
+      }
+    },
+    "DataSetMoon": {
+      "type": "make_moons",
+      "parameters": {
+        "noise": 0.2,
+        "random_state": 0
       }
     },
     "DataSetIris": {
@@ -32,10 +33,7 @@
     "DataSetBlobs": {
       "type": "make_blobs",
       "parameters": {
-        "n_samples": [
-          100,
-          1000
-        ],
+        "n_samples": 100,
         "shuffle": true,
         "random_state": 0
       }
@@ -52,9 +50,20 @@
     "knn-base": {
       "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
       "hyperparameters": {
-        "n_neighbors": 2,
+        "n_neighbors": [
+          2,
+          3,
+          4
+        ],
         "algorithm": "auto",
-        "weights": "uniform"
+        "weights": "uniform",
+        "leaf_size": 30,
+        "metric": [
+          "minkowski",
+          "manhattan",
+          "euclidean",
+          "chebyshev"
+        ]
       }
     },
     "smv-base": {
@@ -94,7 +103,7 @@
     "traintest20": {
       "type": "traintest",
       "parameters": {
-        "test_size": 20,
+        "test_size": 40,
         "random_state": 0,
         "shuffle": true
       }
@@ -104,15 +113,11 @@
     "input": [
       "DataSetNClassRandom",
       "DataSetCircle",
-      "DataSetIris",
-      "DataSetBlobs",
-      "DataSetGermanCredit"
+      "DataSetMoon"
     ],
     "split": "traintest20",
     "algorithm": [
-      "knn-base",
-      "smv-base",
-      "nn-base"
+      "knn-base"
     ]
   }
 }
