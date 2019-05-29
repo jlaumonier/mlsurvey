@@ -15,7 +15,6 @@
 ## TODO
 * F : Change config format to introduction definition section for non compact format
 * F : Use panda dataframe into Data() and Dataset() (big changes...)
-* F : Fairness : rethinking the workflow to integrate supervised learning workflow
 * F : Generate a "full" config file for sci-kit-learn
 * F : Log management
 * B : Visualization workflow does not handle correctly more than 2 classes
@@ -40,9 +39,11 @@
         See https://datascience.stackexchange.com/questions/33527/scikit-learn-decision-tree-in-production
         https://github.com/scikit-learn/scikit-learn/issues/11041
         https://www.andrey-melentyev.com/model-interoperability.html
+* F : adding search of specific dataset. Adding a new search field ?
+* F : adding a base_directory for LearningWorkflows and child
 
 ## Current
-* A : Regenerate/rethinking the test files (md5 or other database ?)
+* F : Fairness : rethinking the workflow to integrate supervised learning workflow
 
 ## Done
 * Git repository : local
@@ -90,7 +91,7 @@
 * Adding show/hide sections
 * Adding display options to interface
 * Bug : Dash display blank page when all results are deselected : remove Loading component
-
+* A : Regenerate/rethinking the test files (md5 or other database ?)
 
 
 

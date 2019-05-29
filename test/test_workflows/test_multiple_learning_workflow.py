@@ -21,6 +21,7 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
     def test_init_multiple_learning_workflow_should_initialized(self):
         mlw = mls.workflows.MultipleLearningWorkflow('multiple_config.json', config_directory=self.cd)
         self.assertIsNotNone(mlw.config.data)
+        self.assertEqual(self.cd, mlw.config_directory)
         self.assertFalse(mlw.task_terminated_expand_config)
         self.assertFalse(mlw.task_terminated_run_each_config)
 

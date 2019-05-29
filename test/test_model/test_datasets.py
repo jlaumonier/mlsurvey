@@ -5,11 +5,90 @@ import mlsurvey as mls
 
 class TestDataSet(unittest.TestCase):
 
+    def test_init_parameters_type_fairness(self):
+        expected_type = 'typ'
+        data = mls.datasets.DataSet(expected_type)
+        self.assertEqual(expected_type, data.t)
+        self.assertDictEqual({}, data.params)
+        self.assertDictEqual({}, data.fairness)
+
     def test_set_generation_parameters(self):
         data = mls.datasets.DataSet('')
         params = {'param1': 1, 'param2': 3}
         data.set_generation_parameters(params)
         self.assertDictEqual(data.params, params)
+
+    def test_set_fairness_parameters(self):
+        data = mls.datasets.DataSet('')
+        expected_fairness = {'protected_attribute': 0, 'privileged_classes': 'x >= 25'}
+        data.set_fairness_parameters(expected_fairness)
+        self.assertDictEqual(data.fairness, expected_fairness)
+
+    def test_to_dict_is_transformed(self):
+        data = mls.datasets.DataSet('')
+        params = {'param1': 1, 'param2': 3}
+        data.set_generation_parameters(params)
+        fairness = {'protected_attribute': 0, 'privileged_classes': 'x >= 25'}
+        data.set_fairness_parameters(fairness)
+        dict_result = data.to_dict()
+        expected = {'type': '', "parameters": params, "fairness": fairness}
+        self.assertDictEqual(expected, dict_result)
+
+    def test_set_fairness_parameters_empty_parameter(self):
+        """
+        :test : mlsurvey.datasets.DataSet.set_fairness_parameters
+        :condition : empty fairness parameters
+        :main_result : raise ConfigError
+        """
+        data = mls.datasets.DataSet('')
+        expected_fairness = {}
+        try:
+            data.set_fairness_parameters(expected_fairness)
+            self.assertTrue(False)
+        except mls.exceptions.ConfigError:
+            self.assertTrue(True)
+
+    def test_set_fairness_parameters_none_parameter(self):
+        """
+        :test : mlsurvey.datasets.DataSet.set_fairness_parameters
+        :condition : none fairness parameters
+        :main_result : raise ConfigError
+        """
+        data = mls.datasets.DataSet('')
+        expected_fairness = None
+        try:
+            data.set_fairness_parameters(expected_fairness)
+            self.assertTrue(False)
+        except mls.exceptions.ConfigError:
+            self.assertTrue(True)
+
+    def test_set_fairness_parameters_no_protected_parameter(self):
+        """
+        :test : mlsurvey.datasets.DataSet.set_fairness_parameters
+        :condition : fairness parameters does not contains a protected_attribute
+        :main_result : raise ConfigError
+        """
+        data = mls.datasets.DataSet('')
+        expected_fairness = {'param1': 1, 'param2': 3}
+        try:
+            data.set_fairness_parameters(expected_fairness)
+            self.assertTrue(False)
+        except mls.exceptions.ConfigError:
+            self.assertTrue(True)
+
+    def test_set_fairness_parameters_no_privileged_classes_parameter(self):
+        """
+        :test : mlsurvey.datasets.DataSet.set_fairness_parameters
+        :condition : fairness parameters does not contains privileged_classes
+        :main_result : raise ConfigError
+        """
+        data = mls.datasets.DataSet('')
+        expected_fairness = {'param1': 1, 'param2': 3, 'protected_attribute': 0}
+        try:
+            data.set_fairness_parameters(expected_fairness)
+            self.assertTrue(False)
+        except mls.exceptions.ConfigError:
+            self.assertTrue(True)
 
 
 class TestGenericDataSet(unittest.TestCase):

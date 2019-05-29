@@ -11,6 +11,18 @@ from .dataset_factory import DataSetFactory
 
 class FileDataSet(DataSet):
 
+    def __init__(self, t):
+        """
+        Initialize the generic dataset,
+        :param t: type of the dataset, a function name into sklearn.datasets
+        """
+        super().__init__(t)
+        self.base_directory = ''
+
+    def set_base_directory(self, d):
+        """ set base directory used to search the file in generate()"""
+        self.base_directory = d
+
     def generate(self):
         """
         load file of arff file using params ['directory'] and ['filename']. Assume that y is the last column.
@@ -22,7 +34,7 @@ class FileDataSet(DataSet):
         except KeyError as e:
             raise mls.exceptions.ConfigError(e)
 
-        fullname = os.path.join(path, filename)
+        fullname = os.path.join(self.base_directory, path, filename)
 
         try:
             with open(fullname) as f:

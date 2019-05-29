@@ -25,6 +25,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
     def test_init_SL_workflow_should_initialized(self):
         slw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
         self.assertIsNotNone(slw.config.data)
+        self.assertEqual(self.cd, slw.config_directory)
         self.assertFalse(slw.terminated)
         self.assertFalse(slw.task_terminated_get_data)
         self.assertFalse(slw.task_terminated_prepare_data)
@@ -161,6 +162,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json', config_directory=self.cd)
         slw.task_get_data()
         self.assertIsInstance(slw.context.dataset, mls.datasets.NClassRandomClassificationWithNoise)
+        self.assertDictEqual({}, slw.context.dataset.fairness)
         self.assertIsNotNone(slw.context.data)
         self.assertEqual(100, len(slw.context.data.x))
         self.assertEqual(100, len(slw.context.data.y))

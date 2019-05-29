@@ -14,9 +14,9 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         :param config_file: config file for initializing the workflow, Used if config is None
         :param config: dictionary for config. If set, replace config file
         """
-        super().__init__()
+        super().__init__(config_directory=config_directory)
         try:
-            self.config = mls.Config(config_file, config=config, directory=config_directory)
+            self.config = mls.Config(config_file, config=config, directory=self.config_directory)
         except (FileNotFoundError, mls.exceptions.ConfigError):
             self.task_terminated_init = False
         self.data_preparation = StandardScaler()
@@ -48,6 +48,15 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         dataset_type = self.config.data['datasets'][dataset_name]['type']
         self.context.dataset = mls.datasets.DataSetFactory.create_dataset(dataset_type)
         self.context.dataset.set_generation_parameters(dataset_params)
+
+        # this line is only for FileDataSet testing... Not sure if it is the most Pythonic and most TDDic way....
+        if hasattr(self.context.dataset, 'set_base_directory'):
+            self.context.dataset.set_base_directory(self.config_directory)
+
+        if 'fairness' in self.config.data['datasets'][dataset_name]:
+            dataset_fairness = self.config.data['datasets'][dataset_name]['fairness']
+            self.context.dataset.set_fairness_parameters(dataset_fairness)
+
         self.context.data.x, self.context.data.y = self.context.dataset.generate()
         self.task_terminated_get_data = True
 

@@ -113,11 +113,15 @@
     "input": [
       "DataSetNClassRandom",
       "DataSetCircle",
-      "DataSetMoon"
+      "DataSetMoon",
+      "DataSetIris",
+      "DataSetGermanCredit"
     ],
     "split": "traintest20",
     "algorithm": [
-      "knn-base"
+      "knn-base",
+      "smv-base",
+      "nn-base"
     ]
   }
 }
