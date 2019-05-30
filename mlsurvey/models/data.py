@@ -40,3 +40,14 @@ class Data:
                                  self.y_pred.reshape((-1, 1))),
                                 axis=1)
         return result
+
+    def copy(self):
+        """
+        copy the object into another
+        :return: the new object
+        """
+        result = Data()
+        result.x = self.x.copy()
+        result.y = self.y.copy()
+        result.y_pred = self.y_pred.copy()
+        return result

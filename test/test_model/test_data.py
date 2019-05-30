@@ -80,3 +80,19 @@ class TestData(unittest.TestCase):
                                       [3, 4, 1, 0]])
         result = d.merge_all()
         np.testing.assert_array_equal(expected_result, result)
+
+    def test_copy_data_should_copy(self):
+        """
+        :test : mlsurvey.modles.Data.copy()
+        :condition : data contains x, y and y_pred
+        :main_result : copy into an other object
+        """
+        d = mls.models.Data()
+        d.x = np.array([[1, 2], [3, 4]])
+        d.y = np.array([0, 1])
+        d.y_pred = np.array([1, 0])
+        d_copied = d.copy()
+        np.testing.assert_array_equal(d.x, d_copied.x)
+        np.testing.assert_array_equal(d.y, d_copied.y)
+        np.testing.assert_array_equal(d.y_pred, d_copied.y_pred)
+        self.assertIsNot(d, d_copied)

@@ -67,9 +67,16 @@ and score of the learning process. Test data are also displayed with the true la
 
 # Fairness process
 
-At this time, fairness process work only on data and not on classifier, which is not really correct since fairness 
-should be calculated on prediction vs data. However, no calculation is done :-S since I do not know if I implement it
-or just use a fairness library such as AIF360
+At this time, fairness process calculate only the demographic parity on all the dataset. To do so, add a fairness parameter
+at the end of the dataset definition :
+
+```
+"fairness": {
+        "protected_attribute": <num column of protected attribute>,
+        "privileged_classes": "<condition on x>"
+      }
+```
+the condition on x is a test such as "x >= 10" or "x == 'one_value'"
 
 # Error management
 

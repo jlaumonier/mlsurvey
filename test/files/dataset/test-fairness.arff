@@ -1,0 +1,18 @@
+@relation test_fairness
+@attribute 'credit_amount' real
+@attribute 'age' real
+@attribute 'class' { good, bad}
+@data
+1169,67,good
+5951,22,bad
+2096,49,good
+7882,45,good
+4870,53,bad
+9055,35,good
+2835,53,good
+6948,35,good
+3059,61,good
+5234,28,bad
+1295,25,bad
+4308,24,bad
+1567,22,good

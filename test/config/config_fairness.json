@@ -4,10 +4,10 @@
       "type": "FileDataSet",
       "parameters": {
         "directory": "../files/dataset",
-        "filename": "credit-g.arff"
+        "filename": "test-fairness.arff"
       },
       "fairness": {
-        "protected_attribute": 12,
+        "protected_attribute": 1,
         "privileged_classes": "x >= 25"
       }
     }

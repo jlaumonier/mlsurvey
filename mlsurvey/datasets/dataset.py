@@ -41,7 +41,9 @@ class DataSet:
         transform the dataset into a dictionary {'type': .., 'parameters': {...} }
         :return: the dictionary
         """
-        result = {'type': self.t, 'parameters': self.params, 'fairness': self.fairness}
+        result = {'type': self.t, 'parameters': self.params}
+        if self.fairness != {}:
+            result['fairness'] = self.fairness
         return result
 
     @abstractmethod

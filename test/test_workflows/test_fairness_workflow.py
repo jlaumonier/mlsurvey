@@ -69,11 +69,11 @@ class TestFairnessWorkflow(unittest.TestCase):
         fw = mls.workflows.FairnessWorkflow(config_directory=self.cd)
         fw.task_get_data()
         self.assertIsInstance(fw.context.dataset, mls.datasets.FileDataSet)
-        self.assertEqual(12, fw.context.dataset.fairness['protected_attribute'])
+        self.assertEqual(1, fw.context.dataset.fairness['protected_attribute'])
         self.assertEqual("x >= 25", fw.context.dataset.fairness['privileged_classes'])
         self.assertIsNotNone(fw.context.data)
-        self.assertEqual(1000, len(fw.context.data.x))
-        self.assertEqual(1000, len(fw.context.data.y))
+        self.assertEqual(13, len(fw.context.data.x))
+        self.assertEqual(13, len(fw.context.data.y))
         self.assertTrue(fw.task_terminated_get_data)
 
     def test_task_get_data_no_fairness_data_error(self):
@@ -107,6 +107,7 @@ class TestFairnessWorkflow(unittest.TestCase):
         fw = mls.workflows.FairnessWorkflow(config_directory=self.cd)
         fw.task_get_data()
         fw.task_evaluate()
+        self.assertAlmostEqual(-0.3666666, fw.context.evaluation.demographic_parity, delta=1e-07)
         self.assertTrue(fw.task_terminated_evaluate)
 
     def test_task_persist_data_classifier_should_have_been_saved(self):
@@ -115,11 +116,11 @@ class TestFairnessWorkflow(unittest.TestCase):
         fw.task_evaluate()
         fw.task_persist()
         self.assertTrue(os.path.isfile(fw.log.directory + 'config.json'))
-        self.assertEqual('c39200b2e4983ee659e533c5d7b6fc21', mls.Utils.md5_file(fw.log.directory + 'config.json'))
+        self.assertEqual('6f368f9089d67e4ffae7cba6cb386928', mls.Utils.md5_file(fw.log.directory + 'config.json'))
         self.assertTrue(os.path.isfile(fw.log.directory + 'dataset.json'))
-        self.assertEqual('11a1b140d634276101f08ce8f3da6ccc', mls.Utils.md5_file(fw.log.directory + 'dataset.json'))
+        self.assertEqual('cf3d81c0a41941bb7dc7b0daf9f9ed9e', mls.Utils.md5_file(fw.log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(fw.log.directory + 'evaluation.json'))
-        self.assertEqual('6bb9b7751380b79c1c8c1bb11c1ebc3d', mls.Utils.md5_file(fw.log.directory + 'evaluation.json'))
+        self.assertEqual('1733f3db7551c5d35b6e603325a42782', mls.Utils.md5_file(fw.log.directory + 'evaluation.json'))
         self.assertTrue(fw.task_terminated_persistence)
 
     def test_run_all_step_should_be_executed(self):
