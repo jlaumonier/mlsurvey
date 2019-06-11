@@ -8,13 +8,13 @@ from .learning_workflow import LearningWorkflow
 
 class SupervisedLearningWorkflow(LearningWorkflow):
 
-    def __init__(self, config_file='config.json', config=None, config_directory='config/'):
+    def __init__(self, config_file='config.json', config=None, config_directory='config/', base_directory=''):
         """
         Initialized the supervised learning workflow
         :param config_file: config file for initializing the workflow, Used if config is None
         :param config: dictionary for config. If set, replace config file
         """
-        super().__init__(config_directory=config_directory)
+        super().__init__(config_directory=config_directory, base_directory=base_directory)
         try:
             self.config = mls.Config(config_file, config=config, directory=self.config_directory)
         except (FileNotFoundError, mls.exceptions.ConfigError):
@@ -51,7 +51,7 @@ class SupervisedLearningWorkflow(LearningWorkflow):
 
         # this line is only for FileDataSet testing... Not sure if it is the most Pythonic and most TDDic way....
         if hasattr(self.context.dataset, 'set_base_directory'):
-            self.context.dataset.set_base_directory(self.config_directory)
+            self.context.dataset.set_base_directory(self.base_directory)
 
         if 'fairness' in self.config.data['datasets'][dataset_name]:
             dataset_fairness = self.config.data['datasets'][dataset_name]['fairness']

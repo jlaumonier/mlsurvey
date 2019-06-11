@@ -3,7 +3,7 @@
     "DataSetGermanCredit": {
       "type": "FileDataSet",
       "parameters": {
-        "directory": "../files/dataset",
+        "directory": "files/dataset",
         "filename": "test-fairness.arff"
       },
       "fairness": {

@@ -7,11 +7,13 @@ import mlsurvey as mls
 
 class TestFairnessWorkflow(unittest.TestCase):
     cd = ''
+    bd = ''
 
     @classmethod
     def setUpClass(cls):
         directory = os.path.dirname(__file__)
         cls.cd = os.path.join(directory, '../config/')
+        cls.bd = os.path.join(directory, '../')
 
     @classmethod
     def tearDownClass(cls):
@@ -66,7 +68,7 @@ class TestFairnessWorkflow(unittest.TestCase):
         :condition : config file contains fairness parameters
         :main_result : Generate and dataset contains the fairness parameters
         """
-        fw = mls.workflows.FairnessWorkflow(config_directory=self.cd)
+        fw = mls.workflows.FairnessWorkflow(config_directory=self.cd, base_directory=self.bd)
         fw.task_get_data()
         self.assertIsInstance(fw.context.dataset, mls.datasets.FileDataSet)
         self.assertEqual(1, fw.context.dataset.fairness['protected_attribute'])
@@ -104,27 +106,27 @@ class TestFairnessWorkflow(unittest.TestCase):
             self.assertTrue(True)
 
     def test_task_evaluate_classifier_should_have_evaluate(self):
-        fw = mls.workflows.FairnessWorkflow(config_directory=self.cd)
+        fw = mls.workflows.FairnessWorkflow(config_directory=self.cd, base_directory=self.bd)
         fw.task_get_data()
         fw.task_evaluate()
         self.assertAlmostEqual(-0.3666666, fw.context.evaluation.demographic_parity, delta=1e-07)
         self.assertTrue(fw.task_terminated_evaluate)
 
     def test_task_persist_data_classifier_should_have_been_saved(self):
-        fw = mls.workflows.FairnessWorkflow(config_directory=self.cd)
+        fw = mls.workflows.FairnessWorkflow(config_directory=self.cd, base_directory=self.bd)
         fw.task_get_data()
         fw.task_evaluate()
         fw.task_persist()
         self.assertTrue(os.path.isfile(fw.log.directory + 'config.json'))
-        self.assertEqual('6f368f9089d67e4ffae7cba6cb386928', mls.Utils.md5_file(fw.log.directory + 'config.json'))
+        self.assertEqual('03d9ab96b2677c8e7efcd8a063781472', mls.Utils.md5_file(fw.log.directory + 'config.json'))
         self.assertTrue(os.path.isfile(fw.log.directory + 'dataset.json'))
-        self.assertEqual('cf3d81c0a41941bb7dc7b0daf9f9ed9e', mls.Utils.md5_file(fw.log.directory + 'dataset.json'))
+        self.assertEqual('66452e7c6a7d0ebf206b02b7d604b67c', mls.Utils.md5_file(fw.log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(fw.log.directory + 'evaluation.json'))
         self.assertEqual('1733f3db7551c5d35b6e603325a42782', mls.Utils.md5_file(fw.log.directory + 'evaluation.json'))
         self.assertTrue(fw.task_terminated_persistence)
 
     def test_run_all_step_should_be_executed(self):
-        fw = mls.workflows.FairnessWorkflow(config_directory=self.cd)
+        fw = mls.workflows.FairnessWorkflow(config_directory=self.cd, base_directory=self.bd)
         self.assertFalse(fw.terminated)
         fw.run()
 

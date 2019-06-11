@@ -6,8 +6,8 @@ from .learning_workflow import LearningWorkflow
 
 class FairnessWorkflow(LearningWorkflow):
 
-    def __init__(self, config_file='config_fairness.json', config_directory='config/'):
-        super().__init__(config_directory=config_directory)
+    def __init__(self, config_file='config_fairness.json', config_directory='config/', base_directory=''):
+        super().__init__(config_directory=config_directory, base_directory=base_directory)
         self.config = mls.Config(config_file, directory=self.config_directory)
         self.context = mls.models.Context(eval_type=mls.models.EvaluationFairness)
         self.log = mls.Logging()
@@ -33,7 +33,7 @@ class FairnessWorkflow(LearningWorkflow):
 
             # this line is only for FileDataSet testing... Not sure if it is the most Pythonic and most TDDic way....
             if hasattr(self.context.dataset, 'set_base_directory'):
-                self.context.dataset.set_base_directory(self.config_directory)
+                self.context.dataset.set_base_directory(self.base_directory)
 
             self.context.dataset.set_generation_parameters(dataset_params)
             dataset_fairness = self.config.data['datasets'][dataset_name]['fairness']

@@ -11,11 +11,13 @@ import mlsurvey as mls
 
 class TestSupervisedLearningWorkflow(unittest.TestCase):
     cd = ''
+    bd = ''
 
     @classmethod
     def setUpClass(cls):
         directory = os.path.dirname(__file__)
         cls.cd = os.path.join(directory, '../config/')
+        cls.bd = os.path.join(directory, '../')
 
     @classmethod
     def tearDownClass(cls):
@@ -166,6 +168,19 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertIsNotNone(slw.context.data)
         self.assertEqual(100, len(slw.context.data.x))
         self.assertEqual(100, len(slw.context.data.y))
+        self.assertEqual(0, len(slw.context.data.y_pred))
+        self.assertTrue(slw.task_terminated_get_data)
+
+    def test_task_get_data_filedataset_data_is_obtained(self):
+        slw = mls.workflows.SupervisedLearningWorkflow('config_filedataset.json',
+                                                       config_directory=self.cd,
+                                                       base_directory=self.bd)
+        slw.task_get_data()
+        self.assertIsInstance(slw.context.dataset, mls.datasets.FileDataSet)
+        self.assertDictEqual({'protected_attribute': 1, 'privileged_classes': 'x >= 25'}, slw.context.dataset.fairness)
+        self.assertIsNotNone(slw.context.data)
+        self.assertEqual(13, len(slw.context.data.x))
+        self.assertEqual(13, len(slw.context.data.y))
         self.assertEqual(0, len(slw.context.data.y_pred))
         self.assertTrue(slw.task_terminated_get_data)
 
