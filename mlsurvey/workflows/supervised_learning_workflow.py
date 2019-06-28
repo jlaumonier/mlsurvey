@@ -27,6 +27,7 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         self.task_terminated_split_data = False
         self.task_terminated_learn = False
         self.task_terminated_evaluate = False
+        self.task_terminated_fairness = False
         self.task_terminated_persistence = False
 
     def set_terminated(self):
@@ -37,6 +38,7 @@ class SupervisedLearningWorkflow(LearningWorkflow):
                            & self.task_terminated_split_data
                            & self.task_terminated_learn
                            & self.task_terminated_evaluate
+                           & self.task_terminated_fairness
                            & self.task_terminated_persistence)
 
     def task_get_data(self):
@@ -100,6 +102,10 @@ class SupervisedLearningWorkflow(LearningWorkflow):
                                                                     self.context.data_test.y_pred)
         self.task_terminated_evaluate = True
 
+    def task_fairness(self):
+        fw = mls.workflows.FairnessWorkflow()
+        self.task_terminated_fairness = True
+
     def task_persist(self):
         """
         save all aspects of the learning into files (config, data sets, classifier, evaluation)
@@ -123,5 +129,6 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         self.task_split_data()
         self.task_learn()
         self.task_evaluate()
+        self.task_fairness()
         self.task_persist()
         self.set_terminated()

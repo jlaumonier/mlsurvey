@@ -62,6 +62,30 @@ class TestFairnessWorkflow(unittest.TestCase):
         fw.set_terminated()
         self.assertFalse(fw.terminated)
 
+    def test_set_subprocess_terminated_all_terminated_but_persistence(self):
+        fw = mls.workflows.FairnessWorkflow(config_directory=self.cd)
+        fw.task_terminated_get_data = True
+        fw.task_terminated_evaluate = True
+        fw.task_terminated_persistence = False
+        fw.set_subprocess_terminated()
+        self.assertTrue(fw.terminated)
+
+    def test_set_subprocess_terminated_all_terminated_but_get_data(self):
+        fw = mls.workflows.FairnessWorkflow(config_directory=self.cd)
+        fw.task_terminated_get_data = False
+        fw.task_terminated_evaluate = True
+        fw.task_terminated_persistence = True
+        fw.set_subprocess_terminated()
+        self.assertFalse(fw.terminated)
+
+    def test_set_subprocess_terminated_all_terminated_but_evaluate(self):
+        fw = mls.workflows.FairnessWorkflow(config_directory=self.cd)
+        fw.task_terminated_get_data = True
+        fw.task_terminated_evaluate = False
+        fw.task_terminated_persistence = True
+        fw.set_subprocess_terminated()
+        self.assertFalse(fw.terminated)
+
     def test_task_get_data_data_is_obtained(self):
         """
         :test : mls.workflows.FairnessWorkflow().task_get_data()
@@ -132,10 +156,30 @@ class TestFairnessWorkflow(unittest.TestCase):
 
         # data is generated
         self.assertTrue(fw.task_terminated_get_data)
-        # evaluation in done
+        # evaluation is done
         self.assertTrue(fw.task_terminated_evaluate)
-        # persistence in done
+        # persistence is done
         self.assertTrue(fw.task_terminated_persistence)
+
+        # all tasks are finished
+        self.assertTrue(fw.terminated)
+
+    def test_run_as_subprocess_all_step_but_persistence(self):
+        """
+        :test : mls.workflows.FairnessWorkflow().run_as_subprocess()
+        :condition : config file exists
+        :main_result : all tasks are executed except persistence
+        """
+        fw = mls.workflows.FairnessWorkflow(config_directory=self.cd, base_directory=self.bd)
+        self.assertFalse(fw.terminated)
+        fw.run_as_subprocess()
+
+        # data is generated
+        self.assertTrue(fw.task_terminated_get_data)
+        # evaluation is done
+        self.assertTrue(fw.task_terminated_evaluate)
+        # persistence is not done
+        self.assertFalse(fw.task_terminated_persistence)
 
         # all tasks are finished
         self.assertTrue(fw.terminated)

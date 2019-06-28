@@ -33,6 +33,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertFalse(slw.task_terminated_prepare_data)
         self.assertFalse(slw.task_terminated_split_data)
         self.assertFalse(slw.task_terminated_learn)
+        self.assertFalse(slw.task_terminated_fairness)
         self.assertFalse(slw.task_terminated_evaluate)
         self.assertFalse(slw.task_terminated_persistence)
         self.assertIsInstance(slw.data_preparation, StandardScaler)
@@ -72,21 +73,23 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.task_terminated_split_data = True
         slw.task_terminated_learn = True
         slw.task_terminated_evaluate = True
+        slw.task_terminated_fairness = True
         slw.task_terminated_persistence = True
         slw.set_terminated()
         self.assertTrue(slw.terminated)
 
     def test_set_terminated_all_terminated_but_init(self):
-        mlw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
-        mlw.task_terminated_init = False
-        mlw.task_terminated_get_data = True
-        mlw.task_terminated_prepare_data = True
-        mlw.task_terminated_split_data = True
-        mlw.task_terminated_learn = True
-        mlw.task_terminated_evaluate = True
-        mlw.task_terminated_persistence = True
-        mlw.set_terminated()
-        self.assertFalse(mlw.terminated)
+        slw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
+        slw.task_terminated_init = False
+        slw.task_terminated_get_data = True
+        slw.task_terminated_prepare_data = True
+        slw.task_terminated_split_data = True
+        slw.task_terminated_learn = True
+        slw.task_terminated_evaluate = True
+        slw.task_terminated_fairness = True
+        slw.task_terminated_persistence = True
+        slw.set_terminated()
+        self.assertFalse(slw.terminated)
 
     def test_set_terminated_all_terminated_but_get_data(self):
         slw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
@@ -96,6 +99,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.task_terminated_split_data = True
         slw.task_terminated_learn = True
         slw.task_terminated_evaluate = True
+        slw.task_terminated_fairness = True
         slw.task_terminated_persistence = True
         slw.set_terminated()
         self.assertFalse(slw.terminated)
@@ -108,6 +112,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.task_terminated_split_data = True
         slw.task_terminated_learn = True
         slw.task_terminated_evaluate = True
+        slw.task_terminated_fairness = True
         slw.task_terminated_persistence = True
         slw.set_terminated()
         self.assertFalse(slw.terminated)
@@ -120,6 +125,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.task_terminated_split_data = False
         slw.task_terminated_learn = True
         slw.task_terminated_evaluate = True
+        slw.task_terminated_fairness = True
         slw.task_terminated_persistence = True
         slw.set_terminated()
         self.assertFalse(slw.terminated)
@@ -132,6 +138,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.task_terminated_split_data = True
         slw.task_terminated_learn = False
         slw.task_terminated_evaluate = True
+        slw.task_terminated_fairness = True
         slw.task_terminated_persistence = True
         slw.set_terminated()
         self.assertFalse(slw.terminated)
@@ -144,6 +151,20 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.task_terminated_split_data = True
         slw.task_terminated_learn = True
         slw.task_terminated_evaluate = False
+        slw.task_terminated_fairness = True
+        slw.task_terminated_persistence = True
+        slw.set_terminated()
+        self.assertFalse(slw.terminated)
+
+    def test_set_terminated_all_terminated_but_fairness(self):
+        slw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
+        slw.task_terminated_init = True
+        slw.task_terminated_get_data = True
+        slw.task_terminated_prepare_data = True
+        slw.task_terminated_split_data = True
+        slw.task_terminated_learn = True
+        slw.task_terminated_evaluate = True
+        slw.task_terminated_fairness = False
         slw.task_terminated_persistence = True
         slw.set_terminated()
         self.assertFalse(slw.terminated)
@@ -156,6 +177,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.task_terminated_split_data = True
         slw.task_terminated_learn = True
         slw.task_terminated_evaluate = True
+        slw.task_terminated_fairness = True
         slw.task_terminated_persistence = False
         slw.set_terminated()
         self.assertFalse(slw.terminated)
@@ -229,6 +251,35 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertEqual(100, len(slw.context.data.y_pred))
         self.assertEqual(80, len(slw.context.data_train.y_pred))
         self.assertEqual(20, len(slw.context.data_test.y_pred))
+        self.assertIsNone(slw.context.evaluation.sub_evaluation)
+        self.assertTrue(slw.task_terminated_evaluate)
+
+    def test_task_fairness_classifier_should_have_calculate_fairness(self):
+        slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json', config_directory=self.cd)
+        slw.task_get_data()
+        slw.task_split_data()
+        slw.task_learn()
+        slw.task_evaluate()
+        slw.task_fairness()
+        self.assertIsInstance(slw.context.evaluation.sub_evaluation, mls.models.EvaluationFairness)
+        # ADD some assert to test the learning
+        self.assertTrue(slw.task_terminated_learn)
+
+    def test_task_evaluate_classifier_with_fairness_should_have_evaluate(self):
+        slw = mls.workflows.SupervisedLearningWorkflow('config_filedataset.json',
+                                                       config_directory=self.cd,
+                                                       base_directory=self.bd)
+        slw.task_get_data()
+        slw.task_split_data()
+        slw.task_learn()
+        slw.task_evaluate()
+        expected_cm = np.array([[2, 1], [0, 2]])
+        self.assertEqual(0.8, slw.context.evaluation.score)
+        np.testing.assert_array_equal(expected_cm, slw.context.evaluation.confusion_matrix)
+        self.assertEqual(13, len(slw.context.data.y_pred))
+        self.assertEqual(8, len(slw.context.data_train.y_pred))
+        self.assertEqual(5, len(slw.context.data_test.y_pred))
+        self.assertAlmostEqual(-0.3666666, slw.context.evaluation.sub_evaluation.demographic_parity, delta=1e-07)
         self.assertTrue(slw.task_terminated_evaluate)
 
     def test_task_persist_data_classifier_should_have_been_saved(self):
@@ -267,6 +318,8 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(slw.task_terminated_learn)
         # evaluation in done
         self.assertTrue(slw.task_terminated_evaluate)
+        # fairness is done
+        self.assertTrue(slw.task_terminated_fairness)
         # persistence in done
         self.assertTrue(slw.task_terminated_persistence)
 

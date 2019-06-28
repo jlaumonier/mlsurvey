@@ -21,6 +21,11 @@ class FairnessWorkflow(LearningWorkflow):
                            & self.task_terminated_evaluate
                            & self.task_terminated_persistence)
 
+    def set_subprocess_terminated(self):
+        """ set the subprocess workflow as terminated if all tasks are terminated except persistence"""
+        self.terminated = (self.task_terminated_get_data
+                           & self.task_terminated_evaluate)
+
     def task_get_data(self):
         """
         Initialize and generate the dataset from configuration learning_process.input
@@ -84,3 +89,13 @@ class FairnessWorkflow(LearningWorkflow):
         self.task_evaluate()
         self.task_persist()
         self.set_terminated()
+
+    def run_as_subprocess(self):
+        """
+        Run the following tasks
+            - get and generate data
+            - evaluate
+        """
+        self.task_get_data()
+        self.task_evaluate()
+        self.set_subprocess_terminated()
