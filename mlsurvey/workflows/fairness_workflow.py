@@ -6,9 +6,14 @@ from .learning_workflow import LearningWorkflow
 
 class FairnessWorkflow(LearningWorkflow):
 
-    def __init__(self, config_file='config_fairness.json', config_directory='config/', base_directory=''):
+    def __init__(self, config_file='config_fairness.json', config_directory='config/', base_directory='', context=None):
         super().__init__(config_directory=config_directory, base_directory=base_directory)
-        self.config = mls.Config(config_file, directory=self.config_directory)
+        if context is None:
+            self.config = mls.Config(config_file, directory=self.config_directory)
+        else:
+            self.config = None
+        self.is_sub_process = (context is not None)
+        self.parent_context = context
         self.context = mls.models.Context(eval_type=mls.models.EvaluationFairness)
         self.log = mls.Logging()
         self.task_terminated_get_data = False
@@ -31,19 +36,27 @@ class FairnessWorkflow(LearningWorkflow):
         Initialize and generate the dataset from configuration learning_process.input
         """
         try:
-            dataset_name = self.config.data['fairness_process']['input']
-            dataset_params = self.config.data['datasets'][dataset_name]['parameters']
-            dataset_type = self.config.data['datasets'][dataset_name]['type']
-            self.context.dataset = mls.datasets.DataSetFactory.create_dataset(dataset_type)
+            if not self.is_sub_process:
+                dataset_name = self.config.data['fairness_process']['input']
+                dataset_params = self.config.data['datasets'][dataset_name]['parameters']
+                dataset_type = self.config.data['datasets'][dataset_name]['type']
+                self.context.dataset = mls.datasets.DataSetFactory.create_dataset(dataset_type)
 
-            # this line is only for FileDataSet testing... Not sure if it is the most Pythonic and most TDDic way....
-            if hasattr(self.context.dataset, 'set_base_directory'):
-                self.context.dataset.set_base_directory(self.base_directory)
+                # this line is only for FileDataSet testing...
+                # Not sure if it is the most Pythonic and most TDDic way....
+                if hasattr(self.context.dataset, 'set_base_directory'):
+                    self.context.dataset.set_base_directory(self.base_directory)
 
-            self.context.dataset.set_generation_parameters(dataset_params)
-            dataset_fairness = self.config.data['datasets'][dataset_name]['fairness']
-            self.context.dataset.set_fairness_parameters(dataset_fairness)
-            self.context.data.x, self.context.data.y = self.context.dataset.generate()
+                self.context.dataset.set_generation_parameters(dataset_params)
+                dataset_fairness = self.config.data['datasets'][dataset_name]['fairness']
+                self.context.dataset.set_fairness_parameters(dataset_fairness)
+                self.context.data.x, self.context.data.y = self.context.dataset.generate()
+            else:
+                self.context.dataset = self.parent_context.dataset
+                if not self.context.dataset.fairness:
+                    raise mls.exceptions.WorkflowError("Fairness parameters are required")
+                self.context.data = self.parent_context.raw_data
+
             self.task_terminated_get_data = True
         except KeyError as e:
             raise mls.exceptions.ConfigError(e)
@@ -66,8 +79,9 @@ class FairnessWorkflow(LearningWorkflow):
         # privileged_data.y = self.context.data.y[privileged_selected]
         # unprivileged_data.x = self.context.data.x[~privileged_selected]
         # unprivileged_data.y = self.context.data.y[~privileged_selected]
-        proba = mls.FairnessUtils.calculate_all_cond_probability(extended_data)
-        self.context.evaluation.demographic_parity = proba[n]['0.0'][1] - proba[n]['1.0'][1]
+        self.context.evaluation.probability = mls.FairnessUtils.calculate_all_cond_probability(extended_data)
+        self.context.evaluation.demographic_parity = self.context.evaluation.probability[n]['0.0'][1] - \
+                                                     self.context.evaluation.probability[n]['1.0'][1]
         self.task_terminated_evaluate = True
 
     def task_persist(self):

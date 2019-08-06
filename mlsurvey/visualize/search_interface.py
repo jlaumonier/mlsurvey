@@ -45,7 +45,8 @@ class SearchInterface:
                 data_test_section = html.Details(children=[html.Summary('Test Data'),
                                                            vw.data_test_table])
                 evaluation_result = html.Div(children=[html.Div(vw.scoreText),
-                                                       html.Div(vw.confusionMatrixFigure)])
+                                                       html.Div(vw.confusionMatrixFigure),
+                                                       vw.fairness_results])
                 if vw.figure is None:
                     one_result = html.Div(children=[html.Div(vw.configText,
                                                              className='six columns',

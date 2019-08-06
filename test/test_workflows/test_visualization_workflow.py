@@ -39,6 +39,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
         self.assertIsNone(vw.configText)
         self.assertIsNone(vw.confusionMatrixFigure)
         self.assertIsNone(vw.data_test_table)
+        self.assertIsNone(vw.fairness_results)
 
     def test_set_terminated_all_terminated(self):
         vw = mls.workflows.VisualizationWorkflow(directory=self.directory)
@@ -80,6 +81,11 @@ class TestVisualizationWorkflow(unittest.TestCase):
         self.assertEqual(1.00, vw.context.evaluation.score)
         np.testing.assert_array_equal(np.array([[13, 0], [0, 7]]), vw.context.evaluation.confusion_matrix)
 
+    def test_task_load_data_with_fairness_data_loaded(self):
+        vw = mls.workflows.VisualizationWorkflow(directory=self.directory_germancredit)
+        vw.task_load_data()
+        self.assertAlmostEqual(-0.12854990969960323, vw.context.evaluation.sub_evaluation.demographic_parity)
+
     def test_task_display_data_figure_generated(self):
         vw = mls.workflows.VisualizationWorkflow(directory=self.directory)
         vw.task_load_data()
@@ -109,6 +115,19 @@ class TestVisualizationWorkflow(unittest.TestCase):
         self.assertIsInstance(vw.confusionMatrixFigure, dcc.Graph)
         self.assertIsInstance(vw.configText, html.Div)
         self.assertIsInstance(vw.data_test_table, dash_table.DataTable)
+
+    def test_task_display_data_fairness_div_generated(self):
+        vw = mls.workflows.VisualizationWorkflow(directory=self.directory_germancredit)
+        vw.task_load_data()
+        vw.task_display_data()
+        self.assertIsInstance(vw.fairness_results, html.Div)
+
+    def test_task_display_data_no_fairness_div_generated_empty(self):
+        vw = mls.workflows.VisualizationWorkflow(directory=self.directory)
+        vw.task_load_data()
+        vw.task_display_data()
+        self.assertIsInstance(vw.fairness_results, html.Div)
+        self.assertIsNone(vw.fairness_results.children)
 
     def test_task_display_data_more_2_dimensions(self):
         """

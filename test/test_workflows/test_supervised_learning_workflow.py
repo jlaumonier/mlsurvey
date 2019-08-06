@@ -187,9 +187,13 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.task_get_data()
         self.assertIsInstance(slw.context.dataset, mls.datasets.NClassRandomClassificationWithNoise)
         self.assertDictEqual({}, slw.context.dataset.fairness)
+        self.assertIsNotNone(slw.context.raw_data)
+        self.assertEqual(100, len(slw.context.raw_data.x))
+        self.assertEqual(100, len(slw.context.raw_data.y))
+        self.assertEqual(0, len(slw.context.data.y_pred))
         self.assertIsNotNone(slw.context.data)
-        self.assertEqual(100, len(slw.context.data.x))
-        self.assertEqual(100, len(slw.context.data.y))
+        self.assertEqual(0, len(slw.context.data.x))
+        self.assertEqual(0, len(slw.context.data.y))
         self.assertEqual(0, len(slw.context.data.y_pred))
         self.assertTrue(slw.task_terminated_get_data)
 
@@ -200,23 +204,32 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.task_get_data()
         self.assertIsInstance(slw.context.dataset, mls.datasets.FileDataSet)
         self.assertDictEqual({'protected_attribute': 1, 'privileged_classes': 'x >= 25'}, slw.context.dataset.fairness)
+        self.assertIsNotNone(slw.context.raw_data)
+        self.assertEqual(13, len(slw.context.raw_data.x))
+        self.assertEqual(13, len(slw.context.raw_data.y))
+        self.assertEqual(0, len(slw.context.raw_data.y_pred))
         self.assertIsNotNone(slw.context.data)
-        self.assertEqual(13, len(slw.context.data.x))
-        self.assertEqual(13, len(slw.context.data.y))
+        self.assertEqual(0, len(slw.context.data.x))
+        self.assertEqual(0, len(slw.context.data.y))
         self.assertEqual(0, len(slw.context.data.y_pred))
         self.assertTrue(slw.task_terminated_get_data)
 
     def test_task_prepare_data_data_should_be_prepared(self):
         slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json', config_directory=self.cd)
         slw.task_get_data()
-        self.assertEqual(-1.766054694735782, slw.context.data.x[0][0])
+        lx = len(slw.context.raw_data.x)
+        ly = len(slw.context.raw_data.y)
+        self.assertEqual(-1.766054694735782, slw.context.raw_data.x[0][0])
         slw.task_prepare_data()
         self.assertEqual(-0.7655005998158294, slw.context.data.x[0][0])
+        self.assertEqual(lx, len(slw.context.data.x))
+        self.assertEqual(ly, len(slw.context.data.y))
         self.assertTrue(slw.task_terminated_prepare_data)
 
     def test_task_split_data_data_should_be_split_train_test(self):
         slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json', config_directory=self.cd)
         slw.task_get_data()
+        slw.task_prepare_data()
         self.assertEqual(100, len(slw.context.data.x))
         slw.task_split_data()
         self.assertEqual(100, len(slw.context.data.x))
@@ -233,6 +246,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
     def test_task_learn_classifier_should_have_learn(self):
         slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json', config_directory=self.cd)
         slw.task_get_data()
+        slw.task_prepare_data()
         slw.task_split_data()
         slw.task_learn()
         self.assertIsInstance(slw.context.classifier, neighbors.KNeighborsClassifier)
@@ -242,6 +256,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
     def test_task_evaluate_classifier_should_have_evaluate(self):
         slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json', config_directory=self.cd)
         slw.task_get_data()
+        slw.task_prepare_data()
         slw.task_split_data()
         slw.task_learn()
         slw.task_evaluate()
@@ -255,36 +270,45 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(slw.task_terminated_evaluate)
 
     def test_task_fairness_classifier_should_have_calculate_fairness(self):
-        slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json', config_directory=self.cd)
+        """
+        :test : mlsurvey.workflows.SupervisedLearningWorkflow.fairness()
+        :condition : config is made to learn on dataset with fairness config
+        :main_result : fairness is calculate
+        """
+        slw = mls.workflows.SupervisedLearningWorkflow('config_filedataset.json',
+                                                       config_directory=self.cd,
+                                                       base_directory=self.bd)
         slw.task_get_data()
+        slw.task_prepare_data()
         slw.task_split_data()
         slw.task_learn()
         slw.task_evaluate()
         slw.task_fairness()
         self.assertIsInstance(slw.context.evaluation.sub_evaluation, mls.models.EvaluationFairness)
-        # ADD some assert to test the learning
-        self.assertTrue(slw.task_terminated_learn)
+        self.assertAlmostEqual(-0.3666666, slw.context.evaluation.sub_evaluation.demographic_parity, delta=1e-07)
+        self.assertTrue(slw.task_terminated_fairness)
 
-    def test_task_evaluate_classifier_with_fairness_should_have_evaluate(self):
-        slw = mls.workflows.SupervisedLearningWorkflow('config_filedataset.json',
-                                                       config_directory=self.cd,
-                                                       base_directory=self.bd)
+    def test_task_fairness_classifier_not_executed(self):
+        """
+        :test : mlsurvey.workflows.SupervisedLearningWorkflow.fairness()
+        :condition : config is made to learn on dataset without fairness config
+        :main_result : fairness is not calculated
+        """
+        slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json',
+                                                       config_directory=self.cd)
         slw.task_get_data()
+        slw.task_prepare_data()
         slw.task_split_data()
         slw.task_learn()
         slw.task_evaluate()
-        expected_cm = np.array([[2, 1], [0, 2]])
-        self.assertEqual(0.8, slw.context.evaluation.score)
-        np.testing.assert_array_equal(expected_cm, slw.context.evaluation.confusion_matrix)
-        self.assertEqual(13, len(slw.context.data.y_pred))
-        self.assertEqual(8, len(slw.context.data_train.y_pred))
-        self.assertEqual(5, len(slw.context.data_test.y_pred))
-        self.assertAlmostEqual(-0.3666666, slw.context.evaluation.sub_evaluation.demographic_parity, delta=1e-07)
-        self.assertTrue(slw.task_terminated_evaluate)
+        slw.task_fairness()
+        self.assertIsNone(slw.context.evaluation.sub_evaluation)
+        self.assertTrue(slw.task_terminated_fairness)
 
     def test_task_persist_data_classifier_should_have_been_saved(self):
         slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json', config_directory=self.cd)
         slw.task_get_data()
+        slw.task_prepare_data()
         slw.task_split_data()
         slw.task_learn()
         slw.task_evaluate()
@@ -294,11 +318,11 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(slw.log.directory + 'dataset.json'))
         self.assertEqual('66eafcadd6773bcf132096486a57263a', mls.Utils.md5_file(slw.log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'input.json'))
-        self.assertEqual('1f430bca4679a1bf58ad7e3e0c725ce0', mls.Utils.md5_file(slw.log.directory + 'input.json'))
+        self.assertEqual('5f5725372962fd921f83d90fd83378e3', mls.Utils.md5_file(slw.log.directory + 'input.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'algorithm.json'))
         self.assertEqual('1697475bd77100f5a9c8806c462cbd0b', mls.Utils.md5_file(slw.log.directory + 'algorithm.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'model.joblib'))
-        self.assertEqual('f692fa120e705050370ed146e68104fa', mls.Utils.md5_file(slw.log.directory + 'model.joblib'))
+        self.assertEqual('29fa272d22ef413dedfb837ba97dd61f', mls.Utils.md5_file(slw.log.directory + 'model.joblib'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'evaluation.json'))
         self.assertEqual('3880646a29148f80a36efd2eb14e8814', mls.Utils.md5_file(slw.log.directory + 'evaluation.json'))
         self.assertTrue(slw.task_terminated_persistence)

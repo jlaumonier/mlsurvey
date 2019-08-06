@@ -1,0 +1,18 @@
+{
+  "datasets": {
+    "DataSetGermanCredit": {
+      "type": "FileDataSet",
+      "parameters": {
+        "directory": "files/dataset",
+        "filename": "credit-g.arff"
+      },
+      "fairness": {
+        "protected_attribute": 12,
+        "privileged_classes": "x >= 25"
+      }
+    }
+  },
+  "fairness_process": {
+    "input": "DataSetGermanCredit"
+  }
+}

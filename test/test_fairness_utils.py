@@ -28,3 +28,16 @@ class TestFairnessUtils(unittest.TestCase):
                            '4': [0.0, 1.0]}]
         self.assertIsInstance(proba, list)
         self.assertListEqual(proba, expected_proba)
+
+    def test_calculate_all_cond_probability_calculated_with_one_class_in_y(self):
+        d = mls.models.Data()
+        d.x = np.array([[1, 2], [3, 4], [3, 2], [3, 3], [1, 3]])
+        d.y = np.array([0, 0, 0, 0, 0])
+        proba = mls.FairnessUtils.calculate_all_cond_probability(d)
+        expected_proba = [{'1': [1.0],
+                           '3': [1.0]},
+                          {'2': [1.0],
+                           '3': [1.0],
+                           '4': [1.0]}]
+        self.assertIsInstance(proba, list)
+        self.assertListEqual(proba, expected_proba)

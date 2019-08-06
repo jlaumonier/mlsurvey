@@ -8,6 +8,7 @@ class Context:
     def __init__(self, eval_type):
         self.id = uuid.uuid1()
         self.dataset = mls.datasets.DataSet('generic')
+        self.raw_data = mls.models.Data()
         self.data = mls.models.Data()
         self.data_train = mls.models.Data()
         self.data_test = mls.models.Data()
@@ -17,7 +18,7 @@ class Context:
 
     def save(self, log):
         log.save_dict_as_json('dataset.json', self.dataset.to_dict())
-        inputs = {'data': self.data, 'train': self.data_train, 'test': self.data_test}
+        inputs = {'raw_data': self.raw_data, 'data': self.data, 'train': self.data_train, 'test': self.data_test}
         log.save_input(inputs)
         if self.algorithm is not None:
             log.save_dict_as_json('algorithm.json', self.algorithm.to_dict())
@@ -28,6 +29,7 @@ class Context:
         dataset_dict = log.load_json_as_dict('dataset.json')
         self.dataset = mls.datasets.DataSetFactory.create_dataset_from_dict(dataset_dict)
         inputs = log.load_input('input.json')
+        self.raw_data = inputs['raw_data']
         self.data = inputs['data']
         self.data_train = inputs['train']
         self.data_test = inputs['test']

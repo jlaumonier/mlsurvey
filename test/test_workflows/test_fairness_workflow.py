@@ -23,12 +23,21 @@ class TestFairnessWorkflow(unittest.TestCase):
     def test_init_should_init(self):
         fw = mls.workflows.FairnessWorkflow(config_directory=self.cd)
         self.assertIsNotNone(fw.config.data)
+        self.assertFalse(fw.is_sub_process)
+        self.assertIsNone(fw.parent_context)
         self.assertIsInstance(fw.context, mls.models.Context)
         self.assertIsInstance(fw.log, mls.Logging)
         self.assertFalse(fw.terminated)
         self.assertFalse(fw.task_terminated_get_data)
         self.assertFalse(fw.task_terminated_evaluate)
         self.assertFalse(fw.task_terminated_persistence)
+
+    def test_init_should_init_with_existing_data(self):
+        context = mls.models.Context(mls.models.EvaluationSupervised)
+        fw = mls.workflows.FairnessWorkflow(context=context)
+        self.assertIsNone(fw.config)
+        self.assertTrue(fw.is_sub_process)
+        self.assertEqual(context, fw.parent_context)
 
     def test_set_terminated_all_terminated(self):
         fw = mls.workflows.FairnessWorkflow(config_directory=self.cd)
@@ -86,7 +95,7 @@ class TestFairnessWorkflow(unittest.TestCase):
         fw.set_subprocess_terminated()
         self.assertFalse(fw.terminated)
 
-    def test_task_get_data_data_is_obtained(self):
+    def test_task_get_data_data_is_obtained_with_config(self):
         """
         :test : mls.workflows.FairnessWorkflow().task_get_data()
         :condition : config file contains fairness parameters
@@ -102,11 +111,32 @@ class TestFairnessWorkflow(unittest.TestCase):
         self.assertEqual(13, len(fw.context.data.y))
         self.assertTrue(fw.task_terminated_get_data)
 
-    def test_task_get_data_no_fairness_data_error(self):
+    def test_task_get_data_data_is_obtained_with_context(self):
+        """
+        :test : mls.workflows.FairnessWorkflow().task_get_data()
+        :condition : workflow is defined as subprocess and context contains fairness parameters
+        :main_result : dataset and data are get from the context
+        """
+        context = mls.models.Context(mls.models.EvaluationSupervised)
+        context.dataset = mls.datasets.DataSetFactory.create_dataset('FileDataSet')
+        directory = os.path.join(self.bd, "files/dataset")
+        dataset_params = {"directory": directory, "filename": "test-fairness.arff"}
+        fairness_params = {"protected_attribute": 1, "privileged_classes": "x >= 25"}
+        context.dataset.set_generation_parameters(dataset_params)
+        context.dataset.set_fairness_parameters(fairness_params)
+        context.raw_data.x, context.raw_data.y = context.dataset.generate()
+        fw = mls.workflows.FairnessWorkflow(context=context)
+        fw.task_get_data()
+        self.assertEqual(context.dataset, fw.context.dataset)
+        self.assertEqual(context.dataset.fairness, fw.context.dataset.fairness)
+        self.assertEqual(context.raw_data, fw.context.data)
+        self.assertTrue(fw.task_terminated_get_data)
+
+    def test_task_get_data_no_fairness_data_error_with_config(self):
         """
         :test : mls.workflows.FairnessWorkflow().task_get_data()
         :condition : config file does not contains fairness parameters
-        :main_result :
+        :main_result : mls.exceptions.ConfigError is raised
         """
         fw = mls.workflows.FairnessWorkflow(config_file='config_fairness_no_fairness_data.json',
                                             config_directory=self.cd)
@@ -116,11 +146,30 @@ class TestFairnessWorkflow(unittest.TestCase):
         except mls.exceptions.ConfigError:
             self.assertTrue(True)
 
-    def test_task_get_data_no_fairness_process(self):
+    def test_task_get_data_no_fairness_data_error_with_context(self):
+        """
+        :test : mls.workflows.FairnessWorkflow().task_get_data()
+        :condition : workflow is defined as subprocess and context does not contain fairness parameters
+        :main_result : mls.exceptions.WorkflowError is raised
+        """
+        context = mls.models.Context(mls.models.EvaluationSupervised)
+        context.dataset = mls.datasets.DataSetFactory.create_dataset('FileDataSet')
+        directory = os.path.join(self.bd, "files/dataset")
+        dataset_params = {"directory": directory, "filename": "test-fairness.arff"}
+        context.dataset.set_generation_parameters(dataset_params)
+        context.data.x, context.data.y = context.dataset.generate()
+        fw = mls.workflows.FairnessWorkflow(context=context)
+        try:
+            fw.task_get_data()
+            self.assertTrue(False)
+        except mls.exceptions.WorkflowError:
+            self.assertTrue(True)
+
+    def test_task_get_data_no_fairness_process_with_config(self):
         """
         :test : mls.workflows.FairnessWorkflow().task_get_data()
         :condition : config file does not contains fairness parameters
-        :main_result :
+        :main_result : mls.exceptions.ConfigError is raised
         """
         fw = mls.workflows.FairnessWorkflow(config_file='complete_config_loaded.json', config_directory=self.cd)
         try:
@@ -133,8 +182,17 @@ class TestFairnessWorkflow(unittest.TestCase):
         fw = mls.workflows.FairnessWorkflow(config_directory=self.cd, base_directory=self.bd)
         fw.task_get_data()
         fw.task_evaluate()
+        self.assertNotEqual(0, len(fw.context.evaluation.probability))
         self.assertAlmostEqual(-0.3666666, fw.context.evaluation.demographic_parity, delta=1e-07)
         self.assertTrue(fw.task_terminated_evaluate)
+
+    def test_run_with_real_data(self):
+        fw = mls.workflows.FairnessWorkflow(config_file='config_fairness_all_data.json',
+                                            config_directory=self.cd,
+                                            base_directory=self.bd)
+        fw.run()
+        self.assertIsNotNone(fw.context.evaluation.demographic_parity)
+        self.assertTrue(fw.terminated)
 
     def test_task_persist_data_classifier_should_have_been_saved(self):
         fw = mls.workflows.FairnessWorkflow(config_directory=self.cd, base_directory=self.bd)
@@ -146,7 +204,7 @@ class TestFairnessWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(fw.log.directory + 'dataset.json'))
         self.assertEqual('66452e7c6a7d0ebf206b02b7d604b67c', mls.Utils.md5_file(fw.log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(fw.log.directory + 'evaluation.json'))
-        self.assertEqual('1733f3db7551c5d35b6e603325a42782', mls.Utils.md5_file(fw.log.directory + 'evaluation.json'))
+        self.assertEqual('5210e06b7a6a98a4a96bf10f456fb46f', mls.Utils.md5_file(fw.log.directory + 'evaluation.json'))
         self.assertTrue(fw.task_terminated_persistence)
 
     def test_run_all_step_should_be_executed(self):

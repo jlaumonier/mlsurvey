@@ -43,6 +43,10 @@
       "parameters": {
         "directory": "dataset/german_credit_data",
         "filename": "credit-g.arff"
+      },
+      "fairness": {
+        "protected_attribute": 12,
+        "privileged_classes": "x >= 25"
       }
     }
   },

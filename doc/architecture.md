@@ -68,7 +68,7 @@ and score of the learning process. Test data are also displayed with the true la
 # Fairness process
 
 At this time, fairness process calculate only the demographic parity on all the dataset. To do so, add a fairness parameter
-at the end of the dataset definition :
+at the end of the dataset definition, in supervised learning process config file :
 
 ```
 "fairness": {

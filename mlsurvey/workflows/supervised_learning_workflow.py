@@ -59,12 +59,13 @@ class SupervisedLearningWorkflow(LearningWorkflow):
             dataset_fairness = self.config.data['datasets'][dataset_name]['fairness']
             self.context.dataset.set_fairness_parameters(dataset_fairness)
 
-        self.context.data.x, self.context.data.y = self.context.dataset.generate()
+        self.context.raw_data.x, self.context.raw_data.y = self.context.dataset.generate()
         self.task_terminated_get_data = True
 
     def task_prepare_data(self):
         """ Prepare the data. At that time, prepared with StandardScaler()"""
-        self.context.data.x = self.data_preparation.fit_transform(self.context.data.x)
+        self.context.data.x = self.data_preparation.fit_transform(self.context.raw_data.x)
+        self.context.data.y = self.context.raw_data.y
         self.task_terminated_prepare_data = True
 
     def task_split_data(self):
@@ -103,7 +104,10 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         self.task_terminated_evaluate = True
 
     def task_fairness(self):
-        fw = mls.workflows.FairnessWorkflow()
+        if self.context.dataset.fairness:
+            fw = mls.workflows.FairnessWorkflow(context=self.context)
+            fw.run_as_subprocess()
+            self.context.evaluation.sub_evaluation = fw.context.evaluation
         self.task_terminated_fairness = True
 
     def task_persist(self):

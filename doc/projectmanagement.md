@@ -41,6 +41,7 @@
         https://www.andrey-melentyev.com/model-interoperability.html
 * F : adding search of specific dataset. Adding a new search field ?
 * F : adding a base_directory for LearningWorkflows and child
+* B : Demographic parity is not defined if, in a dataset, no instance belong to privileged or unpriviliged class.
 
 ## Current
 * F : Fairness : rethinking the workflow to integrate supervised learning workflow

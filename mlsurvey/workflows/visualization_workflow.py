@@ -32,6 +32,7 @@ class VisualizationWorkflow(LearningWorkflow):
         self.configText = None
         self.confusionMatrixFigure = None
         self.data_test_table = None
+        self.fairness_results = None
 
     def set_terminated(self):
         self.terminated = (self.task_terminated_load_data
@@ -181,6 +182,14 @@ class VisualizationWorkflow(LearningWorkflow):
                                                     columns=columns,
                                                     data=data)
 
+    def __display_fairness__(self):
+        if self.context.evaluation.sub_evaluation:
+            self.fairness_results = html.Div(children=[html.P('demographic parity : ' +
+                                                              str(
+                                                                  self.context.evaluation.sub_evaluation.demographic_parity))])
+        else:
+            self.fairness_results = html.Div()
+
     def task_display_data(self):
         """
         Display with dash.
@@ -190,6 +199,7 @@ class VisualizationWorkflow(LearningWorkflow):
 
         self.__display_confusion_matrix__()
         self.__display_data_test_table__()
+        self.__display_fairness__()
 
         self.scoreText = html.P('Score : ' + str(self.context.evaluation.score))
         compact_config = mls.Config.compact(self.config.data)
