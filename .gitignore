@@ -1,0 +1,5 @@
+.directory
+.idea
+logs/
+venv/
+__pycache__/
