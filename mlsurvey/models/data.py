@@ -6,9 +6,36 @@ import mlsurvey as mls
 class Data:
 
     def __init__(self):
-        self.x = np.asarray([])
-        self.y = np.asarray([])
-        self.y_pred = np.asarray([])
+        self.__x = np.asarray([])
+        self.__y = np.asarray([])
+        self.__y_pred = np.asarray([])
+
+    def set_data(self, x_values, y_values):
+        """
+        set the x and y data with values
+        """
+        if x_values is not None:
+            self.__x = x_values
+        if y_values is not None:
+            self.__y = y_values
+
+    def set_pred_data(self, y_pred_values):
+        """
+        set the y predicted data with values
+        """
+        self.__y_pred = y_pred_values
+
+    @property
+    def x(self):
+        return self.__x
+
+    @property
+    def y(self):
+        return self.__y
+
+    @property
+    def y_pred(self):
+        return self.__y_pred
 
     def to_dict(self):
         """
@@ -27,9 +54,8 @@ class Data:
         """
         result = Data()
         try:
-            result.x = np.array(d['data.x'])
-            result.y = np.array(d['data.y'])
-            result.y_pred = np.array(d['data.y_pred'])
+            result.set_data(np.array(d['data.x']), np.array(d['data.y']))
+            result.set_pred_data(np.array(d['data.y_pred']))
         except KeyError as e:
             raise mls.exceptions.ModelError(e)
         return result
@@ -47,7 +73,6 @@ class Data:
         :return: the new object
         """
         result = Data()
-        result.x = self.x.copy()
-        result.y = self.y.copy()
-        result.y_pred = self.y_pred.copy()
+        result.set_data(self.x.copy(), self.y.copy())
+        result.set_pred_data(self.y_pred.copy())
         return result

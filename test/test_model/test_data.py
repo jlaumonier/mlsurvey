@@ -13,11 +13,64 @@ class TestData(unittest.TestCase):
         np.testing.assert_array_equal(np.array([]), i.y)
         np.testing.assert_array_equal(np.array([]), i.y_pred)
 
+    def test_set_data_data_set(self):
+        """
+        :test : mlsurvey.model.Data.set_data()
+        :condition : x and y data are given as numpy arrays
+        :main_result : x and y data are set
+        """
+        d = mls.models.Data()
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        d.set_data(x, y)
+        np.testing.assert_array_equal(x, d.x)
+        np.testing.assert_array_equal(y, d.y)
+
+    def test_set_pred_data_data_set(self):
+        """
+        :test : mlsurvey.model.Data.set_pred_data()
+        :condition : y prediction data is given as numpy array
+        :main_result : y prediction data is set
+        """
+        d = mls.models.Data()
+        y_pred = np.array([1, 0])
+        d.set_pred_data(y_pred)
+        np.testing.assert_array_equal(y_pred, d.y_pred)
+
+    def test_set_data_x_data_update_y_not_changed(self):
+        """
+        :test : mlsurvey.model.Data.set_data()
+        :condition : x data is given as numpy array, x and y have been previously set
+        :main_result : x data is changed, y data not
+        """
+        d = mls.models.Data()
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        d.set_data(x, y)
+        x_expected = np.array([[10, 20], [30, 40]])
+        d.set_data(x_expected, None)
+        np.testing.assert_array_equal(x_expected, d.x)
+        np.testing.assert_array_equal(y, d.y)
+
+    def test_set_data_y_data_update_x_not_changed(self):
+        """
+        :test : mlsurvey.model.Data.set_data()
+        :condition : y data is given as numpy array, x and y have been previously set
+        :main_result : y data is changed, x data not
+        """
+        d = mls.models.Data()
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        d.set_data(x, y)
+        y_expected = np.array([0, 10])
+        d.set_data(None, y_expected)
+        np.testing.assert_array_equal(x, d.x)
+        np.testing.assert_array_equal(y_expected, d.y)
+
     def test_to_dict_dict_should_be_set(self):
         d = mls.models.Data()
-        d.x = np.array([[1, 2], [3, 4]])
-        d.y = np.array([0, 1])
-        d.y_pred = np.array([1, 0])
+        d.set_data(np.array([[1, 2], [3, 4]]), np.array([0, 1]))
+        d.set_pred_data(np.array([1, 0]))
         expected = {'data.x': [[1, 2], [3, 4]], 'data.y': [0, 1], 'data.y_pred': [1, 0]}
         result = d.to_dict()
         self.assertDictEqual(expected, result)
@@ -73,9 +126,8 @@ class TestData(unittest.TestCase):
         :main_result : data are merge into one array
         """
         d = mls.models.Data()
-        d.x = np.array([[1, 2], [3, 4]])
-        d.y = np.array([0, 1])
-        d.y_pred = np.array([1, 0])
+        d.set_data(np.array([[1, 2], [3, 4]]), np.array([0, 1]))
+        d.set_pred_data(np.array([1, 0]))
         expected_result = np.asarray([[1, 2, 0, 1],
                                       [3, 4, 1, 0]])
         result = d.merge_all()
@@ -88,9 +140,8 @@ class TestData(unittest.TestCase):
         :main_result : copy into an other object
         """
         d = mls.models.Data()
-        d.x = np.array([[1, 2], [3, 4]])
-        d.y = np.array([0, 1])
-        d.y_pred = np.array([1, 0])
+        d.set_data(np.array([[1, 2], [3, 4]]), np.array([0, 1]))
+        d.set_pred_data(np.array([1, 0]))
         d_copied = d.copy()
         np.testing.assert_array_equal(d.x, d_copied.x)
         np.testing.assert_array_equal(d.y, d_copied.y)

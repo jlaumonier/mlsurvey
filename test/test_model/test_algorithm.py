@@ -63,7 +63,7 @@ class TestAlgorithm(unittest.TestCase):
         }
         dataset = mls.datasets.DataSetFactory.create_dataset('make_circles')
         data = mls.models.Data()
-        data.x, data.y = dataset.generate()
+        data.set_data(*dataset.generate())
         algo = mls.models.Algorithm(config)
         classif = algo.learn(data.x, data.y)
         score = classif.score(data.x, data.y)
@@ -85,7 +85,7 @@ class TestAlgorithm(unittest.TestCase):
         }
         dataset = mls.datasets.DataSetFactory.create_dataset('make_circles')
         data = mls.models.Data()
-        data.x, data.y = dataset.generate()
+        data.set_data(*dataset.generate())
         algo = mls.models.Algorithm(config)
         classif = None
         try:

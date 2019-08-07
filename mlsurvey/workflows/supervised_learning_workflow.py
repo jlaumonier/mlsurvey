@@ -59,13 +59,13 @@ class SupervisedLearningWorkflow(LearningWorkflow):
             dataset_fairness = self.config.data['datasets'][dataset_name]['fairness']
             self.context.dataset.set_fairness_parameters(dataset_fairness)
 
-        self.context.raw_data.x, self.context.raw_data.y = self.context.dataset.generate()
+        self.context.raw_data.set_data(*self.context.dataset.generate())
         self.task_terminated_get_data = True
 
     def task_prepare_data(self):
         """ Prepare the data. At that time, prepared with StandardScaler()"""
-        self.context.data.x = self.data_preparation.fit_transform(self.context.raw_data.x)
-        self.context.data.y = self.context.raw_data.y
+        self.context.data.set_data(self.data_preparation.fit_transform(self.context.raw_data.x),
+                                   self.context.raw_data.y)
         self.task_terminated_prepare_data = True
 
     def task_split_data(self):
@@ -75,14 +75,16 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         split_name = self.config.data['learning_process']['split']
         split_param = self.config.data['splits'][split_name]['parameters']
         if self.config.data['splits'][split_name]['type'] == 'traintest':
-            (self.context.data_train.x,
-             self.context.data_test.x,
-             self.context.data_train.y,
-             self.context.data_test.y) = train_test_split(self.context.data.x,
-                                                          self.context.data.y,
-                                                          test_size=split_param['test_size'],
-                                                          random_state=split_param['random_state'],
-                                                          shuffle=split_param['shuffle'])
+            (data_train_x,
+             data_test_x,
+             data_train_y,
+             data_test_y) = train_test_split(self.context.data.x,
+                                             self.context.data.y,
+                                             test_size=split_param['test_size'],
+                                             random_state=split_param['random_state'],
+                                             shuffle=split_param['shuffle'])
+            self.context.data_train.set_data(data_train_x, data_train_y)
+            self.context.data_test.set_data(data_test_x, data_test_y)
             self.task_terminated_split_data = True
 
     def task_learn(self):
@@ -96,9 +98,9 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         """ calculate the score of the classifier with test data """
         self.context.evaluation.score = self.context.classifier.score(self.context.data_test.x,
                                                                       self.context.data_test.y)
-        self.context.data.y_pred = self.context.classifier.predict(self.context.data.x)
-        self.context.data_train.y_pred = self.context.classifier.predict(self.context.data_train.x)
-        self.context.data_test.y_pred = self.context.classifier.predict(self.context.data_test.x)
+        self.context.data.set_pred_data(self.context.classifier.predict(self.context.data.x))
+        self.context.data_train.set_pred_data(self.context.classifier.predict(self.context.data_train.x))
+        self.context.data_test.set_pred_data(self.context.classifier.predict(self.context.data_test.x))
         self.context.evaluation.confusion_matrix = confusion_matrix(self.context.data_test.y,
                                                                     self.context.data_test.y_pred)
         self.task_terminated_evaluate = True

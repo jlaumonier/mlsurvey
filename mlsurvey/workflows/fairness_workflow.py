@@ -50,7 +50,7 @@ class FairnessWorkflow(LearningWorkflow):
                 self.context.dataset.set_generation_parameters(dataset_params)
                 dataset_fairness = self.config.data['datasets'][dataset_name]['fairness']
                 self.context.dataset.set_fairness_parameters(dataset_fairness)
-                self.context.data.x, self.context.data.y = self.context.dataset.generate()
+                self.context.data.set_data(*self.context.dataset.generate())
             else:
                 self.context.dataset = self.parent_context.dataset
                 if not self.context.dataset.fairness:
@@ -72,7 +72,7 @@ class FairnessWorkflow(LearningWorkflow):
         n = self.context.data.x.shape[1]
         # number of examples in data
         m = self.context.data.x.shape[0]
-        extended_data.x = np.concatenate((extended_data.x, privileged_selected.reshape(-1, m).T), axis=1)
+        extended_data.set_data(np.concatenate((extended_data.x, privileged_selected.reshape(-1, m).T), axis=1), None)
         # privileged_data = mls.models.Data()
         # unprivileged_data = mls.models.Data()
         # privileged_data.x = self.context.data.x[privileged_selected]

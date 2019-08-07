@@ -13,8 +13,8 @@
 * A is Architecture
 
 ## TODO
+* F : Allowing multiple parameters for fairness parameters
 * F : Change config format to introduction definition section for non compact format
-* F : Use panda dataframe into Data() and Dataset() (big changes...)
 * F : Generate a "full" config file for sci-kit-learn
 * F : Log management
 * B : Visualization workflow does not handle correctly more than 2 classes
@@ -44,7 +44,7 @@
 * B : Demographic parity is not defined if, in a dataset, no instance belong to privileged or unpriviliged class.
 
 ## Current
-* F : Fairness : rethinking the workflow to integrate supervised learning workflow
+* F : Use panda dataframe into Data() and Dataset() (big changes...)
 
 ## Done
 * Git repository : local
@@ -93,6 +93,7 @@
 * Adding display options to interface
 * Bug : Dash display blank page when all results are deselected : remove Loading component
 * A : Regenerate/rethinking the test files (md5 or other database ?)
+* F : Fairness : rethinking the workflow to integrate supervised learning workflow
 
 
 

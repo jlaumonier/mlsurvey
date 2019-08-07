@@ -43,14 +43,14 @@ class TestLogging(unittest.TestCase):
         d_data = mls.datasets.DataSetFactory.create_dataset('make_moons')
         d_data.params['random_state'] = 0
         i_data = mls.models.Data()
-        i_data.x, i_data.y = d_data.generate()
+        i_data.set_data(*d_data.generate())
         d_train = mls.datasets.DataSetFactory.create_dataset('load_iris')
         i_train = mls.models.Data()
-        i_train.x, i_train.y = d_train.generate()
+        i_train.set_data(*d_train.generate())
         d_test = mls.datasets.DataSetFactory.create_dataset('make_circles')
         d_test.params['random_state'] = 0
         i_test = mls.models.Data()
-        i_test.x, i_test.y = d_test.generate()
+        i_test.set_data(*d_test.generate())
         log = mls.Logging(dir_name)
         inputs = {'data': i_data, 'train': i_train, 'test': i_test}
         log.save_input(inputs)

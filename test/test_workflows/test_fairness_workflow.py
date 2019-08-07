@@ -124,7 +124,7 @@ class TestFairnessWorkflow(unittest.TestCase):
         fairness_params = {"protected_attribute": 1, "privileged_classes": "x >= 25"}
         context.dataset.set_generation_parameters(dataset_params)
         context.dataset.set_fairness_parameters(fairness_params)
-        context.raw_data.x, context.raw_data.y = context.dataset.generate()
+        context.raw_data.set_data(*context.dataset.generate())
         fw = mls.workflows.FairnessWorkflow(context=context)
         fw.task_get_data()
         self.assertEqual(context.dataset, fw.context.dataset)
@@ -157,7 +157,7 @@ class TestFairnessWorkflow(unittest.TestCase):
         directory = os.path.join(self.bd, "files/dataset")
         dataset_params = {"directory": directory, "filename": "test-fairness.arff"}
         context.dataset.set_generation_parameters(dataset_params)
-        context.data.x, context.data.y = context.dataset.generate()
+        context.data.set_data(*context.dataset.generate())
         fw = mls.workflows.FairnessWorkflow(context=context)
         try:
             fw.task_get_data()

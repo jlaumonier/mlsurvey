@@ -9,8 +9,9 @@ class TestFairnessUtils(unittest.TestCase):
 
     def test_calculate_probability_calculated(self):
         d = mls.models.Data()
-        d.x = np.array([[1, 2], [3, 4], [3, 2], [3, 3], [1, 3]])
-        d.y = np.array([0, 1, 0, 0, 1])
+        x = np.array([[1, 2], [3, 4], [3, 2], [3, 3], [1, 3]])
+        y = np.array([0, 1, 0, 0, 1])
+        d.set_data(x, y)
         proba = mls.FairnessUtils.calculate_probability(d)
         expected_proba = np.array([3 / 5, 2 / 5])
         self.assertIsInstance(proba, np.ndarray)
@@ -18,8 +19,9 @@ class TestFairnessUtils(unittest.TestCase):
 
     def test_calculate_all_cond_probability_calculated(self):
         d = mls.models.Data()
-        d.x = np.array([[1, 2], [3, 4], [3, 2], [3, 3], [1, 3]])
-        d.y = np.array([0, 1, 0, 0, 1])
+        x = np.array([[1, 2], [3, 4], [3, 2], [3, 3], [1, 3]])
+        y = np.array([0, 1, 0, 0, 1])
+        d.set_data(x, y)
         proba = mls.FairnessUtils.calculate_all_cond_probability(d)
         expected_proba = [{'1': [0.5, 0.5],
                            '3': [0.6666666666666666, 0.3333333333333333]},
@@ -31,8 +33,9 @@ class TestFairnessUtils(unittest.TestCase):
 
     def test_calculate_all_cond_probability_calculated_with_one_class_in_y(self):
         d = mls.models.Data()
-        d.x = np.array([[1, 2], [3, 4], [3, 2], [3, 3], [1, 3]])
-        d.y = np.array([0, 0, 0, 0, 0])
+        x = np.array([[1, 2], [3, 4], [3, 2], [3, 3], [1, 3]])
+        y = np.array([0, 0, 0, 0, 0])
+        d.set_data(x, y)
         proba = mls.FairnessUtils.calculate_all_cond_probability(d)
         expected_proba = [{'1': [1.0],
                            '3': [1.0]},
