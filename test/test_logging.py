@@ -42,20 +42,25 @@ class TestLogging(unittest.TestCase):
         dir_name = 'testing/'
         d_data = mls.datasets.DataSetFactory.create_dataset('make_moons')
         d_data.params['random_state'] = 0
-        i_data = mls.models.Data()
-        i_data.set_data(*d_data.generate())
+        i_data = mls.models.Data(*d_data.generate())
         d_train = mls.datasets.DataSetFactory.create_dataset('load_iris')
-        i_train = mls.models.Data()
-        i_train.set_data(*d_train.generate())
+        i_train = mls.models.Data(*d_train.generate())
         d_test = mls.datasets.DataSetFactory.create_dataset('make_circles')
         d_test.params['random_state'] = 0
-        i_test = mls.models.Data()
-        i_test.set_data(*d_test.generate())
+        i_test = mls.models.Data(*d_test.generate())
         log = mls.Logging(dir_name)
         inputs = {'data': i_data, 'train': i_train, 'test': i_test}
         log.save_input(inputs)
         self.assertTrue(os.path.isfile(log.directory + 'input.json'))
-        self.assertEqual('b2aaedbccdaae18d955ba3962696b737', mls.Utils.md5_file(log.directory + 'input.json'))
+        self.assertEqual('9385bdc8ead36f1add775b665badc3f6', mls.Utils.md5_file(log.directory + 'input.json'))
+
+    def test_save_inputs_inputs_none_input_saved(self):
+        dir_name = 'testing/'
+        log = mls.Logging(dir_name)
+        inputs = {'data': None, 'train': None, 'test': None}
+        log.save_input(inputs)
+        self.assertTrue(os.path.isfile(log.directory + 'input.json'))
+        self.assertEqual('c6e977bcc44c3435cf59b9cced4538e0', mls.Utils.md5_file(log.directory + 'input.json'))
 
     def test_load_input_input_loaded(self):
         dir_name = 'files/'

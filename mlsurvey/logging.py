@@ -30,7 +30,7 @@ class Logging:
         """
         output = {}
         for k, v in inpts.items():
-            output[k] = v.to_dict()
+            output[k] = v.to_dict() if v is not None else None
         self.save_dict_as_json('input.json', output)
 
     def load_input(self, filename):

@@ -124,7 +124,7 @@ class TestFairnessWorkflow(unittest.TestCase):
         fairness_params = {"protected_attribute": 1, "privileged_classes": "x >= 25"}
         context.dataset.set_generation_parameters(dataset_params)
         context.dataset.set_fairness_parameters(fairness_params)
-        context.raw_data.set_data(*context.dataset.generate())
+        context.raw_data = mls.models.Data(*context.dataset.generate())
         fw = mls.workflows.FairnessWorkflow(context=context)
         fw.task_get_data()
         self.assertEqual(context.dataset, fw.context.dataset)
@@ -157,7 +157,7 @@ class TestFairnessWorkflow(unittest.TestCase):
         directory = os.path.join(self.bd, "files/dataset")
         dataset_params = {"directory": directory, "filename": "test-fairness.arff"}
         context.dataset.set_generation_parameters(dataset_params)
-        context.data.set_data(*context.dataset.generate())
+        context.data = mls.models.Data(*context.dataset.generate())
         fw = mls.workflows.FairnessWorkflow(context=context)
         try:
             fw.task_get_data()
@@ -204,7 +204,7 @@ class TestFairnessWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(fw.log.directory + 'dataset.json'))
         self.assertEqual('66452e7c6a7d0ebf206b02b7d604b67c', mls.Utils.md5_file(fw.log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(fw.log.directory + 'evaluation.json'))
-        self.assertEqual('5210e06b7a6a98a4a96bf10f456fb46f', mls.Utils.md5_file(fw.log.directory + 'evaluation.json'))
+        self.assertEqual('1fcfe121d143869d3554fca2c0ebc465', mls.Utils.md5_file(fw.log.directory + 'evaluation.json'))
         self.assertTrue(fw.task_terminated_persistence)
 
     def test_run_all_step_should_be_executed(self):

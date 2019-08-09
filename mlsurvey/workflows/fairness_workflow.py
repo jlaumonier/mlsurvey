@@ -50,7 +50,7 @@ class FairnessWorkflow(LearningWorkflow):
                 self.context.dataset.set_generation_parameters(dataset_params)
                 dataset_fairness = self.config.data['datasets'][dataset_name]['fairness']
                 self.context.dataset.set_fairness_parameters(dataset_fairness)
-                self.context.data.set_data(*self.context.dataset.generate())
+                self.context.data = mls.models.Data(*self.context.dataset.generate())
             else:
                 self.context.dataset = self.parent_context.dataset
                 if not self.context.dataset.fairness:
@@ -62,7 +62,7 @@ class FairnessWorkflow(LearningWorkflow):
             raise mls.exceptions.ConfigError(e)
 
     def task_evaluate(self):
-        """ calculate the fairness of the data. Does nothing at the moment :S. Fairness to implement"""
+        """ calculate the fairness of the data."""
         # demographic parity
         column = self.context.dataset.fairness['protected_attribute']
         privileged_selected = np.array(list(map(eval('lambda x:' + self.context.dataset.fairness['privileged_classes']),
@@ -71,8 +71,8 @@ class FairnessWorkflow(LearningWorkflow):
         # number of column in data
         n = self.context.data.x.shape[1]
         # number of examples in data
-        m = self.context.data.x.shape[0]
-        extended_data.set_data(np.concatenate((extended_data.x, privileged_selected.reshape(-1, m).T), axis=1), None)
+        # m = self.context.data.x.shape[0]
+        extended_data.add_column_in_data(privileged_selected)
         # privileged_data = mls.models.Data()
         # unprivileged_data = mls.models.Data()
         # privileged_data.x = self.context.data.x[privileged_selected]
@@ -80,8 +80,8 @@ class FairnessWorkflow(LearningWorkflow):
         # unprivileged_data.x = self.context.data.x[~privileged_selected]
         # unprivileged_data.y = self.context.data.y[~privileged_selected]
         self.context.evaluation.probability = mls.FairnessUtils.calculate_all_cond_probability(extended_data)
-        self.context.evaluation.demographic_parity = self.context.evaluation.probability[n]['0.0'][1] - \
-                                                     self.context.evaluation.probability[n]['1.0'][1]
+        self.context.evaluation.demographic_parity = self.context.evaluation.probability[n][False][1] - \
+                                                     self.context.evaluation.probability[n][True][1]
         self.task_terminated_evaluate = True
 
     def task_persist(self):

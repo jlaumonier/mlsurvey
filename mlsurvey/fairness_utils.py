@@ -38,6 +38,6 @@ class FairnessUtils:
                     else:
                         p = 0.0
                     proba_attrib_value.append(p)
-                proba_attrib[str(attr_value)] = proba_attrib_value
+                proba_attrib[attr_value] = proba_attrib_value
             result.append(proba_attrib)
         return result

@@ -190,11 +190,8 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertIsNotNone(slw.context.raw_data)
         self.assertEqual(100, len(slw.context.raw_data.x))
         self.assertEqual(100, len(slw.context.raw_data.y))
-        self.assertEqual(0, len(slw.context.data.y_pred))
-        self.assertIsNotNone(slw.context.data)
-        self.assertEqual(0, len(slw.context.data.x))
-        self.assertEqual(0, len(slw.context.data.y))
-        self.assertEqual(0, len(slw.context.data.y_pred))
+        self.assertEqual(100, len(slw.context.raw_data.y_pred))
+        self.assertIsNone(slw.context.data)
         self.assertTrue(slw.task_terminated_get_data)
 
     def test_task_get_data_filedataset_data_is_obtained(self):
@@ -207,11 +204,8 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertIsNotNone(slw.context.raw_data)
         self.assertEqual(13, len(slw.context.raw_data.x))
         self.assertEqual(13, len(slw.context.raw_data.y))
-        self.assertEqual(0, len(slw.context.raw_data.y_pred))
-        self.assertIsNotNone(slw.context.data)
-        self.assertEqual(0, len(slw.context.data.x))
-        self.assertEqual(0, len(slw.context.data.y))
-        self.assertEqual(0, len(slw.context.data.y_pred))
+        self.assertEqual(13, len(slw.context.raw_data.y_pred))
+        self.assertIsNone(slw.context.data)
         self.assertTrue(slw.task_terminated_get_data)
 
     def test_task_prepare_data_data_should_be_prepared(self):
@@ -234,13 +228,13 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.task_split_data()
         self.assertEqual(100, len(slw.context.data.x))
         self.assertEqual(100, len(slw.context.data.y))
-        self.assertEqual(0, len(slw.context.data.y_pred))
+        self.assertEqual(100, len(slw.context.data.y_pred))
         self.assertEqual(20, len(slw.context.data_test.x))
         self.assertEqual(20, len(slw.context.data_test.y))
-        self.assertEqual(0, len(slw.context.data_test.y_pred))
+        self.assertEqual(20, len(slw.context.data_test.y_pred))
         self.assertEqual(80, len(slw.context.data_train.x))
         self.assertEqual(80, len(slw.context.data_train.y))
-        self.assertEqual(0, len(slw.context.data_train.y_pred))
+        self.assertEqual(80, len(slw.context.data_train.y_pred))
         self.assertTrue(slw.task_terminated_split_data)
 
     def test_task_learn_classifier_should_have_learn(self):
@@ -318,7 +312,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(slw.log.directory + 'dataset.json'))
         self.assertEqual('66eafcadd6773bcf132096486a57263a', mls.Utils.md5_file(slw.log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'input.json'))
-        self.assertEqual('5f5725372962fd921f83d90fd83378e3', mls.Utils.md5_file(slw.log.directory + 'input.json'))
+        self.assertEqual('800bb2366e739ced66141955e115483a', mls.Utils.md5_file(slw.log.directory + 'input.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'algorithm.json'))
         self.assertEqual('1697475bd77100f5a9c8806c462cbd0b', mls.Utils.md5_file(slw.log.directory + 'algorithm.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'model.joblib'))

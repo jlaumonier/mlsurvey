@@ -8,10 +8,10 @@ class Context:
     def __init__(self, eval_type):
         self.id = uuid.uuid1()
         self.dataset = mls.datasets.DataSet('generic')
-        self.raw_data = mls.models.Data()
-        self.data = mls.models.Data()
-        self.data_train = mls.models.Data()
-        self.data_test = mls.models.Data()
+        self.raw_data = None
+        self.data = None
+        self.data_train = None
+        self.data_test = None
         self.algorithm = None
         self.classifier = None
         self.evaluation = eval_type()

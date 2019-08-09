@@ -1,41 +1,48 @@
 import numpy as np
+import pandas as pd
 
 import mlsurvey as mls
 
 
 class Data:
 
-    def __init__(self):
-        self.__x = np.asarray([])
-        self.__y = np.asarray([])
-        self.__y_pred = np.asarray([])
+    def __init__(self, x, y=None, y_pred=None):
+        self.__inner_data = pd.DataFrame(data=x)
+        self.set_data(None, y)
+        self.set_pred_data(y_pred)
 
     def set_data(self, x_values, y_values):
         """
-        set the x and y data with values
+        set the x and y data with values. size of the x and y value must be the same size as existing data
         """
         if x_values is not None:
-            self.__x = x_values
+            self.__inner_data.iloc[:, 0:-2] = x_values
         if y_values is not None:
-            self.__y = y_values
+            self.__inner_data['target'] = y_values
 
     def set_pred_data(self, y_pred_values):
         """
         set the y predicted data with values
         """
-        self.__y_pred = y_pred_values
+        self.__inner_data['target_pred'] = pd.Series(y_pred_values)
+
+    def add_column_in_data(self, new_column):
+        """
+        add a new column at the end of the data
+        """
+        self.__inner_data.insert(len(self.__inner_data.columns) - 2, "newcolumn", new_column)
 
     @property
     def x(self):
-        return self.__x
+        return self.__inner_data.iloc[:, 0:-2].to_numpy()
 
     @property
     def y(self):
-        return self.__y
+        return self.__inner_data['target'].to_numpy()
 
     @property
     def y_pred(self):
-        return self.__y_pred
+        return self.__inner_data['target_pred'].to_numpy()
 
     def to_dict(self):
         """
@@ -52,19 +59,16 @@ class Data:
         :param d: source dictionary
         Raise mlsurvey.exception.ModelError if data.x or data.y is not present
         """
-        result = Data()
         try:
-            result.set_data(np.array(d['data.x']), np.array(d['data.y']))
-            result.set_pred_data(np.array(d['data.y_pred']))
+            result = Data(x=np.array(d['data.x']),
+                          y=np.array(d['data.y']),
+                          y_pred=np.array(d['data.y_pred']))
         except KeyError as e:
             raise mls.exceptions.ModelError(e)
         return result
 
     def merge_all(self):
-        result = np.concatenate((self.x,
-                                 self.y.reshape((-1, 1)),
-                                 self.y_pred.reshape((-1, 1))),
-                                axis=1)
+        result = self.__inner_data.values
         return result
 
     def copy(self):
@@ -72,7 +76,7 @@ class Data:
         copy the object into another
         :return: the new object
         """
-        result = Data()
-        result.set_data(self.x.copy(), self.y.copy())
-        result.set_pred_data(self.y_pred.copy())
+        result = Data(x=self.x.copy(),
+                      y=self.y.copy(),
+                      y_pred=self.y_pred.copy())
         return result

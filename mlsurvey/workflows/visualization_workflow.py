@@ -184,9 +184,8 @@ class VisualizationWorkflow(LearningWorkflow):
 
     def __display_fairness__(self):
         if self.context.evaluation.sub_evaluation:
-            self.fairness_results = html.Div(children=[html.P('demographic parity : ' +
-                                                              str(
-                                                                  self.context.evaluation.sub_evaluation.demographic_parity))])
+            fairness_text = 'demographic parity : ' + str(self.context.evaluation.sub_evaluation.demographic_parity)
+            self.fairness_results = html.Div(children=[html.P(fairness_text)])
         else:
             self.fairness_results = html.Div()
 
