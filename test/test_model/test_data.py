@@ -1,6 +1,7 @@
 import unittest
 
 import numpy as np
+import pandas as pd
 
 import mlsurvey as mls
 
@@ -12,8 +13,9 @@ class TestData(unittest.TestCase):
         np.testing.assert_array_equal(np.empty((0, 1)), d.x)
         np.testing.assert_array_equal(np.empty((0,)), d.y)
         np.testing.assert_array_equal(np.empty((0,)), d.y_pred)
+        self.assertIsInstance(d.df, pd.DataFrame)
 
-    def test_init_data_x_y(self):
+    def test_init_data_x_y_without_column_name(self):
         """
         :test : mlsurvey.model.Data()
         :condition : x and y data are given as numpy arrays
@@ -22,8 +24,24 @@ class TestData(unittest.TestCase):
         x = np.array([[1, 2], [3, 4]])
         y = np.array([0, 1])
         d = mls.models.Data(x=x, y=y)
+        expected_column_name = ['C0', 'C1', 'target', 'target_pred']
         np.testing.assert_array_equal(x, d.x)
         np.testing.assert_array_equal(y, d.y)
+        self.assertListEqual(expected_column_name, list(d.df.columns))
+
+    def test_init_data_x_y_with_column_name(self):
+        """
+        :test : mlsurvey.model.Data()
+        :condition : x and y data are given as numpy arrays. Column are given
+        :main_result : x and y data are set
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        expected_column_name = ['Col1', 'Col2']
+        d = mls.models.Data(x=x, y=y, columns=expected_column_name)
+        np.testing.assert_array_equal(x, d.x)
+        np.testing.assert_array_equal(y, d.y)
+        self.assertListEqual(expected_column_name, list(d.df.columns[0:-2]))
 
     def test_init_data_x_y_ypred(self):
         """
@@ -94,19 +112,35 @@ class TestData(unittest.TestCase):
         np.testing.assert_array_equal(x, d.x)
         np.testing.assert_array_equal(y_expected, d.y)
 
-    def test_add_column_in_data_column_added(self):
+    def test_add_column_in_data_column_added_without_column_name(self):
         """
         :test : mlsurvey.model.Data.add_column_in_data()
-        :condition : x data if filled
-        :main_result : column and data added
+        :condition : x data if filled. No columns name is given
+        :main_result : column and data added. The column name is generate
         """
-        x = np.array([[1, 2], [3, 4]])
+        x = np.array([[1, 2, 3], [4, 5, 6]])
         y = np.array([0, 1])
         y_pred = np.array([1, 0])
         d = mls.models.Data(x=x, y=y, y_pred=y_pred)
         new_column = np.array([10, 20])
         d.add_column_in_data(new_column)
         np.testing.assert_array_equal(new_column, d.x[:, -1])
+        self.assertEqual('C2', d.df.columns[2])
+
+    def test_add_column_in_data_column_added_with_column_name(self):
+        """
+        :test : mlsurvey.model.Data.add_column_in_data()
+        :condition : x data if filled. Column name is given
+        :main_result : column and data added.
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        y_pred = np.array([1, 0])
+        d = mls.models.Data(x=x, y=y, y_pred=y_pred)
+        new_column = np.array([10, 20])
+        d.add_column_in_data(new_column, column_name='priv_class')
+        np.testing.assert_array_equal(new_column, d.x[:, -1])
+        self.assertEqual('priv_class', d.df.columns[2])
 
     def test_to_dict_dict_should_be_set(self):
         d = mls.models.Data(x=np.array([[1, 2], [3, 4]]),

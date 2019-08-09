@@ -72,7 +72,7 @@ class FairnessWorkflow(LearningWorkflow):
         n = self.context.data.x.shape[1]
         # number of examples in data
         # m = self.context.data.x.shape[0]
-        extended_data.add_column_in_data(privileged_selected)
+        extended_data.add_column_in_data(privileged_selected, 'priv_class')
         # privileged_data = mls.models.Data()
         # unprivileged_data = mls.models.Data()
         # privileged_data.x = self.context.data.x[privileged_selected]

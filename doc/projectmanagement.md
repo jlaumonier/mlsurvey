@@ -14,6 +14,7 @@
 
 ## TODO
 * F : Allowing multiple parameters for fairness parameters
+* F : Use the column names in all the processes (sl, fairness, ...)
 * F : Change config format to introduction definition section for non compact format
 * F : Generate a "full" config file for sci-kit-learn
 * F : Log management

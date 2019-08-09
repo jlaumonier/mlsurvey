@@ -6,8 +6,13 @@ import mlsurvey as mls
 
 class Data:
 
-    def __init__(self, x, y=None, y_pred=None):
-        self.__inner_data = pd.DataFrame(data=x)
+    def __init__(self, x, y=None, y_pred=None, columns=None):
+        if columns is None and x.ndim > 1:
+            columns = []
+            for idx_col in range(x.shape[1]):
+                col_name = 'C' + str(idx_col)
+                columns.append(col_name)
+        self.__inner_data = pd.DataFrame(data=x, columns=columns)
         self.set_data(None, y)
         self.set_pred_data(y_pred)
 
@@ -26,11 +31,13 @@ class Data:
         """
         self.__inner_data['target_pred'] = pd.Series(y_pred_values)
 
-    def add_column_in_data(self, new_column):
+    def add_column_in_data(self, new_column, column_name=None):
         """
         add a new column at the end of the data
         """
-        self.__inner_data.insert(len(self.__inner_data.columns) - 2, "newcolumn", new_column)
+        if column_name is None:
+            column_name = 'C' + str(len(self.__inner_data.columns) - 2)
+        self.__inner_data.insert(len(self.__inner_data.columns) - 2, column_name, new_column)
 
     @property
     def x(self):
@@ -43,6 +50,10 @@ class Data:
     @property
     def y_pred(self):
         return self.__inner_data['target_pred'].to_numpy()
+
+    @property
+    def df(self):
+        return self.__inner_data
 
     def to_dict(self):
         """
