@@ -13,13 +13,13 @@
 * A is Architecture
 
 ## TODO
+* A : Change Dataset.generate() to return more than x and y (column, chunk...)
 * F : Allowing multiple parameters for fairness parameters
-* F : Use the column names in all the processes (sl, fairness, ...)
+* F : Use the column names in all the processes (sl, fairness, visualization)
 * F : Change config format to introduction definition section for non compact format
 * F : Generate a "full" config file for sci-kit-learn
 * F : Log management
 * B : Visualization workflow does not handle correctly more than 2 classes
-* T : Rename Logging class to "FilesOperation"-ish class. Make it used by the Config class to read the json file
 * F : Regularization
 * F : Model evaluation (complete)
 * F : Random seed global
@@ -43,9 +43,10 @@
 * F : adding search of specific dataset. Adding a new search field ?
 * F : adding a base_directory for LearningWorkflows and child
 * B : Demographic parity is not defined if, in a dataset, no instance belong to privileged or unpriviliged class.
+* F : Allowing very large datasets (Dask ?)
 
 ## Current
-* F : Use panda dataframe into Data() and Dataset() (big changes...)
+* T : Rename Logging class to "FilesOperation"-ish class. Make it used by the Config class to read the json file
 
 ## Done
 * Git repository : local
@@ -95,6 +96,7 @@
 * Bug : Dash display blank page when all results are deselected : remove Loading component
 * A : Regenerate/rethinking the test files (md5 or other database ?)
 * F : Fairness : rethinking the workflow to integrate supervised learning workflow
+* F : Use panda dataframe into Data() and Dataset() (big changes...)
 
 
 

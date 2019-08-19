@@ -1,5 +1,4 @@
 import os
-import shutil
 import unittest
 
 import dash_core_components as dcc
@@ -21,11 +20,6 @@ class TestVisualizationWorkflow(unittest.TestCase):
         cls.directory_blobs = os.path.join(directory, '../files/visualization/blobs/')
         cls.directory_svc = os.path.join(directory, '../files/visualization/svc/')
         cls.directory_germancredit = os.path.join(directory, '../files/visualization/germancredit/')
-
-    @classmethod
-    def tearDownClass(cls):
-        log = mls.Logging()
-        shutil.rmtree(log.base_dir)
 
     def test_init_should_init(self):
         vw = mls.workflows.VisualizationWorkflow(directory=self.directory)

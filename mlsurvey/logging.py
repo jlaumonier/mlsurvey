@@ -1,5 +1,4 @@
 import datetime
-import json
 import os
 
 import joblib
@@ -20,8 +19,6 @@ class Logging:
             dir_name = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
         self.dir_name = dir_name
         self.directory = os.path.join(self.base_dir, dir_name, '')
-        if not os.path.exists(self.directory):
-            os.makedirs(self.directory)
 
     def save_input(self, inpts):
         """
@@ -48,20 +45,19 @@ class Logging:
 
     def save_dict_as_json(self, filename, d):
         """ save a dictionary into a json file"""
-        with open(self.directory + filename, 'w') as outfile:
-            json.dump(mls.Utils.transform_to_json(d), outfile)
-        outfile.close()
+        mls.FileOperation.save_dict_as_json(filename, self.directory, d)
 
     def load_json_as_dict(self, filename):
         """ load a dictionary from a json file"""
-        with open(self.directory + filename, 'r') as infile:
-            data = mls.Utils.transform_to_dict(json.load(infile))
+        data = mls.FileOperation.load_json_as_dict(filename, self.directory)
         return data
 
     def save_classifier(self, classifier):
         """ save a scikitlearn classifier"""
+        os.makedirs(self.directory, exist_ok=True)
         joblib.dump(classifier, self.directory + 'model.joblib')
 
     def load_classifier(self):
         """ load a scikitlearn classifier"""
+        os.makedirs(self.directory, exist_ok=True)
         return joblib.load(self.directory + 'model.joblib')

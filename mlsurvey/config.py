@@ -1,5 +1,4 @@
 import json
-import os
 
 import mlsurvey as mls
 
@@ -16,13 +15,10 @@ class Config:
         Raise ConfigError is the config file is not a valid Json file
         """
         if config is None:
-            full_path = os.path.join(directory, name)
-
-            with open(full_path, 'r') as json_config_file:
-                try:
-                    self.data = json.load(json_config_file)
-                except json.JSONDecodeError as e:
-                    raise mls.exceptions.ConfigError(e)
+            try:
+                self.data = mls.FileOperation.load_json_as_dict(name, directory)
+            except json.JSONDecodeError as e:
+                raise mls.exceptions.ConfigError(e)
         else:
             self.data = config
 

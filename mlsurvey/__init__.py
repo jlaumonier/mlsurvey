@@ -5,6 +5,7 @@ from . import visualize
 from . import workflows
 from .config import Config
 from .fairness_utils import FairnessUtils
+from .fileoperation import FileOperation
 from .logging import Logging
 from .utils import Utils
 
