@@ -1,6 +1,7 @@
 import os
 from operator import concat
 
+import pandas as pd
 import tinydb as tdb
 
 import mlsurvey as mls
@@ -14,6 +15,7 @@ class AnalyzeLogs:
         self.list_full_dir = list(map(concat, [self.directory] * len(self.list_dir), self.list_dir))
         self.algorithms_list = []
         self.datasets_list = []
+        self.parameters_df = None
         self.db = tdb.TinyDB(storage=tdb.storages.MemoryStorage)
 
     def __del__(self):
@@ -44,3 +46,6 @@ class AnalyzeLogs:
         self.datasets_list = list(set(d))
         self.datasets_list.sort()
         self.datasets_list.insert(0, '.')
+        parameters_list = [mls.Utils.flatten_dict(doc['learning_process'], separator='.') for doc in all_doc]
+        self.parameters_df = pd.DataFrame(parameters_list)
+        print(self.parameters_df.to_string())

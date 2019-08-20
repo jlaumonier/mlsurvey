@@ -40,13 +40,13 @@
         See https://datascience.stackexchange.com/questions/33527/scikit-learn-decision-tree-in-production
         https://github.com/scikit-learn/scikit-learn/issues/11041
         https://www.andrey-melentyev.com/model-interoperability.html
-* F : adding search of specific dataset. Adding a new search field ?
 * F : adding a base_directory for LearningWorkflows and child
 * B : Demographic parity is not defined if, in a dataset, no instance belong to privileged or unpriviliged class.
 * F : Allowing very large datasets (Dask ?)
 
 ## Current
-* T : Rename Logging class to "FilesOperation"-ish class. Make it used by the Config class to read the json file
+* F : Adding dynamic and generic criteria in visualization
+* F : adding search of specific dataset. Adding a new search field ?
 
 ## Done
 * Git repository : local
@@ -97,6 +97,7 @@
 * A : Regenerate/rethinking the test files (md5 or other database ?)
 * F : Fairness : rethinking the workflow to integrate supervised learning workflow
 * F : Use panda dataframe into Data() and Dataset() (big changes...)
+* T : Rename Logging class to "FilesOperation"-ish class. Make it used by the Config class to read the json file
 
 
 

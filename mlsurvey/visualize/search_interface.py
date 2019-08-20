@@ -1,6 +1,10 @@
+from functools import reduce
+from operator import eq, ge, gt, le, lt, ne
+
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
+import numpy as np
 import tinydb as tdb
 from dash.dependencies import Input, Output
 
@@ -12,14 +16,30 @@ class SearchInterface:
     def __init__(self, analyse_logs):
         self.analyse_logs = analyse_logs
 
-    def search(self, n_clicks, value_algo, value_ds):
+    def search(self, n_clicks, value_algo, value_ds, criteria_value, criteria_operator, criteria):
         """Callback when the user click on the 'Search' button"""
+        """ helped by on https://stackoverflow.com/questions/30530562/dynamically-parse-and-build-tinydb-queries"""
+        operators = {'==': eq, '!=': ne, '<=': le, '>=': ge, '<': lt, '>': gt}
         result = []
         if n_clicks is not None:
+            db = self.analyse_logs.db
+            search_result = []
             query = tdb.Query()
-            search_result = self.analyse_logs.db.search(
-                query.learning_process.algorithm['algorithm-family'].matches(value_algo)
-                & query.learning_process.input.type.matches(value_ds))
+            if criteria_value is not None and criteria_operator is not None:
+                criteria_split = criteria.split('.')
+                q = reduce(tdb.Query.__getitem__, criteria_split, query.learning_process)
+                operator = operators[criteria_operator]
+                dt = self.analyse_logs.parameters_df.dtypes[criteria]
+                if dt == np.float64:
+                    criteria_value = np.float64(criteria_value)
+                if dt == np.int64:
+                    criteria_value = np.int64(criteria_value)
+                search_result = db.search(operator(q, criteria_value)
+                                          & query.learning_process.algorithm['algorithm-family'].matches(value_algo)
+                                          & query.learning_process.input.type.matches(value_ds))
+            else:
+                search_result = db.search(query.learning_process.algorithm['algorithm-family'].matches(value_algo)
+                                          & query.learning_process.input.type.matches(value_ds))
             for res in search_result:
                 one_row = {'Algorithm': res['learning_process']['algorithm']['algorithm-family'],
                            'AlgoParams': str(res['learning_process']['algorithm']['hyperparameters']),
@@ -28,6 +48,17 @@ class SearchInterface:
                            'Directory': res['location']}
                 result.append(one_row)
         return result
+
+    def select_criteria_value_operator(self, criteria):
+        values = self.analyse_logs.parameters_df[criteria].unique()
+        result_value = [{'label': str(v), 'value': str(v)} for v in values]
+        dtype = self.analyse_logs.parameters_df.dtypes[criteria]
+        if dtype == np.float64 or dtype == np.int64:
+            operators = ['==', '!=', '<=', '>=', '<', '>']
+        else:
+            operators = ['==', '!=']
+        result_operator = [{'label': str(v), 'value': str(v)} for v in operators]
+        return result_value, result_operator
 
     @staticmethod
     def select_result(derived_virtual_data, derived_virtual_selected_rows, options):
@@ -73,42 +104,66 @@ class SearchInterface:
     def get_layout(self):
         """Layout of the search page"""
         d = [{'Algorithm': 0, 'AlgoParams': 0, 'Dataset': 0, 'DSParams': 0, 'Directory': 0}]
-        c = ['Algorithm', 'AlgoParams', 'Dataset', 'DSParams', 'Directory']
+        col_names = ['Algorithm', 'AlgoParams', 'Dataset', 'DSParams', 'Directory']
         options_algorithms = [{'label': a, 'value': a} for a in self.analyse_logs.algorithms_list]
         options_datasets = [{'label': d, 'value': d} for d in self.analyse_logs.datasets_list]
+
+        list_criteria = [{'label': a, 'value': a} for a in self.analyse_logs.parameters_df.columns]
+
+        crit_drop = [dcc.Dropdown(id='id-criteria',
+                                  options=list_criteria,
+                                  className='three columns',
+                                  value=list_criteria[0],
+                                  searchable=False,
+                                  clearable=False,
+                                  placeholder=list_criteria[0]),
+                     dcc.Dropdown(id='id-criteria-operator',
+                                  options=[],
+                                  className='one column',
+                                  searchable=False,
+                                  clearable=False),
+                     dcc.Dropdown(id='id-criteria-value',
+                                  options=[],
+                                  className='three columns',
+                                  searchable=False,
+                                  clearable=False)
+                     ]
+
+        list_search_section_children = [dcc.Dropdown(id='search-algo-dd-id',
+                                                     options=options_algorithms,
+                                                     className='three columns',
+                                                     value=options_algorithms[0]['value'],
+                                                     searchable=False,
+                                                     clearable=False,
+                                                     placeholder="Algorithm"),
+                                        dcc.Dropdown(id='search-dataset-dd-id',
+                                                     options=options_datasets,
+                                                     className='three columns',
+                                                     value=options_datasets[0]['value'],
+                                                     searchable=False,
+                                                     clearable=False,
+                                                     placeholder="Dataset"
+                                                     ),
+                                        html.Button('Search', id='search-button-id'),
+                                        dash_table.DataTable(id='search-results-id',
+                                                             columns=[{"name": i, "id": i} for i in col_names],
+                                                             data=d,
+                                                             row_selectable='multi',
+                                                             page_action='native',
+                                                             page_size=10,
+                                                             page_current=0,
+                                                             selected_rows=[],
+                                                             style_as_list_view=True,
+                                                             style_cell={'textAlign': 'left',
+                                                                         'font-size': '0.9em'})]
+        criteria_section = html.Div(id='criteria-section',
+                                    children=crit_drop,
+                                    className='twelve columns')
+
         search_section = html.Div(id='search-section',
-                                  children=[dcc.Dropdown(id='search-algo-dd-id',
-                                                         options=options_algorithms,
-                                                         className='three columns',
-                                                         value=options_algorithms[0]['value'],
-                                                         searchable=False,
-                                                         clearable=False,
-                                                         placeholder="Algorithm"),
-                                            dcc.Dropdown(id='search-dataset-dd-id',
-                                                         options=options_datasets,
-                                                         className='three columns',
-                                                         value=options_datasets[0]['value'],
-                                                         searchable=False,
-                                                         clearable=False,
-                                                         placeholder="Dataset"
-                                                         ),
-                                            html.Button('Search', id='search-button-id'),
-                                            dash_table.DataTable(id='search-results-id',
-                                                                 columns=[{"name": i, "id": i} for i in c],
-                                                                 data=d,
-                                                                 row_selectable='multi',
-                                                                 pagination_mode='fe',
-                                                                 pagination_settings={
-                                                                     "displayed_pages": 1,
-                                                                     "current_page": 0,
-                                                                     "page_size": 10,
-                                                                 },
-                                                                 navigation="page",
-                                                                 selected_rows=[],
-                                                                 style_as_list_view=True,
-                                                                 style_cell={'textAlign': 'left',
-                                                                             'font-size': '0.9em'})],
+                                  children=list_search_section_children,
                                   className='twelve columns')
+
         options_section = html.Div(id='option-section',
                                    children=[
                                        dcc.Checklist(
@@ -117,16 +172,18 @@ class SearchInterface:
                                                {'label': 'Configuration table', 'value': 'CFG'},
                                                {'label': 'Data Separation figure', 'value': 'FIG'},
                                                {'label': 'Data test table', 'value': 'DTA_TEST_TBL'}],
-                                           values=['CFG', 'FIG'],
-                                           style={'display': 'inline'})
+                                           value=['CFG', 'FIG'],
+                                           labelStyle={'display': 'inline-block'})
                                    ],
                                    className='twelve columns')
 
+        criteria_detail = html.Details(children=[html.Summary('Criteria'), criteria_section],
+                                       open=True)
         search_detail = html.Details(children=[html.Summary('Search'), search_section],
                                      open=True)
         options_detail = html.Details(children=[html.Summary('Display options'), options_section],
                                       open=False)
-        return html.Div(children=[search_detail, options_detail])
+        return html.Div(children=[criteria_detail, search_detail, options_detail])
 
     def define_callback(self, dash_app):
         """define the callbacks on the page"""
@@ -134,7 +191,10 @@ class SearchInterface:
             Output(component_id='search-results-id', component_property='data'),
             [Input(component_id='search-button-id', component_property='n_clicks'),
              Input(component_id='search-algo-dd-id', component_property='value'),
-             Input(component_id='search-dataset-dd-id', component_property='value')])(self.search)
+             Input(component_id='search-dataset-dd-id', component_property='value'),
+             Input(component_id='id-criteria-value', component_property='value'),
+             Input(component_id='id-criteria-operator', component_property='value'),
+             Input(component_id='id-criteria', component_property='value')])(self.search)
 
         dash_app.callback(
             Output(component_id='visualize-id',
@@ -144,4 +204,12 @@ class SearchInterface:
              Input(component_id='search-results-id',
                    component_property='derived_virtual_selected_rows'),
              Input(component_id='options-checklist',
-                   component_property='values')])(self.select_result)
+                   component_property='value')])(self.select_result)
+
+        dash_app.callback(
+            [Output(component_id='id-criteria-value',
+                    component_property='options'),
+             Output(component_id='id-criteria-operator',
+                    component_property='options')],
+            [Input(component_id='id-criteria',
+                   component_property='value')])(self.select_criteria_value_operator)

@@ -8,7 +8,12 @@ from .learning_workflow import LearningWorkflow
 
 class SupervisedLearningWorkflow(LearningWorkflow):
 
-    def __init__(self, config_file='config.json', config=None, config_directory='config/', base_directory=''):
+    def __init__(self,
+                 config_file='config.json',
+                 config=None,
+                 config_directory='config/',
+                 base_directory='',
+                 logging_dir=None):
         """
         Initialized the supervised learning workflow
         :param config_file: config file for initializing the workflow, Used if config is None
@@ -21,7 +26,7 @@ class SupervisedLearningWorkflow(LearningWorkflow):
             self.task_terminated_init = False
         self.data_preparation = StandardScaler()
         self.context = mls.models.Context(eval_type=mls.models.EvaluationSupervised)
-        self.log = mls.Logging()
+        self.log = mls.Logging(dir_name=logging_dir)
         self.task_terminated_get_data = False
         self.task_terminated_prepare_data = False
         self.task_terminated_split_data = False

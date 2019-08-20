@@ -65,6 +65,16 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw = mls.workflows.SupervisedLearningWorkflow(config=c)
         self.assertEqual('config loaded', slw.config.data['testconfig'])
 
+    def test_init_SL_workflow_logging_in_specified_dir(self):
+        """
+        :test : mlsurvey.workflows.SupervisedLearningWorkflow()
+        :condition : set the logging directory
+        :main_result : logging directory is set as specified
+        """
+        expected_dir = 'testlog/'
+        slw = mls.workflows.SupervisedLearningWorkflow(logging_dir=expected_dir)
+        self.assertEqual('logs/' + expected_dir, slw.log.directory)
+
     def test_set_terminated_all_terminated(self):
         slw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
         slw.task_terminated_init = True
@@ -312,11 +322,11 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(slw.log.directory + 'dataset.json'))
         self.assertEqual('66eafcadd6773bcf132096486a57263a', mls.Utils.md5_file(slw.log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'input.json'))
-        self.assertEqual('800bb2366e739ced66141955e115483a', mls.Utils.md5_file(slw.log.directory + 'input.json'))
+        self.assertEqual('7ab2c4d5b53978563b0fd0de57326bf8', mls.Utils.md5_file(slw.log.directory + 'input.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'algorithm.json'))
         self.assertEqual('1697475bd77100f5a9c8806c462cbd0b', mls.Utils.md5_file(slw.log.directory + 'algorithm.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'model.joblib'))
-        self.assertEqual('29fa272d22ef413dedfb837ba97dd61f', mls.Utils.md5_file(slw.log.directory + 'model.joblib'))
+        self.assertEqual('d7b367aab251aa13c7e3b731ef251ade', mls.Utils.md5_file(slw.log.directory + 'model.joblib'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'evaluation.json'))
         self.assertEqual('3880646a29148f80a36efd2eb14e8814', mls.Utils.md5_file(slw.log.directory + 'evaluation.json'))
         self.assertTrue(slw.task_terminated_persistence)

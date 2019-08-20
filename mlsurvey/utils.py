@@ -155,3 +155,11 @@ class Utils:
                     else:
                         result = result & Utils.check_dict_python_ready(e)
         return result
+
+    @classmethod
+    def flatten_dict(cls, dd, separator='_', prefix=''):
+        """SRC : https://www.geeksforgeeks.org/python-convert-nested-dictionary-into-flattened-dictionary/"""
+        return {prefix + separator + k if prefix else k: v
+                for kk, vv in dd.items()
+                for k, v in Utils.flatten_dict(vv, separator, kk).items()
+                } if isinstance(dd, dict) else {prefix: dd}

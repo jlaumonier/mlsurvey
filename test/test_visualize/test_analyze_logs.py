@@ -26,6 +26,7 @@ class TestAnalyzeLogs(unittest.TestCase):
         self.assertListEqual(expected_list_full_dir, analyse_logs.list_full_dir)
         self.assertListEqual([], analyse_logs.algorithms_list)
         self.assertListEqual([], analyse_logs.datasets_list)
+        self.assertIsNone(analyse_logs.parameters_df)
         self.assertIsInstance(analyse_logs.db, tdb.database.TinyDB)
         self.assertEqual(0, len(analyse_logs.db.all()))
 
@@ -97,6 +98,7 @@ class TestAnalyzeLogs(unittest.TestCase):
         analyse_logs.store_config()
         self.assertEqual(4, len(analyse_logs.algorithms_list))
         self.assertEqual(2, len(analyse_logs.datasets_list))
+        self.assertEqual(3, len(analyse_logs.parameters_df))
 
     def test_fill_lists_should_fill(self):
         """
