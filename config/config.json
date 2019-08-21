@@ -49,7 +49,10 @@
       },
       "fairness": {
         "protected_attribute": 12,
-        "privileged_classes": "x >= 25"
+        "privileged_classes": [
+          "x >= 25",
+          "x >= 35"
+        ]
       }
     }
   },

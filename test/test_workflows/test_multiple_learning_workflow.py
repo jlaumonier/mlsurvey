@@ -117,6 +117,28 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
         self.assertDictEqual(al32, mlw.expanded_config[32]['algorithms']['nn-multiple-layer-choice'])
         self.assertEqual(1, len(mlw.expanded_config[0]['datasets']))
 
+    def test_task_expand_config_fairness_should_have_expanded(self):
+        """
+        :test : mlsurvey.workflows.MultipleLearningWorkflow.task_expand_config()
+        :condition : config file contains lists in fairness parameters
+        :main_result : should expand
+        """
+        mlw = mls.workflows.MultipleLearningWorkflow('multiple_config_multiple_fairness.json', config_directory=self.cd)
+        mlw.task_expand_config()
+        self.assertEqual(2, len(mlw.expanded_config))
+        f1 = {"type": "FileDataSet",
+              "parameters": {
+                  "directory": "files/dataset",
+                  "filename": "test-fairness.arff"
+              },
+              "fairness": {
+                  "protected_attribute": 1,
+                  "privileged_classes": "x >= 35"
+              }
+              }
+        self.assertDictEqual(f1, mlw.expanded_config[1]['datasets']['DataSetGermanCredit'])
+        self.assertEqual(1, len(mlw.expanded_config[0]['datasets']))
+
     def test_run_each_config_all_should_be_ran(self):
         mlw = mls.workflows.MultipleLearningWorkflow('multiple_config.json', config_directory=self.cd)
         mlw.task_expand_config()

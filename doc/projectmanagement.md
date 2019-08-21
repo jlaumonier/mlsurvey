@@ -13,8 +13,8 @@
 * A is Architecture
 
 ## TODO
+* B : Visualisation : No results found when a tuple parameter is searched
 * A : Change Dataset.generate() to return more than x and y (column, chunk...)
-* F : Allowing multiple parameters for fairness parameters
 * F : Use the column names in all the processes (sl, fairness, visualization)
 * F : Change config format to introduction definition section for non compact format
 * F : Generate a "full" config file for sci-kit-learn
@@ -45,7 +45,7 @@
 * F : Allowing very large datasets (Dask ?)
 
 ## Current
-* F : Handle multi criteria in visualization
+* F : Allowing multiple parameters for fairness parameters
 
 ## Done
 * Git repository : local
@@ -99,6 +99,7 @@
 * T : Rename Logging class to "FilesOperation"-ish class. Make it used by the Config class to read the json file
 * F : Adding dynamic and generic criteria in visualization
 * F : adding search of specific dataset. Adding a new search field ?
+* F : Handle multi criteria in visualization
 
 
 

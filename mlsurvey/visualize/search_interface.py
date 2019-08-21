@@ -49,10 +49,15 @@ class SearchInterface:
             search_result = db.search(query.learning_process.algorithm['algorithm-family'].matches(value_algo)
                                       & query.learning_process.input.type.matches(value_ds))
         for res in search_result:
+            if 'fairness' in res['learning_process']['input']:
+                str_fairness_params = str(res['learning_process']['input']['fairness'])
+            else:
+                str_fairness_params = str({})
             one_row = {'Algorithm': res['learning_process']['algorithm']['algorithm-family'],
                        'AlgoParams': str(res['learning_process']['algorithm']['hyperparameters']),
                        'Dataset': res['learning_process']['input']['type'],
                        'DSParams': str(res['learning_process']['input']['parameters']),
+                       'FairnessParams': str_fairness_params,
                        'Directory': res['location']}
             result.append(one_row)
         return result
@@ -130,12 +135,12 @@ class SearchInterface:
 
     def get_layout(self):
         """Layout of the search page"""
-        d = [{'Algorithm': 0, 'AlgoParams': 0, 'Dataset': 0, 'DSParams': 0, 'Directory': 0}]
-        col_names = ['Algorithm', 'AlgoParams', 'Dataset', 'DSParams', 'Directory']
+        d = [{'Algorithm': 0, 'AlgoParams': 0, 'Dataset': 0, 'DSParams': 0, 'FairnessParams': 0, 'Directory': 0}]
+        col_names = ['Algorithm', 'AlgoParams', 'Dataset', 'DSParams', 'FairnessParams', 'Directory']
         options_algorithms = [{'label': a, 'value': a} for a in self.analyse_logs.algorithms_list]
         options_datasets = [{'label': d, 'value': d} for d in self.analyse_logs.datasets_list]
 
-        list_criteria = [{'label': a, 'value': a} for a in self.analyse_logs.parameters_df.columns]
+        list_criteria = [{'label': a, 'value': a} for a in sorted(self.analyse_logs.parameters_df.columns)]
 
         crit_drop = [dcc.Dropdown(id='id-criteria',
                                   options=list_criteria,
