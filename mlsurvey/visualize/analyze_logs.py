@@ -48,4 +48,3 @@ class AnalyzeLogs:
         self.datasets_list.insert(0, '.')
         parameters_list = [mls.Utils.flatten_dict(doc['learning_process'], separator='.') for doc in all_doc]
         self.parameters_df = pd.DataFrame(parameters_list)
-        print(self.parameters_df.to_string())

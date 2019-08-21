@@ -45,8 +45,7 @@
 * F : Allowing very large datasets (Dask ?)
 
 ## Current
-* F : Adding dynamic and generic criteria in visualization
-* F : adding search of specific dataset. Adding a new search field ?
+* F : Handle multi criteria in visualization
 
 ## Done
 * Git repository : local
@@ -98,6 +97,8 @@
 * F : Fairness : rethinking the workflow to integrate supervised learning workflow
 * F : Use panda dataframe into Data() and Dataset() (big changes...)
 * T : Rename Logging class to "FilesOperation"-ish class. Make it used by the Config class to read the json file
+* F : Adding dynamic and generic criteria in visualization
+* F : adding search of specific dataset. Adding a new search field ?
 
 
 
