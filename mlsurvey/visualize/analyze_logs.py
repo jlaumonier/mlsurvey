@@ -26,8 +26,7 @@ class AnalyzeLogs:
         Read all config.json files and store them into a db
         """
         for d in self.list_full_dir:
-            log = mls.Logging(dir_name=d, base_dir='')
-            config = log.load_json_as_dict('config.json')
+            config = mls.FileOperation.load_json_as_dict('config.json', d, tuple_to_string=True)
             compact_config = mls.Config.compact(config)
             compact_config['location'] = d
             self.db.insert(compact_config)

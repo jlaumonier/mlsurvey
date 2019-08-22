@@ -71,25 +71,30 @@ class Utils:
         return xx, yy
 
     @classmethod
-    def transform_to_dict(cls, dictionary: dict):
+    def transform_to_dict(cls, dictionary: dict, tuple_to_string=False):
         """
         Transform a dictionary containing dictionary such as
             { "__type__": "__tuple__", "__value__": "(1, 2, 3)"}
             to dictionary containing the real type (tuple)
         :param dictionary: dictionary containing __tuple__ values
+        :param tuple_to_string: if True the tuple identified with "__type__": "__tuple__" are store as string in the
+               dictionary. If False, the tuple is converted to a tuple type
         :return: dictionary containing the real type
         """
 
         def change_one_dict_element(value):
             if '__type__' in value:
                 if value['__type__'] == '__tuple__':
-                    result_element = ast.literal_eval(value['__value__'])
-                    if not isinstance(result_element, tuple):
-                        raise TypeError(v['__value__'] + " is not a tuple")
+                    if tuple_to_string:
+                        result_element = value['__value__']
+                    else:
+                        result_element = ast.literal_eval(value['__value__'])
+                        if not isinstance(result_element, tuple):
+                            raise TypeError(v['__value__'] + " is not a tuple")
                 else:
-                    result_element = Utils.transform_to_dict(value)
+                    result_element = Utils.transform_to_dict(value, tuple_to_string)
             else:
-                result_element = Utils.transform_to_dict(value)
+                result_element = Utils.transform_to_dict(value, tuple_to_string)
             return result_element
 
         result = dictionary.copy()

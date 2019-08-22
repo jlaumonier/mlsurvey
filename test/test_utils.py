@@ -99,6 +99,21 @@ class TestUtils(unittest.TestCase):
         result = mls.Utils.transform_to_dict(base_dictionary)
         self.assertDictEqual(expected_dictionary, result)
 
+    def test_transform_to_dict_tuple_should_transform_to_string(self):
+        """
+        :test : mlsurvey.Util.transform_to_dict()
+        :condition : dictionary contains one __tuple__
+        :main_result : transforme tupple into string
+        """
+        base_dictionary = {'test': {'__type__': '__tuple__', '__value__': '(1, 2, 3)'},
+                           'nottuple': {'t': 1},
+                           'nottupleeither': 'string'}
+        expected_dictionary = {'test': '(1, 2, 3)',
+                               'nottuple': {'t': 1},
+                               'nottupleeither': 'string'}
+        result = mls.Utils.transform_to_dict(base_dictionary, tuple_to_string=True)
+        self.assertDictEqual(expected_dictionary, result)
+
     def test_transform_to_dict_not_tuple_should_raise_error(self):
         """
         :test : mlsurvey.Util.transform_dict()

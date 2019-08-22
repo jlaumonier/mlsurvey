@@ -22,14 +22,16 @@ class FileOperation:
         outfile.close()
 
     @classmethod
-    def load_json_as_dict(cls, filename, directory):
+    def load_json_as_dict(cls, filename, directory, tuple_to_string=False):
         """
         Load a json file (mlsurvey json format) into dictionary
         :param filename: name of the file
         :param directory: directory to load the file
+        :param tuple_to_string: if True the tuple identified with "__type__": "__tuple__" are store as string in the
+               dictionary. If False, the tuple is converted to a tuple type
         :return: the dictionary
         """
         full_path = os.path.join(directory, filename)
         with open(full_path, 'r') as infile:
-            data = mls.Utils.transform_to_dict(json.load(infile))
+            data = mls.Utils.transform_to_dict(json.load(infile), tuple_to_string)
         return data

@@ -36,3 +36,9 @@ class TestFileOperation(unittest.TestCase):
         result = mls.FileOperation.load_json_as_dict('dict_with_tuple.json', directory)
         expected = {'testA': [[1, 2], [3, 4]], 'testB': 'Text', 'testC': (1, 3, 5)}
         self.assertDictEqual(expected, result)
+
+    def test_load_json_with_tuple_dict_loaded_tuple_to_string(self):
+        directory = '../test/files/'
+        result = mls.FileOperation.load_json_as_dict('dict_with_tuple.json', directory, tuple_to_string=True)
+        expected = {'testA': [[1, 2], [3, 4]], 'testB': 'Text', 'testC': '(1, 3, 5)'}
+        self.assertDictEqual(expected, result)

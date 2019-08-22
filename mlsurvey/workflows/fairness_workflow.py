@@ -80,8 +80,10 @@ class FairnessWorkflow(LearningWorkflow):
         # unprivileged_data.x = self.context.data.x[~privileged_selected]
         # unprivileged_data.y = self.context.data.y[~privileged_selected]
         self.context.evaluation.probability = mls.FairnessUtils.calculate_all_cond_probability(extended_data)
-        self.context.evaluation.demographic_parity = self.context.evaluation.probability[n][False][1] - \
-                                                     self.context.evaluation.probability[n][True][1]
+        false_proba = self.context.evaluation.probability[n][False][1]
+        true_proba = self.context.evaluation.probability[n][True][1]
+        self.context.evaluation.demographic_parity = false_proba - true_proba
+
         self.task_terminated_evaluate = True
 
     def task_persist(self):
