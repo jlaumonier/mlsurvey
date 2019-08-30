@@ -22,7 +22,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         log = mls.Logging()
-        shutil.rmtree(log.base_dir)
+        shutil.rmtree(log.base_dir, ignore_errors=True)
 
     def test_init_SL_workflow_should_initialized(self):
         slw = mls.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
@@ -267,9 +267,14 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         expected_cm = np.array([[13, 0], [1, 6]])
         self.assertEqual(0.95, slw.context.evaluation.score)
         np.testing.assert_array_equal(expected_cm, slw.context.evaluation.confusion_matrix)
+        self.assertEqual(100, len(slw.context.raw_data.y_pred))
+        self.assertTrue(not np.isnan(slw.context.raw_data.y_pred).all())
         self.assertEqual(100, len(slw.context.data.y_pred))
+        self.assertTrue(not np.isnan(slw.context.data.y_pred).all())
         self.assertEqual(80, len(slw.context.data_train.y_pred))
+        self.assertTrue(not np.isnan(slw.context.data_train.y_pred).all())
         self.assertEqual(20, len(slw.context.data_test.y_pred))
+        self.assertTrue(not np.isnan(slw.context.data_test.y_pred).all())
         self.assertIsNone(slw.context.evaluation.sub_evaluation)
         self.assertTrue(slw.task_terminated_evaluate)
 
@@ -290,6 +295,10 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.task_fairness()
         self.assertIsInstance(slw.context.evaluation.sub_evaluation, mls.models.EvaluationFairness)
         self.assertAlmostEqual(-0.3666666, slw.context.evaluation.sub_evaluation.demographic_parity, delta=1e-07)
+        self.assertAlmostEqual(1.0, slw.context.evaluation.sub_evaluation.equal_opportunity, delta=1e-07)
+        self.assertAlmostEqual(-0.8, slw.context.evaluation.sub_evaluation.statistical_parity, delta=1e-07)
+        self.assertAlmostEqual(-0.6666666, slw.context.evaluation.sub_evaluation.average_equalized_odds, delta=1e-07)
+        self.assertAlmostEqual(0.476190476, slw.context.evaluation.sub_evaluation.disparate_impact_rate, delta=1e-07)
         self.assertTrue(slw.task_terminated_fairness)
 
     def test_task_fairness_classifier_not_executed(self):
@@ -322,7 +331,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(slw.log.directory + 'dataset.json'))
         self.assertEqual('66eafcadd6773bcf132096486a57263a', mls.Utils.md5_file(slw.log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'input.json'))
-        self.assertEqual('7ab2c4d5b53978563b0fd0de57326bf8', mls.Utils.md5_file(slw.log.directory + 'input.json'))
+        self.assertEqual('2cd330c7b49321ff0d70652e4e9f6672', mls.Utils.md5_file(slw.log.directory + 'input.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'algorithm.json'))
         self.assertEqual('1697475bd77100f5a9c8806c462cbd0b', mls.Utils.md5_file(slw.log.directory + 'algorithm.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'model.joblib'))

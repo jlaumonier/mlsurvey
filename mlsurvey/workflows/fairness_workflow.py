@@ -68,21 +68,47 @@ class FairnessWorkflow(LearningWorkflow):
         privileged_selected = np.array(list(map(eval('lambda x:' + self.context.dataset.fairness['privileged_classes']),
                                                 self.context.data.x[:, column])))
         extended_data = self.context.data.copy()
-        # number of column in data
-        n = self.context.data.x.shape[1]
-        # number of examples in data
-        # m = self.context.data.x.shape[0]
         extended_data.add_column_in_data(privileged_selected, 'priv_class')
-        # privileged_data = mls.models.Data()
-        # unprivileged_data = mls.models.Data()
-        # privileged_data.x = self.context.data.x[privileged_selected]
-        # privileged_data.y = self.context.data.y[privileged_selected]
-        # unprivileged_data.x = self.context.data.x[~privileged_selected]
-        # unprivileged_data.y = self.context.data.y[~privileged_selected]
-        self.context.evaluation.probability = mls.FairnessUtils.calculate_all_cond_probability(extended_data)
-        false_proba = self.context.evaluation.probability[n][False][1]
-        true_proba = self.context.evaluation.probability[n][True][1]
+
+        # Demographic parity
+        # P(Y=1 | Priv_class = False) - P(Y=1 | Priv_class = True)
+        false_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target', 1)],
+                                                                   [('priv_class', False)])
+        true_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target', 1)],
+                                                                  [('priv_class', True)])
         self.context.evaluation.demographic_parity = false_proba - true_proba
+        # Disparate impact ratio
+        # P(Y=1 | Priv_class = False) / P(Y=1 | Priv_class = True)
+        self.context.evaluation.disparate_impact_rate = false_proba / true_proba
+
+        # criteria that use the classier
+        if not np.isnan(extended_data.y_pred).any():
+            # equal opportunity
+            # P(Y_hat=0 | Y=1, Priv_class = False) - P(Y_hat=0 | Y=1, Priv_class = True)
+            false_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target_pred', 0)],
+                                                                       [('target', 1), ('priv_class', False)])
+            true_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target_pred', 0)],
+                                                                      [('target', 1), ('priv_class', True)])
+            self.context.evaluation.equal_opportunity = false_proba - true_proba
+
+            # statistical parity
+            # P(Y_hat=1 | Priv_class = False) - P(y_hat=1 | Priv_class = True)
+            false_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target_pred', 1)],
+                                                                       [('priv_class', False)])
+            true_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target_pred', 1)],
+                                                                      [('priv_class', True)])
+            self.context.evaluation.statistical_parity = false_proba - true_proba
+
+            # average equalized odds
+            # Sum_i\inI [P(Y_hat=1 | Y=i, Priv_class = False) - P(Y_hat=1 | Y=i, Priv_class = True)] / |I|
+            diff = 0
+            for i in [0, 1]:
+                false_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target_pred', 1)],
+                                                                           [('target', i), ('priv_class', False)])
+                true_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target_pred', 1)],
+                                                                          [('target', i), ('priv_class', True)])
+                diff = diff + (false_proba - true_proba)
+            self.context.evaluation.average_equalized_odds = diff / 2.0
 
         self.task_terminated_evaluate = True
 

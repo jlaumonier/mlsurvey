@@ -104,6 +104,8 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         self.context.evaluation.score = self.context.classifier.score(self.context.data_test.x,
                                                                       self.context.data_test.y)
         self.context.data.set_pred_data(self.context.classifier.predict(self.context.data.x))
+        # Assuming that data and raw_data are the same data but transformed
+        self.context.raw_data.set_pred_data(self.context.data.y_pred)
         self.context.data_train.set_pred_data(self.context.classifier.predict(self.context.data_train.x))
         self.context.data_test.set_pred_data(self.context.classifier.predict(self.context.data_test.x))
         self.context.evaluation.confusion_matrix = confusion_matrix(self.context.data_test.y,

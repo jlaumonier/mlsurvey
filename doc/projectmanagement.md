@@ -15,7 +15,8 @@
 ## TODO
 * A : Change Dataset.generate() to return more than x and y (column, chunk...)
 * F : Use the column names in all the processes (sl, fairness, visualization)
-* F : Change config format to introduction definition section for non compact format
+* F : Change config format to introduce definition section for non compact format
+* F : Parameters in config. Allow multiple parameters to be dependant (e.g. fairness.protected_attribute and fairness.privileged_classes)
 * F : Generate a "full" config file for sci-kit-learn
 * F : Log management
 * B : Visualization workflow does not handle correctly more than 2 classes
@@ -42,9 +43,10 @@
 * F : adding a base_directory for LearningWorkflows and child
 * B : Demographic parity is not defined if, in a dataset, no instance belong to privileged or unpriviliged class.
 * F : Allowing very large datasets (Dask ?)
+* F : Adding Theil index as fairness criteria
 
 ## Current
-* B : Visualisation : No results found when a tuple parameter is searched
+* F : Implements some fairness criteria
 
 ## Done
 * Git repository : local
@@ -100,6 +102,7 @@
 * F : adding search of specific dataset. Adding a new search field ?
 * F : Handle multi criteria in visualization
 * F : Allowing multiple parameters for fairness parameters
+* B : Visualisation : No results found when a tuple parameter is searched
 
 
 

@@ -1,3 +1,5 @@
+from operator import eq
+
 import numpy as np
 import pandas as pd
 
@@ -40,4 +42,25 @@ class FairnessUtils:
                     proba_attrib_value.append(p)
                 proba_attrib[attr_value] = proba_attrib_value
             result.append(proba_attrib)
+        return result
+
+    @classmethod
+    def calculate_cond_probability(cls, data, ofs, givens):
+        """ calculate conditional probability of 'ofs' given 'givens' """
+        givens_conditions = []
+        ofs_conditions = []
+        for of in ofs:
+            ofs_conditions.append(eq(data.df[of[0]], of[1]))
+        for given in givens:
+            givens_conditions.append(eq(data.df[given[0]], given[1]))
+            ofs_conditions.append(eq(data.df[given[0]], given[1]))
+
+        ofs_logical_conditions = np.logical_and.reduce(tuple(ofs_conditions))
+        givens_logical_conditions = np.logical_and.reduce(tuple(givens_conditions))
+
+        set_ofs_inter_givens = data.df[ofs_logical_conditions]
+        card_ofs_inter_givens = len(set_ofs_inter_givens.index)
+        set_givens = data.df[givens_logical_conditions]
+        card_givens = len(set_givens.index)
+        result = card_ofs_inter_givens / card_givens
         return result

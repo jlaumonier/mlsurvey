@@ -115,6 +115,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
         vw.task_load_data()
         vw.task_display_data()
         self.assertIsInstance(vw.fairness_results, html.Div)
+        self.assertIsNotNone(vw.fairness_results.children)
 
     def test_task_display_data_no_fairness_div_generated_empty(self):
         vw = mls.workflows.VisualizationWorkflow(directory=self.directory)

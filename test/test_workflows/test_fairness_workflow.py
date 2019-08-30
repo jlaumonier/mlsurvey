@@ -18,7 +18,7 @@ class TestFairnessWorkflow(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         log = mls.Logging()
-        shutil.rmtree(log.base_dir)
+        shutil.rmtree(log.base_dir, ignore_errors=True)
 
     def test_init_should_init(self):
         fw = mls.workflows.FairnessWorkflow(config_directory=self.cd)
@@ -182,8 +182,11 @@ class TestFairnessWorkflow(unittest.TestCase):
         fw = mls.workflows.FairnessWorkflow(config_directory=self.cd, base_directory=self.bd)
         fw.task_get_data()
         fw.task_evaluate()
-        self.assertNotEqual(0, len(fw.context.evaluation.probability))
         self.assertAlmostEqual(-0.3666666, fw.context.evaluation.demographic_parity, delta=1e-07)
+        self.assertIsNone(fw.context.evaluation.equal_opportunity)
+        self.assertIsNone(fw.context.evaluation.statistical_parity)
+        self.assertIsNone(fw.context.evaluation.average_equalized_odds)
+        self.assertAlmostEqual(0.476190476, fw.context.evaluation.disparate_impact_rate, delta=1e-07)
         self.assertTrue(fw.task_terminated_evaluate)
 
     def test_run_with_real_data(self):
@@ -204,7 +207,9 @@ class TestFairnessWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(fw.log.directory + 'dataset.json'))
         self.assertEqual('66452e7c6a7d0ebf206b02b7d604b67c', mls.Utils.md5_file(fw.log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(fw.log.directory + 'evaluation.json'))
-        self.assertEqual('1fcfe121d143869d3554fca2c0ebc465', mls.Utils.md5_file(fw.log.directory + 'evaluation.json'))
+        self.assertEqual('8cbacb12d164526b675b9d819f6872d3', mls.Utils.md5_file(fw.log.directory + 'evaluation.json'))
+        self.assertTrue(os.path.isfile(fw.log.directory + 'input.json'))
+        self.assertEqual('793b9c92ee985c8395b046d40a04551f', mls.Utils.md5_file(fw.log.directory + 'input.json'))
         self.assertTrue(fw.task_terminated_persistence)
 
     def test_run_all_step_should_be_executed(self):
