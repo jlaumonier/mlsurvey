@@ -46,7 +46,7 @@
 * F : Adding Theil index as fairness criteria
 
 ## Current
-* F : Implements some fairness criteria
+* F : Generate plots for one evaluation (y) according to one parameter (x)
 
 ## Done
 * Git repository : local
@@ -103,6 +103,7 @@
 * F : Handle multi criteria in visualization
 * F : Allowing multiple parameters for fairness parameters
 * B : Visualisation : No results found when a tuple parameter is searched
+* F : Implements some fairness criteria
 
 
 

@@ -5,6 +5,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
 import numpy as np
+import pandas as pd
+import plotly.graph_objs as go
 import tinydb as tdb
 from dash.dependencies import Input, Output, State
 
@@ -16,8 +18,48 @@ class SearchInterface:
     def __init__(self, analyse_logs):
         self.analyse_logs = analyse_logs
 
-    def search(self, n_clicks, value_algo, value_ds, criteria_values):
-        """Callback when the user click on the 'Search' button"""
+    @staticmethod
+    def get_result_figure_summary(search_result):
+        """
+        get the result of the summary
+        :param search_result: result to filter
+        :return: sorted_df: dataframe containing the data for axis x (first columns) and for axis y (second column)
+                            sorted by axis x
+                 list_of_not_unique_key: List of parameters which does not have a unique value.
+        """
+        sorted_df = pd.DataFrame({'x': [], 'y': []})
+        flatten_results = [mls.Utils.flatten_dict(doc['learning_process'], separator='.') for doc in search_result]
+        result_df = pd.DataFrame(flatten_results)
+        nb_value = {}
+        values = {}
+        # find the possible values for each column
+        for col, val in result_df.items():
+            values[col] = result_df[col].unique().tolist()
+            nb_value[col] = len(values[col])
+        # list of the key that have more than one value
+        list_of_not_unique_key = [key for (key, value) in nb_value.items() if value > 1]
+        # if there is only one key (for 2d figures)
+        if len(list_of_not_unique_key) == 1:
+            # get the values of the key that have more than 1 value
+            x = values[list_of_not_unique_key[0]]
+            y = []
+            # get the index of result
+            idx_result = result_df.index[result_df[list_of_not_unique_key[0]] == x].tolist()
+            # find the corresponding directory
+            directories = [search_result[i]['location'] for i in idx_result]
+            for d in directories:
+                # for each directory, launch a visualization workflow to get the evaluation
+                vw = mls.workflows.VisualizationWorkflow(d)
+                vw.run()
+                # append the score to the y axis
+                y.append(vw.context.evaluation.score)
+            # in order to sort the result by 'x', we create a dataframe
+            df = pd.DataFrame({list_of_not_unique_key[0]: x, 'score': y})
+            # and we sort it.
+            sorted_df = df.sort_values(by=[list_of_not_unique_key[0]])
+        return sorted_df, list_of_not_unique_key
+
+    def search(self, value_algo, value_ds, criteria_values):
         """ helped by on https://stackoverflow.com/questions/30530562/dynamically-parse-and-build-tinydb-queries"""
         operators = {'==': eq, '!=': ne, '<=': le, '>=': ge, '<': lt, '>': gt}
         result = []
@@ -60,7 +102,30 @@ class SearchInterface:
                        'FairnessParams': str_fairness_params,
                        'Directory': res['location']}
             result.append(one_row)
-        return result
+        return result, search_result
+
+    def search_callback(self, n_clicks, value_algo, value_ds, criteria_values):
+        """Callback when the user click on the 'Search' button"""
+        result, search_result = self.search(value_algo, value_ds, criteria_values)
+        result_df, list_of_not_unique_key = self.get_result_figure_summary(search_result)
+        figure = dcc.Graph(id='graph-id')
+        html_list_not_unique = html.Ul([])
+        for k in list_of_not_unique_key:
+            html_list_not_unique.children.append(html.Li(k, style={'margin-bottom': '0em'}))
+        if len(result_df) != 0:
+            data = {'x': result_df[result_df.columns[0]], 'y': result_df['score']}
+            f = go.Figure(data=data,
+                          layout=go.Layout(
+                              xaxis={'title': str(result_df.columns[0])},
+                              yaxis={'title': 'score'}
+                          )
+                          )
+            figure = dcc.Graph(id='graph-summary-id', figure=f)
+        div_summary = [html.Div(children=html_list_not_unique,
+                                className='three columns'),
+                       html.Div(children=figure,
+                                className='five columns')]
+        return result, div_summary
 
     @staticmethod
     def add_criteria(n_clicks_timestamp, criteria_value, criteria_operator, criteria, existing_options,
@@ -218,22 +283,28 @@ class SearchInterface:
                                    ],
                                    className='twelve columns')
 
+        figure_summary_section = html.Div(id='figure-summary-id',
+                                          className='twelve columns')
+
         criteria_detail = html.Details(children=[html.Summary('Criteria'), criteria_section],
                                        open=True)
         search_detail = html.Details(children=[html.Summary('Search'), search_section],
                                      open=True)
         options_detail = html.Details(children=[html.Summary('Display options'), options_section],
                                       open=False)
-        return html.Div(children=[criteria_detail, search_detail, options_detail])
+        figure_summary_details = html.Details(children=[html.Summary('Figure summary'), figure_summary_section],
+                                              open=False)
+        return html.Div(children=[criteria_detail, search_detail, options_detail, figure_summary_details])
 
     def define_callback(self, dash_app):
         """define the callbacks on the page"""
         dash_app.callback(
-            Output(component_id='search-results-id', component_property='data'),
+            [Output(component_id='search-results-id', component_property='data'),
+             Output(component_id='figure-summary-id', component_property='children')],
             [Input(component_id='search-button-id', component_property='n_clicks'),
              Input(component_id='search-algo-dd-id', component_property='value'),
              Input(component_id='search-dataset-dd-id', component_property='value'),
-             Input(component_id='id-criteria-list', component_property='value')])(self.search)
+             Input(component_id='id-criteria-list', component_property='value')])(self.search_callback)
 
         dash_app.callback(
             Output(component_id='visualize-id',

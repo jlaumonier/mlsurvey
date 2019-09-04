@@ -1,0 +1,8 @@
+{
+  "algorithm-family": "sklearn.svm.SVC",
+  "hyperparameters": {
+    "C": 0.7,
+    "kernel": "rbf",
+    "gamma": "auto"
+  }
+}

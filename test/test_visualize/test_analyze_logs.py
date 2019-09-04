@@ -16,10 +16,11 @@ class TestAnalyzeLogs(unittest.TestCase):
 
     def test_init_should_init(self):
         analyse_logs = mls.visualize.AnalyzeLogs(self.directory)
-        expected_list_dir = ['directory1', 'directory2', 'directory3']
+        expected_list_dir = ['directory1', 'directory2', 'directory3', 'directory4']
         expected_list_full_dir = [os.path.join(self.directory, 'directory1'),
                                   os.path.join(self.directory, 'directory2'),
-                                  os.path.join(self.directory, 'directory3')]
+                                  os.path.join(self.directory, 'directory3'),
+                                  os.path.join(self.directory, 'directory4')]
         self.assertEqual(self.directory, analyse_logs.directory)
         self.assertEqual(len(analyse_logs.list_dir), len(analyse_logs.list_full_dir))
         self.assertListEqual(expected_list_dir, analyse_logs.list_dir)
@@ -57,7 +58,7 @@ class TestAnalyzeLogs(unittest.TestCase):
                                            'type': 'traintest'}},
             'location': os.path.join(self.directory, 'directory1')
         }
-        self.assertEqual(3, len(analyse_logs.db.all()))
+        self.assertEqual(4, len(analyse_logs.db.all()))
         self.assertListEqual([expected_result], r)
 
     def test_store_config_should_answer_query1(self):
@@ -71,7 +72,7 @@ class TestAnalyzeLogs(unittest.TestCase):
         q = tdb.Query()
         r = analyse_logs.db.search(
             q.learning_process.input.type == 'NClassRandomClassificationWithNoise')
-        self.assertEqual(3, len(r))
+        self.assertEqual(4, len(r))
 
     def test_store_config_should_answer_query2(self):
         """
@@ -86,7 +87,7 @@ class TestAnalyzeLogs(unittest.TestCase):
         r = analyse_logs.db.search(
             (q.learning_process.input.parameters.n_samples == 100)
             | (q.learning_process.input.parameters.n_samples == 10000))
-        self.assertEqual(3, len(r))
+        self.assertEqual(4, len(r))
 
     def test_store_config_should_fill_list(self):
         """
@@ -98,7 +99,7 @@ class TestAnalyzeLogs(unittest.TestCase):
         analyse_logs.store_config()
         self.assertEqual(4, len(analyse_logs.algorithms_list))
         self.assertEqual(2, len(analyse_logs.datasets_list))
-        self.assertEqual(3, len(analyse_logs.parameters_df))
+        self.assertEqual(4, len(analyse_logs.parameters_df))
 
     def test_fill_lists_should_fill(self):
         """
@@ -117,6 +118,9 @@ class TestAnalyzeLogs(unittest.TestCase):
                                      'split': {'type': 'traintest'}}}
         expected_algorithms_list = ['.', 'Algorithm 1', 'Algorithm 2']
         expected_datasets_list = ['.', 'Dataset 1']
+        expected_paramaters_df = [['Algorithm 1', 'Dataset 1', 'traintest'],
+                                  ['Algorithm 2', 'Dataset 1', 'traintest'],
+                                  ['Algorithm 2', 'Dataset 1', 'traintest']]
         analyse_logs = mls.visualize.AnalyzeLogs(self.directory)
         analyse_logs.db.insert(doc1)
         analyse_logs.db.insert(doc2)
@@ -124,3 +128,4 @@ class TestAnalyzeLogs(unittest.TestCase):
         analyse_logs.fill_lists()
         self.assertListEqual(expected_algorithms_list, analyse_logs.algorithms_list)
         self.assertListEqual(expected_datasets_list, analyse_logs.datasets_list)
+        self.assertListEqual(expected_paramaters_df, analyse_logs.parameters_df.values.tolist())

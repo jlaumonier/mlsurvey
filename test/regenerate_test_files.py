@@ -33,6 +33,10 @@ def main():
                                                    logging_dir='visualize-log/directory3')
     mlw.run()
 
+    mlw = mls.workflows.SupervisedLearningWorkflow(config_directory='files/visualize-log/directory4',
+                                                   logging_dir='visualize-log/directory4')
+    mlw.run()
+
 
 if __name__ == "__main__":
     main()
