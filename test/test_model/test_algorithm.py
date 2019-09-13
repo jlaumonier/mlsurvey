@@ -62,7 +62,8 @@ class TestAlgorithm(unittest.TestCase):
             }
         }
         dataset = mls.datasets.DataSetFactory.create_dataset('make_circles')
-        data = mls.models.Data(*dataset.generate())
+        df = dataset.generate()
+        data = mls.models.Data(df)
         algo = mls.models.Algorithm(config)
         classif = algo.learn(data.x, data.y)
         score = classif.score(data.x, data.y)
@@ -83,7 +84,8 @@ class TestAlgorithm(unittest.TestCase):
             }
         }
         dataset = mls.datasets.DataSetFactory.create_dataset('make_circles')
-        data = mls.models.Data(*dataset.generate())
+        df = dataset.generate()
+        data = mls.models.Data(df)
         algo = mls.models.Algorithm(config)
         classif = None
         try:

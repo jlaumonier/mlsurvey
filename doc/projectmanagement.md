@@ -13,7 +13,6 @@
 * A is Architecture
 
 ## TODO
-* A : Change Dataset.generate() to return more than x and y (column, chunk...)
 * F : Use the column names in all the processes (sl, fairness, visualization)
 * F : Change config format to introduce definition section for non compact format
 * F : Parameters in config. Allow multiple parameters to be dependant (e.g. fairness.protected_attribute and fairness.privileged_classes)
@@ -40,13 +39,14 @@
         See https://datascience.stackexchange.com/questions/33527/scikit-learn-decision-tree-in-production
         https://github.com/scikit-learn/scikit-learn/issues/11041
         https://www.andrey-melentyev.com/model-interoperability.html
+        Use ONNX ??
 * F : adding a base_directory for LearningWorkflows and child
 * B : Demographic parity is not defined if, in a dataset, no instance belong to privileged or unpriviliged class.
-* F : Allowing very large datasets (Dask ?)
 * F : Adding Theil index as fairness criteria
 
 ## Current
-* F : Generate plots for one evaluation (y) according to one parameter (x)
+* A : Change Dataset.generate() to return more than x and y (column, chunk...). Change to return dask.Dataframe
+* F : Allowing very large datasets (Dask ?)
 
 ## Done
 * Git repository : local
@@ -104,6 +104,7 @@
 * F : Allowing multiple parameters for fairness parameters
 * B : Visualisation : No results found when a tuple parameter is searched
 * F : Implements some fairness criteria
+* F : Generate plots for one evaluation (y) according to one parameter (x)
 
 
 

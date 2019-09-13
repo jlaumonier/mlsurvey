@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 from sklearn import datasets
 
 from .dataset import DataSet
@@ -38,14 +40,16 @@ class GenericDataSet(DataSet):
         Generate data from parameters and type.
         Raise an AttributeError if self.t is not a valid function name of sklearn.datasets
         Raise a TypeError if one parameter in self.params is not expected by the function
-        :return: (x, y) : data and label
+        :return: dask.dataframe with first columns are x (data) and last is y (label)
         """
         if self.t in self.types.keys():
             make_dataset = getattr(datasets, self.types[self.t][0])
         else:
             make_dataset = getattr(datasets, self.t)
         x, y = make_dataset(**self.params)
-        return x, y
+        y = np.reshape(y, (y.shape[0], 1))
+        result = pd.DataFrame(np.concatenate((x, y), axis=1))
+        return result
 
     class Factory:
         @staticmethod

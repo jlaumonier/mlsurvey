@@ -1,5 +1,7 @@
 import unittest
 
+import pandas as pd
+
 import mlsurvey as mls
 
 
@@ -104,30 +106,31 @@ class TestGenericDataSet(unittest.TestCase):
         self.assertDictEqual(params, data.params)
 
     def test_generate_generic_dataset_moon_is_generated(self):
-        data = mls.datasets.DataSetFactory.create_dataset('make_moons')
-        (x, y) = data.generate()
-        self.assertEqual(2, x.shape[1])
-        self.assertEqual(100, x.shape[0])
-        self.assertEqual(100, y.shape[0])
+        moon_dataset = mls.datasets.DataSetFactory.create_dataset('make_moons')
+        moon_data = moon_dataset.generate()
+        self.assertIsInstance(moon_data, pd.DataFrame)
+        self.assertEqual(2, moon_data.iloc[:, 0:-1].shape[1])
+        self.assertEqual(100, moon_data.iloc[:, 0:-1].shape[0])
+        self.assertEqual(100, moon_data.iloc[:, -1].shape[0])
 
     def test_generate_generic_dataset_iris_is_generated(self):
-        data = mls.datasets.DataSetFactory.create_dataset('load_iris')
-        (x, y) = data.generate()
-        self.assertEqual(4, x.shape[1])
-        self.assertEqual(5.1, x[0, 0])
-        self.assertEqual(0, y[0])
-        self.assertEqual(150, x.shape[0])
-        self.assertEqual(150, y.shape[0])
+        iris_dataset = mls.datasets.DataSetFactory.create_dataset('load_iris')
+        iris_data = iris_dataset.generate()
+        self.assertEqual(4, iris_data.iloc[:, 0:-1].shape[1])
+        self.assertEqual(5.1, iris_data.iloc[0, 0])
+        self.assertEqual(0, iris_data.iloc[0, -1])
+        self.assertEqual(150, iris_data.iloc[:, 0:-1].shape[0])
+        self.assertEqual(150, iris_data.iloc[:, -1].shape[0])
 
     def test_generate_generic_dataset_classification_is_generated(self):
-        data = mls.datasets.DataSetFactory.create_dataset('make_classification')
-        (x, y) = data.generate()
-        self.assertEqual(100, x.shape[0])
-        self.assertEqual(20, x.shape[1])
-        self.assertEqual(100, y.shape[0])
+        classification_dataset = mls.datasets.DataSetFactory.create_dataset('make_classification')
+        classification_data = classification_dataset.generate()
+        self.assertEqual(100, classification_data.iloc[:, 0:-1].shape[0])
+        self.assertEqual(20, classification_data.iloc[:, 0:-1].shape[1])
+        self.assertEqual(100, classification_data.iloc[:, -1].shape[0])
 
     def test_generate_generic_dataset_circle_is_generated_with_parameters(self):
-        data = mls.datasets.DataSetFactory.create_dataset('make_circles')
+        circle_dataset = mls.datasets.DataSetFactory.create_dataset('make_circles')
         params = {
             'n_samples': 200,
             # not tested
@@ -139,11 +142,11 @@ class TestGenericDataSet(unittest.TestCase):
             # not tested
             'factor': 0.3
         }
-        data.set_generation_parameters(params)
-        (x, y) = data.generate()
-        self.assertEqual(2, x.shape[1])
-        self.assertEqual(params['n_samples'], x.shape[0])
-        self.assertEqual(params['n_samples'], y.shape[0])
+        circle_dataset.set_generation_parameters(params)
+        circle_data = circle_dataset.generate()
+        self.assertEqual(2, circle_data.iloc[:, 0:-1].shape[1])
+        self.assertEqual(params['n_samples'], circle_data.iloc[:, 0:-1].shape[0])
+        self.assertEqual(params['n_samples'], circle_data.iloc[:, -1].shape[0])
 
     def test_generate_generic_dataset_unknown_dataset_should_cause_error(self):
         """

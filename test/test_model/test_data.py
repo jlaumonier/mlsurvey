@@ -1,5 +1,6 @@
 import unittest
 
+import dask.dataframe as dd
 import numpy as np
 import pandas as pd
 
@@ -8,217 +9,563 @@ import mlsurvey as mls
 
 class TestData(unittest.TestCase):
 
-    def test_init_data_x_y_ypred_empty(self):
-        d = mls.models.Data(x=np.array([]), y=np.array([]), y_pred=np.array([]))
-        np.testing.assert_array_equal(np.empty((0, 1)), d.x)
-        np.testing.assert_array_equal(np.empty((0,)), d.y)
-        np.testing.assert_array_equal(np.empty((0,)), d.y_pred)
-        self.assertIsInstance(d.df, pd.DataFrame)
-
-    def test_init_data_x_y_without_column_name(self):
+    def test_init_data_all_empty_pandas(self):
         """
         :test : mlsurvey.model.Data()
-        :condition : x and y data are given as numpy arrays
+        :condition : input Pandas Dataframe is empty
+        :main_result : model error is raise
+        """
+        df = pd.DataFrame(data=np.array([]))
+        try:
+            _ = mls.models.Data(df)
+            self.assertTrue(False)
+        except mls.exceptions.ModelError:
+            self.assertTrue(True)
+
+    def test_init_data_all_empty_dask(self):
+        """
+        :test : mlsurvey.model.Data()
+        :condition : input Dask Dataframe is empty
+        :main_result : model error is raise
+        """
+        df = dd.from_array(np.array([]))
+        try:
+            _ = mls.models.Data(df)
+            self.assertTrue(False)
+        except mls.exceptions.ModelError:
+            self.assertTrue(True)
+
+    def test_init_data_x_y_without_column_name_pandas(self):
+        """
+        :test : mlsurvey.model.Data()
+        :condition : pandas dataframe created with x and y data as numpy arrays
+                     x = [[1, 2], [3, 4]]
+                     y = [0, 1]
+                     input of dataframe [[1 2 0]
+                                         [3 4 1]]
+        :main_result : x and y data are set
+                           C0  C1  target
+                        0   1   2       0
+                        1   3   4       1
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        df = pd.DataFrame(data=data_array)
+        data = mls.models.Data(df, y_col_name='target')
+        expected_column_name = ['C0', 'C1', 'target']
+        np.testing.assert_array_equal(x, data.x)
+        np.testing.assert_array_equal(y, data.y)
+        self.assertEqual('xy', data.df_contains)
+        self.assertEqual(-1, data.max_x_column)
+        self.assertEqual('target', data.y_col_name)
+        self.assertEqual('target_pred', data.y_pred_col_name)
+        self.assertListEqual(expected_column_name, list(data.df.columns))
+        self.assertIsInstance(data.df, pd.DataFrame)
+
+    def test_init_data_x_y_without_column_name_dask(self):
+        """
+        :test : mlsurvey.model.Data()
+        :condition : dask dataframe created with x and y data as numpy arrays
         :main_result : x and y data are set
         """
         x = np.array([[1, 2], [3, 4]])
         y = np.array([0, 1])
-        d = mls.models.Data(x=x, y=y)
-        expected_column_name = ['C0', 'C1', 'target', 'target_pred']
-        np.testing.assert_array_equal(x, d.x)
-        np.testing.assert_array_equal(y, d.y)
-        self.assertListEqual(expected_column_name, list(d.df.columns))
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        df = dd.from_array(data_array)
+        data = mls.models.Data(df, y_col_name='target')
+        expected_column_name = ['C0', 'C1', 'target']
+        np.testing.assert_array_equal(x, data.x.compute())
+        np.testing.assert_array_equal(y, data.y.compute())
+        self.assertEqual('xy', data.df_contains)
+        self.assertEqual(-1, data.max_x_column)
+        self.assertEqual('target', data.y_col_name)
+        self.assertEqual('target_pred', data.y_pred_col_name)
+        self.assertListEqual(expected_column_name, list(data.df.columns))
+        self.assertIsInstance(data.df, dd.DataFrame)
 
-    def test_init_data_x_y_with_column_name(self):
+    def test_init_data_x_y_without_column_name_no_y_name_pandas(self):
         """
         :test : mlsurvey.model.Data()
-        :condition : x and y data are given as numpy arrays. Column are given
+        :condition : pandas dataframe created with x and y data as numpy arrays. No y col name is set
+        :main_result : x and y data are set. y col name is 'target'
+        :note : not tested with Dask. Should be the same.
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        df = pd.DataFrame(data=data_array)
+        data = mls.models.Data(df)
+        expected_column_name = ['C0', 'C1', 'target']
+        self.assertEqual('xy', data.df_contains)
+        self.assertEqual(-1, data.max_x_column)
+        self.assertEqual('target', data.y_col_name)
+        self.assertEqual('target_pred', data.y_pred_col_name)
+        np.testing.assert_array_equal(x, data.x)
+        np.testing.assert_array_equal(y, data.y)
+        self.assertListEqual(expected_column_name, list(data.df.columns))
+
+    def test_init_data_x_y_with_column_name_pandas(self):
+        """
+        :test : mlsurvey.model.Data()
+        :condition : pandas dataframe created with x and y data as numpy arrays. Column are given
         :main_result : x and y data are set
         """
         x = np.array([[1, 2], [3, 4]])
         y = np.array([0, 1])
-        expected_column_name = ['Col1', 'Col2']
-        d = mls.models.Data(x=x, y=y, columns=expected_column_name)
-        np.testing.assert_array_equal(x, d.x)
-        np.testing.assert_array_equal(y, d.y)
-        self.assertListEqual(expected_column_name, list(d.df.columns[0:-2]))
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        expected_column_name = ['Col1', 'Col2', 'Col3']
+        df = pd.DataFrame(data=data_array, columns=expected_column_name)
+        data = mls.models.Data(df, y_col_name='Col3')
+        self.assertEqual('xy', data.df_contains)
+        self.assertEqual(-1, data.max_x_column)
+        self.assertEqual('Col3', data.y_col_name)
+        self.assertEqual('target_pred', data.y_pred_col_name)
+        np.testing.assert_array_equal(x, data.x)
+        np.testing.assert_array_equal(y, data.y)
+        self.assertListEqual(expected_column_name, list(data.df.columns))
 
-    def test_init_data_x_y_ypred(self):
+    def test_init_data_x_y_with_column_name_dask(self):
         """
         :test : mlsurvey.model.Data()
-        :condition : x,y and y_pred data are given as numpy arrays
+        :condition : dask dataframe created with x and y data as numpy arrays. Column are given
+        :main_result : x and y data are set
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        expected_column_name = ['Col1', 'Col2', 'Col3']
+        df = dd.from_array(data_array, columns=expected_column_name)
+        data = mls.models.Data(df, y_col_name='Col3')
+        self.assertEqual('xy', data.df_contains)
+        self.assertEqual(-1, data.max_x_column)
+        self.assertEqual('Col3', data.y_col_name)
+        self.assertEqual('target_pred', data.y_pred_col_name)
+        np.testing.assert_array_equal(x, data.x)
+        np.testing.assert_array_equal(y, data.y)
+        self.assertListEqual(expected_column_name, list(data.df.columns))
+
+    def test_init_data_x_y_ypred_pandas(self):
+        """
+        :test : mlsurvey.model.Data()
+        :condition : pandas dataframe created with x,y and y_pred data as numpy arrays
         :main_result : x, y and y_pred data are set
         """
         x = np.array([[1, 2], [3, 4]])
         y = np.array([0, 1])
         y_pred = np.array([1, 0])
-        d = mls.models.Data(x=x, y=y, y_pred=y_pred)
-        np.testing.assert_array_equal(x, d.x)
-        np.testing.assert_array_equal(y, d.y)
-        np.testing.assert_array_equal(y_pred, d.y_pred)
+        data_array = np.concatenate((x, np.array([y]).T, np.array([y_pred]).T), axis=1)
+        df = pd.DataFrame(data=data_array)
+        expected_column_name = ['C0', 'C1', 'target', 'target_pred']
+        data = mls.models.Data(df, df_contains='xyypred')
+        self.assertEqual('xyypred', data.df_contains)
+        self.assertEqual(-2, data.max_x_column)
+        self.assertEqual('target', data.y_col_name)
+        self.assertEqual('target_pred', data.y_pred_col_name)
+        np.testing.assert_array_equal(x, data.x)
+        np.testing.assert_array_equal(y, data.y)
+        np.testing.assert_array_equal(y_pred, data.y_pred)
+        self.assertListEqual(expected_column_name, list(data.df.columns))
 
-    def test_init_data_x_y_ypred_with_ypred_empty(self):
+    def test_init_data_x_y_ypred_dask(self):
         """
         :test : mlsurvey.model.Data()
-        :condition : x,y and y_pred data are given as numpy arrays. y_pred is empty
-        :main_result : x, y and y_pred data are set. y_pred is empty
+        :condition : dask dataframe created with x,y and y_pred data as numpy arrays
+        :main_result : x, y and y_pred data are set
         """
         x = np.array([[1, 2], [3, 4]])
         y = np.array([0, 1])
-        y_pred = np.array([])
-        d = mls.models.Data(x=x, y=y, y_pred=y_pred)
-        np.testing.assert_array_equal(x, d.x)
-        np.testing.assert_array_equal(y, d.y)
-        np.testing.assert_array_equal(np.array([np.nan, np.nan]), d.y_pred)
+        y_pred = np.array([1, 0])
+        data_array = np.concatenate((x, np.array([y]).T, np.array([y_pred]).T), axis=1)
+        df = dd.from_array(data_array)
+        expected_column_name = ['C0', 'C1', 'target', 'target_pred']
+        data = mls.models.Data(df, df_contains='xyypred')
+        self.assertEqual('xyypred', data.df_contains)
+        self.assertEqual(-2, data.max_x_column)
+        self.assertEqual('target', data.y_col_name)
+        self.assertEqual('target_pred', data.y_pred_col_name)
+        np.testing.assert_array_equal(x, data.x)
+        np.testing.assert_array_equal(y, data.y)
+        np.testing.assert_array_equal(y_pred, data.y_pred)
+        self.assertListEqual(expected_column_name, list(data.df.columns))
 
-    def test_set_pred_data_data_set(self):
+    def test_set_pred_data_data_set_pandas(self):
         """
         :test : mlsurvey.model.Data.set_pred_data()
-        :condition : y prediction data is given as numpy array
+        :condition : y prediction data is given as pandas dataframe
         :main_result : y prediction data is set
         """
         x = np.array([[1, 2], [3, 4]])
         y = np.array([0, 1])
-        d = mls.models.Data(x=x, y=y)
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        df = pd.DataFrame(data=data_array)
+        data = mls.models.Data(df, y_col_name='target')
         y_pred = np.array([1, 0])
-        d.set_pred_data(y_pred)
-        np.testing.assert_array_equal(y_pred, d.y_pred)
+        df_y_pred = pd.DataFrame(data=y_pred)
+        data.set_pred_data(df_y_pred)
+        self.assertEqual('xyypred', data.df_contains)
+        np.testing.assert_array_equal(x, data.x)
+        np.testing.assert_array_equal(y_pred, data.y_pred)
 
-    def test_set_data_x_data_update_y_not_changed(self):
+    def test_set_pred_data_data_set_dask(self):
         """
-        :test : mlsurvey.model.Data.set_data()
-        :condition : x data is given as numpy array, x and y have been previously set
-        :main_result : x data is changed, y data not
+        :test : mlsurvey.model.Data.set_pred_data()
+        :condition : y prediction data is given as dask dataframe
+        :main_result : y prediction data is set
         """
         x = np.array([[1, 2], [3, 4]])
         y = np.array([0, 1])
-        d = mls.models.Data(x=x, y=y)
-        x_expected = np.array([[10, 20], [30, 40]])
-        d.set_data(x_expected, None)
-        np.testing.assert_array_equal(x_expected, d.x)
-        np.testing.assert_array_equal(y, d.y)
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        df = dd.from_array(data_array)
+        data = mls.models.Data(df, y_col_name='target')
+        y_pred = np.array([1, 0])
+        # if array is not in 2d, Dask creates a Series and not a Dataframe !!!
+        df_y_pred = dd.from_array(y_pred).to_frame()
+        data.set_pred_data(df_y_pred)
+        self.assertEqual('xyypred', data.df_contains)
+        np.testing.assert_array_equal(y_pred, data.y_pred)
 
-    def test_set_data_y_data_update_x_not_changed(self):
+    def test_set_pred_data_with_colname_data_set_pandas(self):
         """
-        :test : mlsurvey.model.Data.set_data()
-        :condition : y data is given as numpy array, x and y have been previously set
-        :main_result : y data is changed, x data not
+        :test : mlsurvey.model.Data.set_pred_data()
+        :condition : y prediction data is given as pandas dataframe. y_pred column name is set into the y_pred dataframe
+        :main_result : y prediction data is set. Columns are set
         """
         x = np.array([[1, 2], [3, 4]])
         y = np.array([0, 1])
-        d = mls.models.Data(x=x, y=y)
-        y_expected = np.array([0, 10])
-        d.set_data(None, y_expected)
-        np.testing.assert_array_equal(x, d.x)
-        np.testing.assert_array_equal(y_expected, d.y)
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        df = pd.DataFrame(data=data_array)
+        data = mls.models.Data(df, y_col_name='target')
+        y_pred = np.array([1, 0])
+        df_y_pred = pd.DataFrame(data=y_pred, columns=['Col3'])
+        expected_column_name = ['C0', 'C1', 'target', 'Col3']
+        data.set_pred_data(df_y_pred)
+        np.testing.assert_array_equal(y_pred, data.y_pred)
+        self.assertEqual('xyypred', data.df_contains)
+        self.assertListEqual(expected_column_name, list(data.df.columns))
 
-    def test_add_column_in_data_column_added_without_column_name(self):
+    def test_set_pred_data_with_colname_data_set_dask(self):
         """
-        :test : mlsurvey.model.Data.add_column_in_data()
-        :condition : x data if filled. No columns name is given
-        :main_result : column and data added. The column name is generate
+        :test : mlsurvey.model.Data.set_pred_data()
+        :condition : y prediction data is given as dask dataframe. y_pred column name is set into the y_pred dataframe
+        :main_result : y prediction data is set. Columns are set
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        df = dd.from_array(data_array)
+        data = mls.models.Data(df, y_col_name='target')
+        y_pred = np.array([1, 0])
+        df_y_pred = dd.from_array(y_pred, columns=['Col3'])
+        expected_column_name = ['C0', 'C1', 'target', 'Col3']
+        data.set_pred_data(df_y_pred)
+        np.testing.assert_array_equal(y_pred, data.y_pred)
+        self.assertEqual('xyypred', data.df_contains)
+        self.assertListEqual(expected_column_name, list(data.df.columns))
+
+    def test_set_pred_data_colname_in_func_data_set_pandas(self):
+        """
+        :test : mlsurvey.model.Data.set_pred_data()
+        :condition : y prediction data is given as pandas dataframe.
+                     y_pred column name is set into the set_pred_data function
+        :main_result : y prediction data is set
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        df = pd.DataFrame(data=data_array)
+        data = mls.models.Data(df, y_col_name='target')
+        y_pred = np.array([1, 0])
+        df_y_pred = pd.DataFrame(data=y_pred)
+        expected_column_name = ['C0', 'C1', 'target', 'Col3']
+        data.set_pred_data(df_y_pred, y_pred_col_name='Col3')
+        np.testing.assert_array_equal(y_pred, data.y_pred)
+        self.assertEqual('xyypred', data.df_contains)
+        self.assertListEqual(expected_column_name, list(data.df.columns))
+
+    def test_set_pred_data_colname_in_func_data_set_dask(self):
+        """
+        :test : mlsurvey.model.Data.set_pred_data()
+        :condition : y prediction data is given as dask dataframe.
+                     y_pred column name is set into the set_pred_data function
+        :main_result : y prediction data is set
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        df = dd.from_array(data_array)
+        data = mls.models.Data(df, y_col_name='target')
+        y_pred = np.array([1, 0])
+        # if array is not in 2d, Dask creates a Series and not a Dataframe !!!
+        df_y_pred = dd.from_array(y_pred).to_frame()
+        expected_column_name = ['C0', 'C1', 'target', 'Col3']
+        data.set_pred_data(df_y_pred, y_pred_col_name='Col3')
+        np.testing.assert_array_equal(y_pred, data.y_pred)
+        self.assertEqual('xyypred', data.df_contains)
+        self.assertListEqual(expected_column_name, list(data.df.columns))
+
+    def test_set_pred_data_colname_in_df_and_func_data_set_pandas(self):
+        """
+        :test : mlsurvey.model.Data.set_pred_data()
+        :condition : y prediction data is given as pandas dataframe.
+                     y_pred column name is set into the set_pred_data function and into the df (different)
+        :main_result : y prediction data is set. column name is the parameters
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        df = pd.DataFrame(data=data_array)
+        data = mls.models.Data(df, y_col_name='target')
+        y_pred = np.array([1, 0])
+        df_y_pred = pd.DataFrame(data=y_pred, columns=['FakeNameCol3'])
+        expected_column_name = ['C0', 'C1', 'target', 'RealNameCol3']
+        data.set_pred_data(df_y_pred, y_pred_col_name='RealNameCol3')
+        np.testing.assert_array_equal(y_pred, data.y_pred)
+        self.assertEqual('RealNameCol3', data.y_pred_col_name)
+        self.assertEqual('xyypred', data.df_contains)
+        self.assertListEqual(expected_column_name, list(data.df.columns))
+
+    def test_set_pred_data_colname_in_df_and_func_data_set_dask(self):
+        """
+        :test : mlsurvey.model.Data.set_pred_data()
+        :condition : y prediction data is given as dask dataframe.
+                     y_pred column name is set into the set_pred_data function and into the df (different)
+        :main_result : y prediction data is set. column name is the parameters
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        df = dd.from_array(data_array)
+        data = mls.models.Data(df, y_col_name='target')
+        y_pred = np.array([1, 0])
+        df_y_pred = dd.from_array(y_pred, columns=['FakeNameCol3'])
+        expected_column_name = ['C0', 'C1', 'target', 'RealNameCol3']
+        data.set_pred_data(df_y_pred, y_pred_col_name='RealNameCol3')
+        np.testing.assert_array_equal(y_pred, data.y_pred)
+        self.assertEqual('RealNameCol3', data.y_pred_col_name)
+        self.assertEqual('xyypred', data.df_contains)
+        self.assertListEqual(expected_column_name, list(data.df.columns))
+
+    def test_set_pred_data_data_set_pandas_and_dask(self):
+        """
+        :test : mlsurvey.model.Data.set_pred_data()
+        :condition : data is a panda dataframe whereas y prediction data is given as dask dataframe
+        :main_result : a ModelError is raised
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        df = pd.DataFrame(data=data_array)
+        data = mls.models.Data(df)
+        y_pred = np.array([1, 0])
+        df_y_pred = dd.from_array(y_pred).to_frame()
+        try:
+            data.set_pred_data(df_y_pred)
+            self.assertTrue(False)
+        except mls.exceptions.ModelError:
+            self.assertTrue(True)
+
+    def test_set_pred_data_data_set_dask_and_pandas(self):
+        """
+        :test : mlsurvey.model.Data.set_pred_data()
+        :condition : data is a dask dataframe whereas y prediction data is given as pandas dataframe
+        :main_result : y_pred is joint into data
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        df = dd.from_array(data_array)
+        data = mls.models.Data(df)
+        y_pred = np.array([1, 0])
+        df_y_pred = pd.DataFrame(data=y_pred)
+        data.set_pred_data(df_y_pred)
+        np.testing.assert_array_equal(y_pred, data.y_pred)
+        self.assertEqual('xyypred', data.df_contains)
+        self.assertIsInstance(data.df, dd.DataFrame)
+
+    def test_add_calculated_column_column_added_pandas(self):
+        """
+        :test : mlsurvey.model.Data.add_calculated_column()
+        :condition : x,y, y_pred data are filled. dataframe is pandas.
+        :main_result : column and data added.
         """
         x = np.array([[1, 2, 3], [4, 5, 6]])
         y = np.array([0, 1])
         y_pred = np.array([1, 0])
-        d = mls.models.Data(x=x, y=y, y_pred=y_pred)
-        new_column = np.array([10, 20])
-        d.add_column_in_data(new_column)
-        np.testing.assert_array_equal(new_column, d.x[:, -1])
-        self.assertEqual('C2', d.df.columns[2])
+        data_array = np.concatenate((x, np.array([y]).T, np.array([y_pred]).T), axis=1)
+        df = pd.DataFrame(data=data_array)
+        data = mls.models.Data(df, df_contains='xyypred')
+        condition = 'x >= 2'
+        on_column_name = 'C0'
+        new_column_name = 'Calculated'
+        data.add_calculated_column(condition, on_column_name, new_column_name)
+        expected_result = [False, True]
+        self.assertEqual(type(expected_result[0]), type(data.x[0, -1]))
+        np.testing.assert_array_equal(expected_result, data.x[:, -1])
+        self.assertEqual('Calculated', data.df.columns[data.max_x_column - 1])
 
-    def test_add_column_in_data_column_added_with_column_name(self):
+    def test_add_calculated_column_column_added_dask(self):
         """
-        :test : mlsurvey.model.Data.add_column_in_data()
-        :condition : x data if filled. Column name is given
+        :test : mlsurvey.model.Data.add_calculated_column()
+        :condition : x,y, y_pred data are filled. dataframe is pandas.
         :main_result : column and data added.
+        """
+        x = np.array([[1, 2, 3], [4, 5, 6]])
+        y = np.array([0, 1])
+        y_pred = np.array([1, 0])
+        data_array = np.concatenate((x, np.array([y]).T, np.array([y_pred]).T), axis=1)
+        df = dd.from_array(data_array)
+        data = mls.models.Data(df, df_contains='xyypred')
+        condition = 'x >= 2'
+        on_column_name = 'C0'
+        new_column_name = 'Calculated'
+        data.add_calculated_column(condition, on_column_name, new_column_name)
+        expected_result = [False, True]
+        self.assertEqual(type(expected_result[0]), type(data.x[0, -1].compute()))
+        np.testing.assert_array_equal(expected_result, data.x[:, -1])
+        self.assertEqual('Calculated', data.df.columns[data.max_x_column - 1])
+
+    def test_to_dict_dict_should_be_set_pandas_dask(self):
+        """
+        :test : mlsurvey.model.Data.to_dict()
+        :condition : x,y, y_pred data are filled.
+        :main_result : the dictionary generated is the same as expected
+        """
+        x = np.array([[1, 2, 3], [4, 5, 6]])
+        y = np.array([0, 1])
+        y_pred = np.array([1, 0])
+        data_array = np.concatenate((x, np.array([y]).T, np.array([y_pred]).T), axis=1)
+        df = pd.DataFrame(data=data_array)
+        data = mls.models.Data(df, df_contains='xyypred')
+        expected = {'df_contains': 'xyypred',
+                    'y_col_name': 'target',
+                    'y_pred_col_name': 'target_pred'}
+        result = data.to_dict()
+        self.assertDictEqual(expected, result)
+
+    def test_from_dict_input_is_set_pandas(self):
+        """
+        :test : mlsurvey.model.Data.from_dict()
+        :condition : the input dict is set and a full pandas df is given
+        :main_result : the data is created as expected
         """
         x = np.array([[1, 2], [3, 4]])
         y = np.array([0, 1])
         y_pred = np.array([1, 0])
-        d = mls.models.Data(x=x, y=y, y_pred=y_pred)
-        new_column = np.array([10, 20])
-        d.add_column_in_data(new_column, column_name='priv_class')
-        np.testing.assert_array_equal(new_column, d.x[:, -1])
-        self.assertEqual('priv_class', d.df.columns[2])
+        data_array = np.concatenate((x, np.array([y]).T, np.array([y_pred]).T), axis=1)
+        df = pd.DataFrame(data=data_array)
+        input_dict = {'df_contains': 'xyypred',
+                      'y_col_name': 'target',
+                      'y_pred_col_name': 'target_pred'}
+        data = mls.models.Data.from_dict(input_dict, df)
+        self.assertEqual('xyypred', data.df_contains)
+        self.assertEqual('target', data.y_col_name)
+        self.assertEqual('target_pred', data.y_pred_col_name)
+        self.assertEqual(1, data.x[0, 0])
+        self.assertEqual(0, data.y[0])
+        self.assertEqual(1, data.y_pred[0])
+        self.assertEqual(2, data.x.shape[1])
+        self.assertEqual(2, data.x.shape[0])
+        self.assertEqual(2, data.y.shape[0])
+        self.assertEqual(2, data.y_pred.shape[0])
 
-    def test_to_dict_dict_should_be_set(self):
-        d = mls.models.Data(x=np.array([[1, 2], [3, 4]]),
-                            y=np.array([0, 1]),
-                            y_pred=np.array([1, 0]))
-        expected = {'data.x': [[1, 2], [3, 4]], 'data.y': [0, 1], 'data.y_pred': [1, 0]}
-        result = d.to_dict()
-        self.assertDictEqual(expected, result)
+    def test_from_dict_input_is_set_dask(self):
+        """
+        :test : mlsurvey.model.Data.from_dict()
+        :condition : the input dict is set and a full dask df is given
+        :main_result : the data is created as expected
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        y_pred = np.array([1, 0])
+        data_array = np.concatenate((x, np.array([y]).T, np.array([y_pred]).T), axis=1)
+        df = dd.from_array(data_array)
+        input_dict = {'df_contains': 'xyypred',
+                      'y_col_name': 'target',
+                      'y_pred_col_name': 'target_pred'}
+        data = mls.models.Data.from_dict(input_dict, df)
+        self.assertEqual('xyypred', data.df_contains)
+        self.assertEqual('target', data.y_col_name)
+        self.assertEqual('target_pred', data.y_pred_col_name)
+        self.assertEqual(1, data.x[0, 0])
+        self.assertEqual(0, data.y[0])
+        self.assertEqual(1, data.y_pred[0])
+        self.assertEqual(2, data.x.shape[1])
+        self.assertEqual(2, data.x.shape[0])
+        self.assertEqual(2, data.y.shape[0])
+        self.assertEqual(2, data.y_pred.shape[0])
 
-    def test_from_dict_input_is_set(self):
-        input_dict = {'data.x': [[1, 2], [3, 4]], 'data.y': [0, 1], 'data.y_pred': [1, 0]}
-        d = mls.models.Data.from_dict(input_dict)
-        self.assertEqual(1, d.x[0, 0])
-        self.assertEqual(0, d.y[0])
-        self.assertEqual(1, d.y_pred[0])
-        self.assertEqual(2, d.x.shape[1])
-        self.assertEqual(2, d.x.shape[0])
-        self.assertEqual(2, d.y.shape[0])
-        self.assertEqual(2, d.y_pred.shape[0])
-
-    def test_from_dict_datax_not_present(self):
-        """ maybe this should be test using a json schema validator """
-        input_dict = {'d.x': [[1, 2], [3, 4]], 'data.y': [0, 1], 'data.y_pred': [1, 0]}
+    def test_from_dict_df_empty(self):
+        """
+        :test : mlsurvey.model.Data.from_dict()
+        :condition : the input dict is set and an empty dataframe is given
+        :main_result : a ModelError occurs
+        """
+        df = pd.DataFrame(data=np.array([]))
         d = None
+        input_dict = {'df_contains': 'xyypred',
+                      'y_col_name': 'target',
+                      'y_pred_col_name': 'target_pred'}
         try:
-            d = mls.models.Data.from_dict(input_dict)
+            d = mls.models.Data.from_dict(input_dict, df)
             self.assertTrue(False)
         except mls.exceptions.ModelError:
             self.assertIsNone(d)
             self.assertTrue(True)
 
-    def test_from_dict_datay_not_present(self):
-        """ maybe this should be test using a json schema validator """
-        input_dict = {'data.x': [[1, 2], [3, 4]], 'd.y': [0, 1], 'data.y_pred': [1, 0]}
-        d = None
+    def test_from_dict_dict_empty(self):
+        """
+        :test : mlsurvey.model.Data.from_dict()
+        :condition : the input dict does not contains all keys and an full dataframe is given
+        :main_result : a ModelError occurs
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        y_pred = np.array([1, 0])
+        data_array = np.concatenate((x, np.array([y]).T, np.array([y_pred]).T), axis=1)
+        df = pd.DataFrame(data=data_array)
+        data = None
+        input_dict = {'df_contains': 'xyypred',
+                      'y_pred_col_name': 'target_pred'}
         try:
-            d = mls.models.Data.from_dict(input_dict)
+            data = mls.models.Data.from_dict(input_dict, df)
             self.assertTrue(False)
         except mls.exceptions.ModelError:
-            self.assertIsNone(d)
+            self.assertIsNone(data)
             self.assertTrue(True)
 
-    def test_from_dict_dataypred_not_present(self):
-        """ maybe this should be test using a json schema validator """
-        input_dict = {'data.x': [[1, 2], [3, 4]], 'data.y': [0, 1], 'd.y_pred': [1, 0]}
-        d = None
-        try:
-            d = mls.models.Data.from_dict(input_dict)
-            self.assertTrue(False)
-        except mls.exceptions.ModelError:
-            self.assertIsNone(d)
-            self.assertTrue(True)
-
-    def test_merge_all_should_merge(self):
+    def test_merge_all_should_merge_pandas(self):
         """
         :test : mlsurvey.modles.Data.merge_all()
-        :condition : data contains x, y and y_pred
+        :condition : data contains x, y and y_pred. Dataframe is pandas
         :main_result : data are merge into one array
         """
-        d = mls.models.Data(x=np.array([[1, 2], [3, 4]]),
-                            y=np.array([0, 1]),
-                            y_pred=np.array([1, 0]))
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        y_pred = np.array([1, 0])
+        data_array = np.concatenate((x, np.array([y]).T, np.array([y_pred]).T), axis=1)
+        df = pd.DataFrame(data=data_array)
+        data = mls.models.Data(df, df_contains='xyypred')
         expected_result = np.asarray([[1, 2, 0, 1],
                                       [3, 4, 1, 0]])
-        result = d.merge_all()
+        result = data.merge_all()
         np.testing.assert_array_equal(expected_result, result)
+        self.assertIsInstance(result, np.ndarray)
 
-    def test_copy_data_should_copy(self):
+    def test_merge_all_should_merge_dask(self):
         """
-        :test : mlsurvey.modles.Data.copy()
-        :condition : data contains x, y and y_pred
-        :main_result : copy into an other object
+        :test : mlsurvey.modles.Data.merge_all()
+        :condition : data contains x, y and y_pred. Dataframe is dask
+        :main_result : data are merge into one array
         """
-        d = mls.models.Data(x=np.array([[1, 2], [3, 4]]),
-                            y=np.array([0, 1]),
-                            y_pred=np.array([1, 0]))
-        d_copied = d.copy()
-        np.testing.assert_array_equal(d.x, d_copied.x)
-        np.testing.assert_array_equal(d.y, d_copied.y)
-        np.testing.assert_array_equal(d.y_pred, d_copied.y_pred)
-        self.assertIsNot(d, d_copied)
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        y_pred = np.array([1, 0])
+        data_array = np.concatenate((x, np.array([y]).T, np.array([y_pred]).T), axis=1)
+        df = dd.from_array(data_array)
+        data = mls.models.Data(df, df_contains='xyypred')
+        expected_result = np.asarray([[1, 2, 0, 1],
+                                      [3, 4, 1, 0]])
+        result = data.merge_all().compute()
+        np.testing.assert_array_equal(expected_result, result)
+        self.assertIsInstance(result, np.ndarray)
