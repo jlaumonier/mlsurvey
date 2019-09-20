@@ -3,7 +3,9 @@ import hashlib
 import importlib
 import itertools
 
+import dask.dataframe as dd
 import numpy as np
+import pandas as pd
 
 
 class Utils:
@@ -168,3 +170,11 @@ class Utils:
                 for kk, vv in dd.items()
                 for k, v in Utils.flatten_dict(vv, separator, kk).items()
                 } if isinstance(dd, dict) else {prefix: dd}
+
+    @classmethod
+    def func_create_dataframe(cls, storage):
+        """ return the function that create a DataFrame from an array"""
+        if storage == 'Pandas':
+            return pd.DataFrame
+        if storage == 'Dask':
+            return dd.from_array

@@ -1,3 +1,4 @@
+import pandas as pd
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -64,13 +65,13 @@ class SupervisedLearningWorkflow(LearningWorkflow):
             dataset_fairness = self.config.data['datasets'][dataset_name]['fairness']
             self.context.dataset.set_fairness_parameters(dataset_fairness)
 
-        self.context.raw_data = mls.models.Data(*self.context.dataset.generate())
+        self.context.raw_data = mls.models.Data(self.context.dataset.generate())
         self.task_terminated_get_data = True
 
     def task_prepare_data(self):
         """ Prepare the data. At that time, prepared with StandardScaler()"""
-        self.context.data = mls.models.Data(self.data_preparation.fit_transform(self.context.raw_data.x),
-                                            self.context.raw_data.y)
+        x_transformed = self.data_preparation.fit_transform(self.context.raw_data.x)
+        self.context.data = self.context.raw_data.copy_with_new_data([x_transformed, self.context.raw_data.y])
         self.task_terminated_prepare_data = True
 
     def task_split_data(self):
@@ -88,8 +89,8 @@ class SupervisedLearningWorkflow(LearningWorkflow):
                                              test_size=split_param['test_size'],
                                              random_state=split_param['random_state'],
                                              shuffle=split_param['shuffle'])
-            self.context.data_train = mls.models.Data(x=data_train_x, y=data_train_y)
-            self.context.data_test = mls.models.Data(x=data_test_x, y=data_test_y)
+            self.context.data_train = self.context.data.copy_with_new_data([data_train_x, data_train_y])
+            self.context.data_test = self.context.data.copy_with_new_data([data_test_x, data_test_y])
             self.task_terminated_split_data = True
 
     def task_learn(self):
@@ -103,11 +104,15 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         """ calculate the score of the classifier with test data """
         self.context.evaluation.score = self.context.classifier.score(self.context.data_test.x,
                                                                       self.context.data_test.y)
-        self.context.data.set_pred_data(self.context.classifier.predict(self.context.data.x))
+        df = pd.DataFrame(self.context.classifier.predict(self.context.data.x))
+        self.context.data.set_pred_data(df)
         # Assuming that data and raw_data are the same data but transformed
-        self.context.raw_data.set_pred_data(self.context.data.y_pred)
-        self.context.data_train.set_pred_data(self.context.classifier.predict(self.context.data_train.x))
-        self.context.data_test.set_pred_data(self.context.classifier.predict(self.context.data_test.x))
+        df = pd.DataFrame(self.context.data.y_pred)
+        self.context.raw_data.set_pred_data(df)
+        df = pd.DataFrame(self.context.classifier.predict(self.context.data_train.x))
+        self.context.data_train.set_pred_data(df)
+        df = pd.DataFrame(self.context.classifier.predict(self.context.data_test.x))
+        self.context.data_test.set_pred_data(df)
         self.context.evaluation.confusion_matrix = confusion_matrix(self.context.data_test.y,
                                                                     self.context.data_test.y_pred)
         self.task_terminated_evaluate = True

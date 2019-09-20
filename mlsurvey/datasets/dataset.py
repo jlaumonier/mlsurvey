@@ -5,13 +5,15 @@ import mlsurvey as mls
 
 class DataSet:
 
-    def __init__(self, t):
+    def __init__(self, t, storage='Pandas'):
         """
         initialize the dataset
         :param t: type of the dataset (usually the name of the class or the name of the function called)
+        :param storage : the type of dataframe to store the data. By default 'Pandas'. Other option is 'Dask'
         """
         self.params = {}
         self.t = t
+        self.storage = storage
         self.fairness = {}
 
     def set_generation_parameters(self, params):
@@ -41,7 +43,7 @@ class DataSet:
         transform the dataset into a dictionary {'type': .., 'parameters': {...} }
         :return: the dictionary
         """
-        result = {'type': self.t, 'parameters': self.params}
+        result = {'type': self.t, 'storage': self.storage, 'parameters': self.params}
         if self.fairness != {}:
             result['fairness'] = self.fairness
         return result
@@ -53,4 +55,4 @@ class DataSet:
     class Factory:
         @staticmethod
         @abstractmethod
-        def create(t): pass
+        def create(t, storage): pass

@@ -1,7 +1,10 @@
 import datetime
 import os
+import random
 
+import dask.dataframe as dd
 import joblib
+import pandas as pd
 
 import mlsurvey as mls
 
@@ -15,8 +18,10 @@ class Logging:
         :param base_dir: name of the base directory for all logging
         """
         self.base_dir = base_dir
+        # adding a random number to avoid the creating at the same microsecond !!
+        salt_random_number = random.randint(0, 9)
         if dir_name is None:
-            dir_name = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
+            dir_name = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f") + '-' + str(salt_random_number)
         self.dir_name = dir_name
         self.directory = os.path.join(self.base_dir, dir_name, '')
 
@@ -27,7 +32,20 @@ class Logging:
         """
         output = {}
         for k, v in inpts.items():
-            output[k] = v.to_dict() if v is not None else None
+            if v is not None:
+                filename = k + '.h5'
+                mls.FileOperation.save_hdf(filename, self.directory, v.df)
+                df_format = ''
+                if isinstance(v.df, dd.DataFrame):
+                    df_format = 'Dask'
+                if isinstance(v.df, pd.DataFrame):
+                    df_format = 'Pandas'
+                output[k] = {'data_path': filename,
+                             'df_format': df_format,
+                             'metadata': v.to_dict()
+                             }
+            else:
+                output[k] = None
         self.save_dict_as_json('input.json', output)
 
     def load_input(self, filename):
@@ -39,7 +57,8 @@ class Logging:
         data = self.load_json_as_dict(filename)
         result = {}
         for k, v in data.items():
-            i = mls.models.Data.from_dict(v)
+            df = mls.FileOperation.read_hdf(v['data_path'], self.directory, v['df_format'])
+            i = mls.models.Data.from_dict(v['metadata'], df)
             result[k] = i
         return result
 

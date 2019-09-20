@@ -14,7 +14,7 @@ class TestContext(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         log = mls.Logging()
-        shutil.rmtree(log.base_dir)
+        shutil.rmtree(log.base_dir, ignore_errors=True)
 
     def test_init_all_init(self):
         context = mls.models.Context(eval_type=mls.models.Evaluation)
@@ -60,7 +60,7 @@ class TestContext(unittest.TestCase):
         context.save(log)
         self.assertEqual(5, len(os.listdir(log.directory)))
         self.assertTrue(os.path.isfile(log.directory + 'dataset.json'))
-        self.assertEqual('10f8ce765f59999d2b3b798cc3267845', mls.Utils.md5_file(log.directory + 'dataset.json'))
+        self.assertEqual('fef33f3cf8296451de30bd6a1cf32d28', mls.Utils.md5_file(log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(log.directory + 'input.json'))
         self.assertEqual('e024075ecfdd447815a1226dc9eff25d', mls.Utils.md5_file(log.directory + 'input.json'))
         self.assertTrue(os.path.isfile(log.directory + 'algorithm.json'))
@@ -76,7 +76,7 @@ class TestContext(unittest.TestCase):
         context.save(log)
         self.assertEqual(3, len(os.listdir(log.directory)))
         self.assertTrue(os.path.isfile(log.directory + 'dataset.json'))
-        self.assertEqual('10f8ce765f59999d2b3b798cc3267845', mls.Utils.md5_file(log.directory + 'dataset.json'))
+        self.assertEqual('fef33f3cf8296451de30bd6a1cf32d28', mls.Utils.md5_file(log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(log.directory + 'input.json'))
         self.assertEqual('e024075ecfdd447815a1226dc9eff25d', mls.Utils.md5_file(log.directory + 'input.json'))
         self.assertTrue(os.path.isfile(log.directory + 'evaluation.json'))
@@ -93,7 +93,6 @@ class TestContext(unittest.TestCase):
         self.assertEqual(100, len(context.raw_data.x))
         self.assertEqual(100, len(context.raw_data.y))
         self.assertEqual(100, len(context.raw_data.y_pred))
-        np.testing.assert_array_equal(np.full((100,), np.nan), context.raw_data.y_pred)
         self.assertIsInstance(context.data, mls.models.Data)
         self.assertEqual(100, len(context.data.x))
         self.assertEqual(100, len(context.data.y))

@@ -1,4 +1,3 @@
-import dask.array as da
 import dask.dataframe as dd
 import numpy as np
 import pandas as pd
@@ -179,3 +178,21 @@ class Data:
                       y=self.y.copy(),
                       y_pred=self.y_pred.copy())
         return result
+
+    def copy_with_new_data(self, data_array):
+        """
+        create a new instance of data with the same parameters but with different data values
+        :param data_array: new data values as numpy array
+        :return: an instance of data
+        """
+        data_array = np.concatenate((data_array[0], np.array([data_array[1]]).T), axis=1)
+        create_function = None
+        if isinstance(self.df, pd.DataFrame):
+            create_function = pd.DataFrame
+        if isinstance(self.df, dd.DataFrame):
+            create_function = dd.from_array
+        df = create_function(data_array, columns=self.df.columns)
+        data = mls.models.Data(df,
+                               df_contains=self.df_contains,
+                               y_col_name=self.y_col_name)
+        return data

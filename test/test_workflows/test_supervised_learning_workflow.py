@@ -200,7 +200,6 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertIsNotNone(slw.context.raw_data)
         self.assertEqual(100, len(slw.context.raw_data.x))
         self.assertEqual(100, len(slw.context.raw_data.y))
-        self.assertEqual(100, len(slw.context.raw_data.y_pred))
         self.assertIsNone(slw.context.data)
         self.assertTrue(slw.task_terminated_get_data)
 
@@ -214,11 +213,15 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertIsNotNone(slw.context.raw_data)
         self.assertEqual(13, len(slw.context.raw_data.x))
         self.assertEqual(13, len(slw.context.raw_data.y))
-        self.assertEqual(13, len(slw.context.raw_data.y_pred))
         self.assertIsNone(slw.context.data)
         self.assertTrue(slw.task_terminated_get_data)
 
     def test_task_prepare_data_data_should_be_prepared(self):
+        """
+        :test : mlsurvey.workflows.SupervisedLearningWorkflow.prepare_data()
+        :condition : data is generated as pandas dataframe (should work with dask)
+        :main_result : data is transformed with StandardScaler()
+        """
         slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json', config_directory=self.cd)
         slw.task_get_data()
         lx = len(slw.context.raw_data.x)
@@ -230,7 +233,12 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertEqual(ly, len(slw.context.data.y))
         self.assertTrue(slw.task_terminated_prepare_data)
 
-    def test_task_split_data_data_should_be_split_train_test(self):
+    def test_task_split_data_data_should_be_split_train_test_pandas(self):
+        """
+        :test : mlsurvey.workflows.SupervisedLearningWorkflow.task_split_data()
+        :condition : data loaded as pandas. Should work with dask
+        :main_result : data is split
+        """
         slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json', config_directory=self.cd)
         slw.task_get_data()
         slw.task_prepare_data()
@@ -238,13 +246,10 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         slw.task_split_data()
         self.assertEqual(100, len(slw.context.data.x))
         self.assertEqual(100, len(slw.context.data.y))
-        self.assertEqual(100, len(slw.context.data.y_pred))
         self.assertEqual(20, len(slw.context.data_test.x))
         self.assertEqual(20, len(slw.context.data_test.y))
-        self.assertEqual(20, len(slw.context.data_test.y_pred))
         self.assertEqual(80, len(slw.context.data_train.x))
         self.assertEqual(80, len(slw.context.data_train.y))
-        self.assertEqual(80, len(slw.context.data_train.y_pred))
         self.assertTrue(slw.task_terminated_split_data)
 
     def test_task_learn_classifier_should_have_learn(self):
@@ -257,8 +262,39 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         # ADD some assert to test the learning
         self.assertTrue(slw.task_terminated_learn)
 
-    def test_task_evaluate_classifier_should_have_evaluate(self):
+    def test_task_evaluate_classifier_should_have_evaluate_pandas(self):
+        """
+        :test : mlsurvey.workflows.SupervisedLearningWorkflow.task_evaluate()
+        :condition : data loaded as pandas
+        :main_result : the evaluation is completed
+        """
         slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded.json', config_directory=self.cd)
+        slw.task_get_data()
+        slw.task_prepare_data()
+        slw.task_split_data()
+        slw.task_learn()
+        slw.task_evaluate()
+        expected_cm = np.array([[13, 0], [1, 6]])
+        self.assertEqual(0.95, slw.context.evaluation.score)
+        np.testing.assert_array_equal(expected_cm, slw.context.evaluation.confusion_matrix)
+        self.assertEqual(100, len(slw.context.raw_data.y_pred))
+        self.assertTrue(not np.isnan(slw.context.raw_data.y_pred).all())
+        self.assertEqual(100, len(slw.context.data.y_pred))
+        self.assertTrue(not np.isnan(slw.context.data.y_pred).all())
+        self.assertEqual(80, len(slw.context.data_train.y_pred))
+        self.assertTrue(not np.isnan(slw.context.data_train.y_pred).all())
+        self.assertEqual(20, len(slw.context.data_test.y_pred))
+        self.assertTrue(not np.isnan(slw.context.data_test.y_pred).all())
+        self.assertIsNone(slw.context.evaluation.sub_evaluation)
+        self.assertTrue(slw.task_terminated_evaluate)
+
+    def test_task_evaluate_classifier_should_have_evaluate_dask(self):
+        """
+        :test : mlsurvey.workflows.SupervisedLearningWorkflow.task_evaluate()
+        :condition : data loaded as dask
+        :main_result : the evaluation is completed
+        """
+        slw = mls.workflows.SupervisedLearningWorkflow('complete_config_loaded_dask.json', config_directory=self.cd)
         slw.task_get_data()
         slw.task_prepare_data()
         slw.task_split_data()
@@ -329,13 +365,13 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(slw.log.directory + 'config.json'))
         self.assertEqual('ae28ce16852d7a5ddbecdb07ea755339', mls.Utils.md5_file(slw.log.directory + 'config.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'dataset.json'))
-        self.assertEqual('66eafcadd6773bcf132096486a57263a', mls.Utils.md5_file(slw.log.directory + 'dataset.json'))
+        self.assertEqual('4ebc31c30a25648a5a153c60fe196c25', mls.Utils.md5_file(slw.log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'input.json'))
-        self.assertEqual('2cd330c7b49321ff0d70652e4e9f6672', mls.Utils.md5_file(slw.log.directory + 'input.json'))
+        self.assertEqual('7eea77c934e04107af044ab15398ac16', mls.Utils.md5_file(slw.log.directory + 'input.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'algorithm.json'))
         self.assertEqual('1697475bd77100f5a9c8806c462cbd0b', mls.Utils.md5_file(slw.log.directory + 'algorithm.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'model.joblib'))
-        self.assertEqual('d7b367aab251aa13c7e3b731ef251ade', mls.Utils.md5_file(slw.log.directory + 'model.joblib'))
+        self.assertEqual('cdd31d2c409b9910fc9a6a92e5cabaef', mls.Utils.md5_file(slw.log.directory + 'model.joblib'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'evaluation.json'))
         self.assertEqual('3880646a29148f80a36efd2eb14e8814', mls.Utils.md5_file(slw.log.directory + 'evaluation.json'))
         self.assertTrue(slw.task_terminated_persistence)

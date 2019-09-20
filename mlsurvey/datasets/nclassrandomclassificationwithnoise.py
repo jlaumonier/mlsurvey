@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.datasets import make_classification
 
+import mlsurvey as mls
 from .dataset import DataSet
 from .dataset_factory import DataSetFactory
 
@@ -28,11 +29,14 @@ class NClassRandomClassificationWithNoise(DataSet):
                                    )
         rng = np.random.RandomState(random_state)
         x += noise * 2 * rng.uniform(size=x.shape)
-        return x, y
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        func_create_df = mls.Utils.func_create_dataframe(self.storage)
+        result = func_create_df(data_array)
+        return result
 
     class Factory:
         @staticmethod
-        def create(t): return NClassRandomClassificationWithNoise(t)
+        def create(t, storage): return NClassRandomClassificationWithNoise(t, storage)
 
 
 DataSetFactory.add_factory('NClassRandomClassificationWithNoise', NClassRandomClassificationWithNoise.Factory)

@@ -1,6 +1,8 @@
 import os
 import unittest
 
+import pandas as pd
+
 import mlsurvey as mls
 
 
@@ -28,11 +30,12 @@ class TestFileDataSet(unittest.TestCase):
         dataset = mls.datasets.DataSetFactory.create_dataset('FileDataSet')
         params = {'directory': self.d, 'filename': filename}
         dataset.set_generation_parameters(params)
-        (x, y) = dataset.generate()
-        self.assertEqual(1000, x.shape[0])
-        self.assertEqual(20, x.shape[1])
-        self.assertEqual(1000, y.shape[0])
-        self.assertEqual(1, y.ndim)
+        df = dataset.generate()
+        self.assertIsInstance(df, pd.DataFrame)
+        self.assertEqual(1000, df.iloc[:, 0:-1].shape[0])
+        self.assertEqual(20, df.iloc[:, 0:-1].shape[1])
+        self.assertEqual(1000, df.iloc[:, -1].shape[0])
+        self.assertEqual(1, df.iloc[:, -1].ndim)
 
     def test_generate_file_dataset_german_credit_generated_with_relative_path(self):
         filename = 'credit-g.arff'
@@ -40,11 +43,12 @@ class TestFileDataSet(unittest.TestCase):
         params = {'directory': 'files/dataset/', 'filename': filename}
         dataset.set_generation_parameters(params)
         dataset.set_base_directory(self.base_dir)
-        (x, y) = dataset.generate()
-        self.assertEqual(1000, x.shape[0])
-        self.assertEqual(20, x.shape[1])
-        self.assertEqual(1000, y.shape[0])
-        self.assertEqual(1, y.ndim)
+        df = dataset.generate()
+        self.assertIsInstance(df, pd.DataFrame)
+        self.assertEqual(1000, df.iloc[:, 0:-1].shape[0])
+        self.assertEqual(20, df.iloc[:, 0:-1].shape[1])
+        self.assertEqual(1000, df.iloc[:, -1].shape[0])
+        self.assertEqual(1, df.iloc[:, -1].ndim)
 
     def test_generate_file_dataset_directory_not_present(self):
         filename = 'credit-g.arff'

@@ -569,3 +569,45 @@ class TestData(unittest.TestCase):
         result = data.merge_all().compute()
         np.testing.assert_array_equal(expected_result, result)
         self.assertIsInstance(result, np.ndarray)
+
+    def test_copy_with_new_data_pandas(self):
+        """
+        :test : mlsurvey.modles.Data.copy_with_new_data()
+        :condition : Dataframe is pandas, x and y a set
+        :main_result : new data instance is return with new data values but same columns names and other paramters
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        expected_column_name = ['Col1', 'Col2', 'Col3']
+        df = pd.DataFrame(data_array, columns=expected_column_name)
+        data = mls.models.Data(df, df_contains='xy', y_col_name=expected_column_name[2])
+        new_x = np.array([[10, 20], [30, 40]])
+        new_data = data.copy_with_new_data([new_x, y])
+        self.assertIsInstance(new_data.df, data.df.__class__)
+        self.assertEqual('xy', new_data.df_contains)
+        self.assertEqual('Col3', new_data.y_col_name)
+        np.testing.assert_array_equal(new_x, new_data.x)
+        np.testing.assert_array_equal(y, new_data.y)
+        self.assertListEqual(expected_column_name, list(new_data.df.columns))
+
+    def test_copy_with_new_data_dask(self):
+        """
+        :test : mlsurvey.modles.Data.copy_with_new_data()
+        :condition : Dataframe is dask, x and y a set
+        :main_result : new data instance is return with new data values but same columns names and other paramters
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        expected_column_name = ['Col1', 'Col2', 'Col3']
+        df = dd.from_array(data_array, columns=expected_column_name)
+        data = mls.models.Data(df, df_contains='xy', y_col_name=expected_column_name[2])
+        new_x = np.array([[10, 20], [30, 40]])
+        new_data = data.copy_with_new_data([new_x, y])
+        self.assertIsInstance(new_data.df, data.df.__class__)
+        self.assertEqual('xy', new_data.df_contains)
+        self.assertEqual('Col3', new_data.y_col_name)
+        np.testing.assert_array_equal(new_x, new_data.x)
+        np.testing.assert_array_equal(y, new_data.y)
+        self.assertListEqual(expected_column_name, list(new_data.df.columns))

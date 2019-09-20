@@ -1,15 +1,18 @@
 import os
-import shutil
 import unittest
+
+import dask.dataframe as dd
+import numpy as np
+import pandas as pd
 
 import mlsurvey as mls
 
 
 class TestFileOperation(unittest.TestCase):
 
-    @classmethod
-    def tearDownClass(cls):
-        shutil.rmtree('logs/testing/')
+    # @classmethod
+    # def tearDownClass(cls):
+    #     shutil.rmtree('logs/testing/')
 
     def test_save_json_file_saves(self):
         directory = 'logs/testing/'
@@ -42,3 +45,49 @@ class TestFileOperation(unittest.TestCase):
         result = mls.FileOperation.load_json_as_dict('dict_with_tuple.json', directory, tuple_to_string=True)
         expected = {'testA': [[1, 2], [3, 4]], 'testB': 'Text', 'testC': '(1, 3, 5)'}
         self.assertDictEqual(expected, result)
+
+    def test_save_hdf_pandas(self):
+        """
+        :test : mlsurvey.FileOperation.save_hdf()
+        :condition : data is pandas dataframe
+        :main_result : file exists
+        """
+        directory = 'logs/testing/'
+        data = pd.DataFrame([[1, 2], [3, 4]])
+        mls.FileOperation.save_hdf('data.h5', directory, data)
+        self.assertTrue(os.path.isfile(directory + 'data.h5'))
+        # do not check the md5 for hdf5 files since it changes each time...
+
+    def test_save_hdf_dask(self):
+        """
+        :test : mlsurvey.FileOperation.save_hdf()
+        :condition : data is dask dataframe
+        :main_result : file exists
+        """
+        directory = 'logs/testing/'
+        data = dd.from_array(np.array([[1, 2], [3, 4]]))
+        mls.FileOperation.save_hdf('data.h5', directory, data)
+        self.assertTrue(os.path.isfile(directory + 'data.h5'))
+        # do not check the md5 for hdf5 files since it changes each time...
+
+    def test_load_hdf_pandas(self):
+        """
+        :test : mlsurvey.FileOperation.load_hdf()
+        :condition : data is pandas dataframe, and file exists
+        :main_result : dataframe is read
+        """
+        directory = '../test/files/'
+        df = mls.FileOperation.read_hdf('data-pandas.h5', directory, 'Pandas')
+        self.assertIsInstance(df, pd.DataFrame)
+        np.testing.assert_array_equal(np.array([[1, 2], [3, 4]]), df.values)
+
+    def test_load_hdf_dask(self):
+        """
+        :test : mlsurvey.FileOperation.load_hdf()
+        :condition : data is dask dataframe, and file exists
+        :main_result : dataframe is read
+        """
+        directory = '../test/files/'
+        df = mls.FileOperation.read_hdf('data-dask.h5', directory, 'Dask')
+        self.assertIsInstance(df, dd.DataFrame)
+        np.testing.assert_array_equal(np.array([[1, 2], [3, 4]]), df.values)

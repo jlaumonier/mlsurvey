@@ -1,7 +1,7 @@
 import numpy as np
-import pandas as pd
 from sklearn import datasets
 
+import mlsurvey as mls
 from .dataset import DataSet
 from .dataset_factory import DataSetFactory
 
@@ -11,12 +11,13 @@ class GenericDataSet(DataSet):
     Generic Dataset generation. Call a method, from config file, to generate a dataset.
     """
 
-    def __init__(self, t):
+    def __init__(self, t, storage='Pandas'):
         """
         Initialize the generic dataset,
         :param t: type of the dataset, a function name into sklearn.datasets
+        :param storage : the type of dataframe to store the data. By default 'Pandas'. Other option is 'Dask'
         """
-        super().__init__(t)
+        super().__init__(t, storage)
         self.types = {'load_iris': ['load_iris', {'return_X_y': True}]}
         # default parameters if exist
         if self.t in self.types.keys():
@@ -48,12 +49,13 @@ class GenericDataSet(DataSet):
             make_dataset = getattr(datasets, self.t)
         x, y = make_dataset(**self.params)
         y = np.reshape(y, (y.shape[0], 1))
-        result = pd.DataFrame(np.concatenate((x, y), axis=1))
+        func_create_df = mls.Utils.func_create_dataframe(self.storage)
+        result = func_create_df(np.concatenate((x, y), axis=1))
         return result
 
     class Factory:
         @staticmethod
-        def create(t): return GenericDataSet(t)
+        def create(t, storage): return GenericDataSet(t, storage)
 
 
 DataSetFactory.add_factory('generic', GenericDataSet.Factory)

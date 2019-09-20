@@ -13,3 +13,4 @@ tqdm
 tinydb
 liac-arff
 dask[complete]
+tables

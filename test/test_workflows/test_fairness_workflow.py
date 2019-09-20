@@ -124,7 +124,7 @@ class TestFairnessWorkflow(unittest.TestCase):
         fairness_params = {"protected_attribute": 1, "privileged_classes": "x >= 25"}
         context.dataset.set_generation_parameters(dataset_params)
         context.dataset.set_fairness_parameters(fairness_params)
-        context.raw_data = mls.models.Data(*context.dataset.generate())
+        context.raw_data = mls.models.Data(context.dataset.generate())
         fw = mls.workflows.FairnessWorkflow(context=context)
         fw.task_get_data()
         self.assertEqual(context.dataset, fw.context.dataset)
@@ -157,7 +157,7 @@ class TestFairnessWorkflow(unittest.TestCase):
         directory = os.path.join(self.bd, "files/dataset")
         dataset_params = {"directory": directory, "filename": "test-fairness.arff"}
         context.dataset.set_generation_parameters(dataset_params)
-        context.data = mls.models.Data(*context.dataset.generate())
+        context.data = mls.models.Data(context.dataset.generate())
         fw = mls.workflows.FairnessWorkflow(context=context)
         try:
             fw.task_get_data()
@@ -205,11 +205,11 @@ class TestFairnessWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(fw.log.directory + 'config.json'))
         self.assertEqual('03d9ab96b2677c8e7efcd8a063781472', mls.Utils.md5_file(fw.log.directory + 'config.json'))
         self.assertTrue(os.path.isfile(fw.log.directory + 'dataset.json'))
-        self.assertEqual('66452e7c6a7d0ebf206b02b7d604b67c', mls.Utils.md5_file(fw.log.directory + 'dataset.json'))
+        self.assertEqual('5f022a7a58c420fe9ecdd80e553d5754', mls.Utils.md5_file(fw.log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(fw.log.directory + 'evaluation.json'))
         self.assertEqual('8cbacb12d164526b675b9d819f6872d3', mls.Utils.md5_file(fw.log.directory + 'evaluation.json'))
         self.assertTrue(os.path.isfile(fw.log.directory + 'input.json'))
-        self.assertEqual('793b9c92ee985c8395b046d40a04551f', mls.Utils.md5_file(fw.log.directory + 'input.json'))
+        self.assertEqual('f7c2c5e2c7a952d0b077bf8eec94a048', mls.Utils.md5_file(fw.log.directory + 'input.json'))
         self.assertTrue(fw.task_terminated_persistence)
 
     def test_run_all_step_should_be_executed(self):

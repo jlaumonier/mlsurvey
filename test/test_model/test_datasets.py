@@ -1,5 +1,6 @@
 import unittest
 
+import dask.dataframe as dd
 import pandas as pd
 
 import mlsurvey as mls
@@ -11,6 +12,15 @@ class TestDataSet(unittest.TestCase):
         expected_type = 'typ'
         data = mls.datasets.DataSet(expected_type)
         self.assertEqual(expected_type, data.t)
+        self.assertEqual('Pandas', data.storage)
+        self.assertDictEqual({}, data.params)
+        self.assertDictEqual({}, data.fairness)
+
+    def test_init_parameters_type_fairness_storage(self):
+        expected_type = 'typ'
+        data = mls.datasets.DataSet(expected_type, 'Dask')
+        self.assertEqual(expected_type, data.t)
+        self.assertEqual('Dask', data.storage)
         self.assertDictEqual({}, data.params)
         self.assertDictEqual({}, data.fairness)
 
@@ -33,7 +43,7 @@ class TestDataSet(unittest.TestCase):
         fairness = {'protected_attribute': 0, 'privileged_classes': 'x >= 25'}
         data.set_fairness_parameters(fairness)
         dict_result = data.to_dict()
-        expected = {'type': '', "parameters": params, "fairness": fairness}
+        expected = {'type': '', 'storage': 'Pandas', 'parameters': params, 'fairness': fairness}
         self.assertDictEqual(expected, dict_result)
 
     def test_set_fairness_parameters_empty_parameter(self):
@@ -144,8 +154,29 @@ class TestGenericDataSet(unittest.TestCase):
         }
         circle_dataset.set_generation_parameters(params)
         circle_data = circle_dataset.generate()
+        self.assertIsInstance(circle_data, pd.DataFrame)
         self.assertEqual(2, circle_data.iloc[:, 0:-1].shape[1])
         self.assertEqual(params['n_samples'], circle_data.iloc[:, 0:-1].shape[0])
+        self.assertEqual(params['n_samples'], circle_data.iloc[:, -1].shape[0])
+
+    def test_generate_generic_dataset_circle_is_generated_with_parameters_dask(self):
+        circle_dataset = mls.datasets.DataSetFactory.create_dataset('make_circles', 'Dask')
+        params = {
+            'n_samples': 200,
+            # not tested
+            'shuffle': False,
+            # not tested
+            'noise': 0.5,
+            # not tested
+            'random_state': 10,
+            # not tested
+            'factor': 0.3
+        }
+        circle_dataset.set_generation_parameters(params)
+        circle_data = circle_dataset.generate()
+        self.assertIsInstance(circle_data, dd.DataFrame)
+        self.assertEqual(2, circle_data.iloc[:, 0:-1].shape[1])
+        self.assertEqual(params['n_samples'], circle_data.iloc[:, 0:-1].compute().shape[0])
         self.assertEqual(params['n_samples'], circle_data.iloc[:, -1].shape[0])
 
     def test_generate_generic_dataset_unknown_dataset_should_cause_error(self):
@@ -155,14 +186,13 @@ class TestGenericDataSet(unittest.TestCase):
         :main_result : raise AttributeError
         """
         data = mls.datasets.DataSetFactory.create_dataset('make_unknown')
-        (x, y) = (None, None)
+        df = None
         try:
-            (x, y) = data.generate()
+            df = data.generate()
             self.assertTrue(False)
         except AttributeError:
             self.assertTrue(True)
-        self.assertIsNone(x)
-        self.assertIsNone(y)
+        self.assertIsNone(df)
 
     def test_generate_generic_dataset_unknown_parameter_should_cause_error(self):
         """
@@ -174,20 +204,21 @@ class TestGenericDataSet(unittest.TestCase):
         params = {
             'test': 200,
         }
-        (x, y) = (None, None)
+        df = None
         data.set_generation_parameters(params)
         try:
-            (x, y) = data.generate()
+            df = data.generate()
             self.assertTrue(False)
         except TypeError:
             self.assertTrue(True)
-        self.assertIsNone(x)
-        self.assertIsNone(y)
+        self.assertIsNone(df)
 
     def test_to_dict_transformed(self):
         dataset = mls.datasets.GenericDataSet('load_iris')
         params = {'param1': 1, 'param2': 3, 'return_X_y': False}
-        expected = {'type': 'load_iris', "parameters": {'param1': 1, 'param2': 3, 'return_X_y': False}}
+        expected = {'type': 'load_iris',
+                    'storage': 'Pandas',
+                    'parameters': {'param1': 1, 'param2': 3, 'return_X_y': False}}
         dataset.set_generation_parameters(params)
         j = dataset.to_dict()
         self.assertDictEqual(expected, j)
@@ -207,8 +238,7 @@ class TestNClassRandomClassificationWithNoise(unittest.TestCase):
             'n_samples': 200
         }
         data.set_generation_parameters(params)
-        (x, y) = data.generate()
-        self.assertTrue(True)
-        self.assertEqual(2, x.shape[1])
-        self.assertEqual(params['n_samples'], x.shape[0])
-        self.assertEqual(params['n_samples'], y.shape[0])
+        df = data.generate()
+        self.assertIsInstance(df, pd.DataFrame)
+        self.assertEqual(2, df.iloc[:, 0:-1].shape[1])
+        self.assertEqual(params['n_samples'], df.shape[0])

@@ -11,16 +11,17 @@ class DataSetFactory:
         DataSetFactory.factories[name] = dataset_factory
 
     @staticmethod
-    def create_dataset(name):
+    def create_dataset(name, storage='Pandas'):
         """
         create a dataset from its name (generic, function name in sklearn.dataset or an existing class in mlsurvey)
         :param name: the name of the dataset
+        :param storage : the type of dataframe to store the data. By default 'Pandas'. Other option is 'Dask'
         :return: the instance of the dataset
         """
         factory_name = name
         if name not in DataSetFactory.factories.keys():
             factory_name = 'generic'
-        return DataSetFactory.factories[factory_name].create(name)
+        return DataSetFactory.factories[factory_name].create(name, storage)
 
     @staticmethod
     def create_dataset_from_dict(d):
@@ -32,6 +33,7 @@ class DataSetFactory:
         factory_name = d['type']
         if d['type'] not in DataSetFactory.factories.keys():
             factory_name = 'generic'
-        dataset = DataSetFactory.factories[factory_name].create(d['type'])
+        storage = d['storage'] if 'storage' in d else 'Pandas'
+        dataset = DataSetFactory.factories[factory_name].create(d['type'], storage)
         dataset.set_generation_parameters(d['parameters'])
         return dataset

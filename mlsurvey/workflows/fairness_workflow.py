@@ -50,7 +50,7 @@ class FairnessWorkflow(LearningWorkflow):
                 self.context.dataset.set_generation_parameters(dataset_params)
                 dataset_fairness = self.config.data['datasets'][dataset_name]['fairness']
                 self.context.dataset.set_fairness_parameters(dataset_fairness)
-                self.context.data = mls.models.Data(*self.context.dataset.generate())
+                self.context.data = mls.models.Data(self.context.dataset.generate())
             else:
                 self.context.dataset = self.parent_context.dataset
                 if not self.context.dataset.fairness:
@@ -64,17 +64,16 @@ class FairnessWorkflow(LearningWorkflow):
     def task_evaluate(self):
         """ calculate the fairness of the data."""
         # demographic parity
-        column = self.context.dataset.fairness['protected_attribute']
-        privileged_selected = np.array(list(map(eval('lambda x:' + self.context.dataset.fairness['privileged_classes']),
-                                                self.context.data.x[:, column])))
-        extended_data = self.context.data.copy()
-        extended_data.add_column_in_data(privileged_selected, 'priv_class')
+        column_str = self.context.data.df.columns[self.context.dataset.fairness['protected_attribute']]
+        self.context.data.add_calculated_column(self.context.dataset.fairness['privileged_classes'],
+                                                column_str,
+                                                'priv_class')
 
         # Demographic parity
         # P(Y=1 | Priv_class = False) - P(Y=1 | Priv_class = True)
-        false_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target', 1)],
+        false_proba = mls.FairnessUtils.calculate_cond_probability(self.context.data, [('target', 1)],
                                                                    [('priv_class', False)])
-        true_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target', 1)],
+        true_proba = mls.FairnessUtils.calculate_cond_probability(self.context.data, [('target', 1)],
                                                                   [('priv_class', True)])
         self.context.evaluation.demographic_parity = false_proba - true_proba
         # Disparate impact ratio
@@ -82,20 +81,20 @@ class FairnessWorkflow(LearningWorkflow):
         self.context.evaluation.disparate_impact_rate = false_proba / true_proba
 
         # criteria that use the classier
-        if not np.isnan(extended_data.y_pred).any():
+        if self.context.data.df_contains == 'xyypred' and not np.isnan(self.context.data.y_pred).any():
             # equal opportunity
             # P(Y_hat=0 | Y=1, Priv_class = False) - P(Y_hat=0 | Y=1, Priv_class = True)
-            false_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target_pred', 0)],
+            false_proba = mls.FairnessUtils.calculate_cond_probability(self.context.data, [('target_pred', 0)],
                                                                        [('target', 1), ('priv_class', False)])
-            true_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target_pred', 0)],
+            true_proba = mls.FairnessUtils.calculate_cond_probability(self.context.data, [('target_pred', 0)],
                                                                       [('target', 1), ('priv_class', True)])
             self.context.evaluation.equal_opportunity = false_proba - true_proba
 
             # statistical parity
             # P(Y_hat=1 | Priv_class = False) - P(y_hat=1 | Priv_class = True)
-            false_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target_pred', 1)],
+            false_proba = mls.FairnessUtils.calculate_cond_probability(self.context.data, [('target_pred', 1)],
                                                                        [('priv_class', False)])
-            true_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target_pred', 1)],
+            true_proba = mls.FairnessUtils.calculate_cond_probability(self.context.data, [('target_pred', 1)],
                                                                       [('priv_class', True)])
             self.context.evaluation.statistical_parity = false_proba - true_proba
 
@@ -103,9 +102,9 @@ class FairnessWorkflow(LearningWorkflow):
             # Sum_i\inI [P(Y_hat=1 | Y=i, Priv_class = False) - P(Y_hat=1 | Y=i, Priv_class = True)] / |I|
             diff = 0
             for i in [0, 1]:
-                false_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target_pred', 1)],
+                false_proba = mls.FairnessUtils.calculate_cond_probability(self.context.data, [('target_pred', 1)],
                                                                            [('target', i), ('priv_class', False)])
-                true_proba = mls.FairnessUtils.calculate_cond_probability(extended_data, [('target_pred', 1)],
+                true_proba = mls.FairnessUtils.calculate_cond_probability(self.context.data, [('target_pred', 1)],
                                                                           [('target', i), ('priv_class', True)])
                 diff = diff + (false_proba - true_proba)
             self.context.evaluation.average_equalized_odds = diff / 2.0

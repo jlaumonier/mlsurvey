@@ -11,12 +11,13 @@ from .dataset_factory import DataSetFactory
 
 class FileDataSet(DataSet):
 
-    def __init__(self, t):
+    def __init__(self, t, storage='Pandas'):
         """
-        Initialize the generic dataset,
+        Initialize the arff file dataset,
         :param t: type of the dataset, a function name into sklearn.datasets
+        :param storage : the type of dataframe to store the data. By default 'Pandas'. Other option is 'Dask'
         """
-        super().__init__(t)
+        super().__init__(t, storage)
         self.base_directory = ''
 
     def set_base_directory(self, d):
@@ -48,14 +49,11 @@ class FileDataSet(DataSet):
         cat_columns = df.select_dtypes(['object']).columns
         df[cat_columns] = df[cat_columns].astype('category')
         df[cat_columns] = df[cat_columns].apply(lambda c: c.cat.codes)
-        d = df.values
-        x = d[:, :-1]
-        y = d[:, -1]
-        return x, y
+        return df
 
     class Factory:
         @staticmethod
-        def create(t): return FileDataSet(t)
+        def create(t, storage): return FileDataSet(t, storage)
 
 
 DataSetFactory.add_factory('FileDataSet', FileDataSet.Factory)

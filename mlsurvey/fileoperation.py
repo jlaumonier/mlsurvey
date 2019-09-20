@@ -1,6 +1,9 @@
 import json
 import os
 
+import dask.dataframe as dd
+import pandas as pd
+
 import mlsurvey as mls
 
 
@@ -34,4 +37,34 @@ class FileOperation:
         full_path = os.path.join(directory, filename)
         with open(full_path, 'r') as infile:
             data = mls.Utils.transform_to_dict(json.load(infile), tuple_to_string)
+        return data
+
+    @classmethod
+    def save_hdf(cls, filename, directory, data):
+        """
+        Save a dataframe into a hdf file.
+        Create the directory of not exists
+        :param filename: name of the file
+        :param directory: directory to save the file
+        :param data: data to save into the file
+        """
+        os.makedirs(directory, exist_ok=True)
+        full_path = os.path.join(directory, filename)
+        data.to_hdf(full_path, 'key', mode='w')
+
+    @classmethod
+    def read_hdf(cls, filename, directory, df_format):
+        """
+        Save a dataframe into a hdf file.
+        Create the directory of not exists
+        :param filename: name of the file
+        :param directory: directory to save the file
+        :param df_format: 'Pandas' or 'Dask'
+        """
+        full_path = os.path.join(directory, filename)
+        data = None
+        if df_format == 'Pandas':
+            data = pd.read_hdf(full_path, 'key')
+        if df_format == 'Dask':
+            data = dd.read_hdf(full_path, 'key')
         return data
