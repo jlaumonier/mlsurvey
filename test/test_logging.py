@@ -71,15 +71,14 @@ class TestLogging(unittest.TestCase):
         log = mls.Logging(dir_name, base_dir='../test/')
         results = log.load_input('input.json')
         i = results['test']
-        self.assertEqual(-0.9921147013144779, i.x[0, 0])
-        self.assertEqual(0, i.y[0])
-        # missing y_pred test TODO when all new process will work
-        # self.assertEqual(1, i.y_pred[0])
+        self.assertEqual(0.6459514595757855, i.x[0, 0])
+        self.assertEqual(1.0499271427368027, i.x[0, 1])
+        self.assertEqual(1.0, i.y[0])
+        self.assertEqual(1, i.y_pred[0])
         self.assertEqual(2, i.x.shape[1])
-        self.assertEqual(100, i.x.shape[0])
-        self.assertEqual(100, i.y.shape[0])
-        # missing y_pred test
-        # self.assertEqual(150, i.y_pred.shape[0])
+        self.assertEqual(20, i.x.shape[0])
+        self.assertEqual(20, i.y.shape[0])
+        self.assertEqual(20, i.y_pred.shape[0])
 
     def test_save_json_file_saves(self):
         dir_name = 'testing/'

@@ -15,6 +15,7 @@ class DataSet:
         self.t = t
         self.storage = storage
         self.fairness = {}
+        self.metadata = {'y_col_name': 'target'}
 
     def set_generation_parameters(self, params):
         """
@@ -38,12 +39,22 @@ class DataSet:
         else:
             raise mls.exceptions.ConfigError('Fairness parameter not valid')
 
+    def set_metadata_parameters(self, metadata):
+        """
+        set the metadata of the datasets
+        :param metadata: a dictionary containing parameters. y_col_name key is required
+        """
+        if metadata is not None \
+                and metadata != {} \
+                and 'y_col_name' in metadata:
+            self.metadata = metadata
+
     def to_dict(self):
         """
         transform the dataset into a dictionary {'type': .., 'parameters': {...} }
         :return: the dictionary
         """
-        result = {'type': self.t, 'storage': self.storage, 'parameters': self.params}
+        result = {'type': self.t, 'storage': self.storage, 'parameters': self.params, 'metadata': self.metadata}
         if self.fairness != {}:
             result['fairness'] = self.fairness
         return result

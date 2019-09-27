@@ -15,6 +15,7 @@ class TestDataSet(unittest.TestCase):
         self.assertEqual('Pandas', data.storage)
         self.assertDictEqual({}, data.params)
         self.assertDictEqual({}, data.fairness)
+        self.assertDictEqual({'y_col_name': 'target'}, data.metadata)
 
     def test_init_parameters_type_fairness_storage(self):
         expected_type = 'typ'
@@ -23,6 +24,7 @@ class TestDataSet(unittest.TestCase):
         self.assertEqual('Dask', data.storage)
         self.assertDictEqual({}, data.params)
         self.assertDictEqual({}, data.fairness)
+        self.assertDictEqual({'y_col_name': 'target'}, data.metadata)
 
     def test_set_generation_parameters(self):
         data = mls.datasets.DataSet('')
@@ -36,14 +38,34 @@ class TestDataSet(unittest.TestCase):
         data.set_fairness_parameters(expected_fairness)
         self.assertDictEqual(data.fairness, expected_fairness)
 
+    def test_set_metadata_parameters_set(self):
+        dataset = mls.datasets.DataSet('')
+        metadata = {'y_col_name': 'col1'}
+        dataset.set_metadata_parameters(metadata)
+        self.assertDictEqual(dataset.metadata, metadata)
+
+    def test_set_metadata_parameters_empty_should_have_default_y_col_name(self):
+        dataset = mls.datasets.DataSet('')
+        metadata = None
+        dataset.set_metadata_parameters(metadata)
+        self.assertEqual('target', dataset.metadata['y_col_name'])
+
+    def test_set_metadata_parameters_no_y_col_name_should_have_default_y_col_name(self):
+        dataset = mls.datasets.DataSet('')
+        metadata = {}
+        dataset.set_metadata_parameters(metadata)
+        self.assertEqual('target', dataset.metadata['y_col_name'])
+
     def test_to_dict_is_transformed(self):
         data = mls.datasets.DataSet('')
         params = {'param1': 1, 'param2': 3}
         data.set_generation_parameters(params)
         fairness = {'protected_attribute': 0, 'privileged_classes': 'x >= 25'}
         data.set_fairness_parameters(fairness)
+        metadata = {'y_col_name': 'col1'}
+        data.set_metadata_parameters(metadata)
         dict_result = data.to_dict()
-        expected = {'type': '', 'storage': 'Pandas', 'parameters': params, 'fairness': fairness}
+        expected = {'type': '', 'storage': 'Pandas', 'parameters': params, 'fairness': fairness, 'metadata': metadata}
         self.assertDictEqual(expected, dict_result)
 
     def test_set_fairness_parameters_empty_parameter(self):
@@ -218,7 +240,8 @@ class TestGenericDataSet(unittest.TestCase):
         params = {'param1': 1, 'param2': 3, 'return_X_y': False}
         expected = {'type': 'load_iris',
                     'storage': 'Pandas',
-                    'parameters': {'param1': 1, 'param2': 3, 'return_X_y': False}}
+                    'parameters': {'param1': 1, 'param2': 3, 'return_X_y': False},
+                    'metadata': {'y_col_name': 'target'}}
         dataset.set_generation_parameters(params)
         j = dataset.to_dict()
         self.assertDictEqual(expected, j)

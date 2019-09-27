@@ -2,7 +2,9 @@ import os
 import shutil
 import unittest
 
+import dask.dataframe as dd
 import numpy as np
+import pandas as pd
 from sklearn import neighbors
 from sklearn.preprocessing import StandardScaler
 
@@ -203,7 +205,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertIsNone(slw.context.data)
         self.assertTrue(slw.task_terminated_get_data)
 
-    def test_task_get_data_filedataset_data_is_obtained(self):
+    def test_task_get_data_filedataset_data_is_obtained_pandas_implicit(self):
         slw = mls.workflows.SupervisedLearningWorkflow('config_filedataset.json',
                                                        config_directory=self.cd,
                                                        base_directory=self.bd)
@@ -211,8 +213,37 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertIsInstance(slw.context.dataset, mls.datasets.FileDataSet)
         self.assertDictEqual({'protected_attribute': 1, 'privileged_classes': 'x >= 25'}, slw.context.dataset.fairness)
         self.assertIsNotNone(slw.context.raw_data)
+        self.assertIsInstance(slw.context.raw_data.df, pd.DataFrame)
         self.assertEqual(13, len(slw.context.raw_data.x))
         self.assertEqual(13, len(slw.context.raw_data.y))
+        self.assertIsNone(slw.context.data)
+        self.assertTrue(slw.task_terminated_get_data)
+
+    def test_task_get_data_filedataset_data_is_obtained_pandas_explicit(self):
+        slw = mls.workflows.SupervisedLearningWorkflow('config_filedataset.json',
+                                                       config_directory=self.cd,
+                                                       base_directory=self.bd)
+        slw.task_get_data()
+        self.assertIsInstance(slw.context.dataset, mls.datasets.FileDataSet)
+        self.assertDictEqual({'protected_attribute': 1, 'privileged_classes': 'x >= 25'}, slw.context.dataset.fairness)
+        self.assertIsNotNone(slw.context.raw_data)
+        self.assertIsInstance(slw.context.raw_data.df, pd.DataFrame)
+        self.assertEqual(13, len(slw.context.raw_data.x))
+        self.assertEqual(13, len(slw.context.raw_data.y))
+        self.assertIsNone(slw.context.data)
+        self.assertTrue(slw.task_terminated_get_data)
+
+    def test_task_get_data_filedataset_data_is_obtained_csv_dask_metadata_explicit(self):
+        slw = mls.workflows.SupervisedLearningWorkflow('config_filedataset_csv_dask.json',
+                                                       config_directory=self.cd,
+                                                       base_directory=self.bd)
+        slw.task_get_data()
+        self.assertIsInstance(slw.context.dataset, mls.datasets.FileDataSet)
+        self.assertIsNotNone(slw.context.raw_data)
+        self.assertIsInstance(slw.context.raw_data.df, dd.DataFrame)
+        self.assertEqual('rating', slw.context.raw_data.y_col_name)
+        self.assertEqual(39, len(slw.context.raw_data.x))
+        self.assertEqual(39, len(slw.context.raw_data.y))
         self.assertIsNone(slw.context.data)
         self.assertTrue(slw.task_terminated_get_data)
 
@@ -314,6 +345,22 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertIsNone(slw.context.evaluation.sub_evaluation)
         self.assertTrue(slw.task_terminated_evaluate)
 
+    def test_task_evaluate_classifier_should_have_evaluate_dask_csv(self):
+        """
+        :test : mlsurvey.workflows.SupervisedLearningWorkflow.task_evaluate()
+        :condition : csv data loaded as dask
+        :main_result : the evaluation is terminated
+        """
+        slw = mls.workflows.SupervisedLearningWorkflow('config_filedataset_csv_dask.json',
+                                                       config_directory=self.cd,
+                                                       base_directory=self.bd)
+        slw.task_get_data()
+        slw.task_prepare_data()
+        slw.task_split_data()
+        slw.task_learn()
+        slw.task_evaluate()
+        self.assertTrue(slw.task_terminated_evaluate)
+
     def test_task_fairness_classifier_should_have_calculate_fairness(self):
         """
         :test : mlsurvey.workflows.SupervisedLearningWorkflow.fairness()
@@ -365,7 +412,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(slw.log.directory + 'config.json'))
         self.assertEqual('ae28ce16852d7a5ddbecdb07ea755339', mls.Utils.md5_file(slw.log.directory + 'config.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'dataset.json'))
-        self.assertEqual('4ebc31c30a25648a5a153c60fe196c25', mls.Utils.md5_file(slw.log.directory + 'dataset.json'))
+        self.assertEqual('8c61e35b282706649f63fba48d3d103e', mls.Utils.md5_file(slw.log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'input.json'))
         self.assertEqual('7eea77c934e04107af044ab15398ac16', mls.Utils.md5_file(slw.log.directory + 'input.json'))
         self.assertTrue(os.path.isfile(slw.log.directory + 'algorithm.json'))

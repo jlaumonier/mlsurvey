@@ -56,7 +56,7 @@ class TestFileDataSet(unittest.TestCase):
         params = {'d': self.d, 'filename': filename}
         dataset.set_generation_parameters(params)
         try:
-            _, _ = dataset.generate()
+            _ = dataset.generate()
             self.assertTrue(False)
         except mls.exceptions.ConfigError:
             self.assertTrue(True)
@@ -67,7 +67,7 @@ class TestFileDataSet(unittest.TestCase):
         params = {'directory': self.d, 'f': filename}
         dataset.set_generation_parameters(params)
         try:
-            _, _ = dataset.generate()
+            _ = dataset.generate()
             self.assertTrue(False)
         except mls.exceptions.ConfigError:
             self.assertTrue(True)
@@ -78,7 +78,19 @@ class TestFileDataSet(unittest.TestCase):
         params = {'directory': self.d, 'filename': filename}
         dataset.set_generation_parameters(params)
         try:
-            _, _ = dataset.generate()
+            _ = dataset.generate()
             self.assertTrue(False)
         except mls.exceptions.ConfigError:
             self.assertTrue(True)
+
+    def test_generate_file_dataset_unittest_de_csv(self):
+        filename = 'unittest_de.csv'
+        dataset = mls.datasets.DataSetFactory.create_dataset('FileDataSet')
+        params = {'directory': self.d, 'filename': filename}
+        dataset.set_generation_parameters(params)
+        df = dataset.generate()
+        self.assertIsInstance(df, pd.DataFrame)
+        self.assertEqual(39, df.iloc[:, 0:-1].shape[0])
+        self.assertEqual(6, df.iloc[:, 0:-1].shape[1])
+        self.assertEqual(39, df.iloc[:, -1].shape[0])
+        self.assertEqual(1, df.iloc[:, -1].ndim)

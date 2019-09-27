@@ -1,4 +1,3 @@
-import pandas as pd
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -54,8 +53,15 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         dataset_name = self.config.data['learning_process']['input']
         dataset_params = self.config.data['datasets'][dataset_name]['parameters']
         dataset_type = self.config.data['datasets'][dataset_name]['type']
-        self.context.dataset = mls.datasets.DataSetFactory.create_dataset(dataset_type)
+        dataset_storage = 'Pandas'
+        dataset_metadata = None
+        if 'storage' in self.config.data['datasets'][dataset_name]:
+            dataset_storage = self.config.data['datasets'][dataset_name]['storage']
+        if 'metadata' in self.config.data['datasets'][dataset_name]:
+            dataset_metadata = self.config.data['datasets'][dataset_name]['metadata']
+        self.context.dataset = mls.datasets.DataSetFactory.create_dataset(dataset_type, dataset_storage)
         self.context.dataset.set_generation_parameters(dataset_params)
+        self.context.dataset.set_metadata_parameters(dataset_metadata)
 
         # this line is only for FileDataSet testing... Not sure if it is the most Pythonic and most TDDic way....
         if hasattr(self.context.dataset, 'set_base_directory'):
@@ -65,7 +71,8 @@ class SupervisedLearningWorkflow(LearningWorkflow):
             dataset_fairness = self.config.data['datasets'][dataset_name]['fairness']
             self.context.dataset.set_fairness_parameters(dataset_fairness)
 
-        self.context.raw_data = mls.models.Data(self.context.dataset.generate())
+        self.context.raw_data = mls.models.Data(self.context.dataset.generate(),
+                                                y_col_name=self.context.dataset.metadata['y_col_name'])
         self.task_terminated_get_data = True
 
     def task_prepare_data(self):
@@ -104,17 +111,25 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         """ calculate the score of the classifier with test data """
         self.context.evaluation.score = self.context.classifier.score(self.context.data_test.x,
                                                                       self.context.data_test.y)
-        df = pd.DataFrame(self.context.classifier.predict(self.context.data.x))
+        if self.context.dataset.storage == 'Dask':
+            self.context.evaluation.score = self.context.evaluation.score.compute()
+        func_create_df = mls.Utils.func_create_dataframe(self.context.dataset.storage)
+        df = func_create_df(self.context.classifier.predict(self.context.data.x), columns=['target_pred'])
         self.context.data.set_pred_data(df)
         # Assuming that data and raw_data are the same data but transformed
-        df = pd.DataFrame(self.context.data.y_pred)
+        df = func_create_df(self.context.data.y_pred, columns=['target_pred'])
         self.context.raw_data.set_pred_data(df)
-        df = pd.DataFrame(self.context.classifier.predict(self.context.data_train.x))
+        df = func_create_df(self.context.classifier.predict(self.context.data_train.x), columns=['target_pred'])
         self.context.data_train.set_pred_data(df)
-        df = pd.DataFrame(self.context.classifier.predict(self.context.data_test.x))
+        df = func_create_df(self.context.classifier.predict(self.context.data_test.x), columns=['target_pred'])
         self.context.data_test.set_pred_data(df)
-        self.context.evaluation.confusion_matrix = confusion_matrix(self.context.data_test.y,
-                                                                    self.context.data_test.y_pred)
+        if self.context.dataset.storage == 'Dask':
+            # confusion_matrix does not work with Dask array...
+            self.context.evaluation.confusion_matrix = confusion_matrix(self.context.data_test.y.compute(),
+                                                                        self.context.data_test.y_pred.compute())
+        if self.context.dataset.storage == 'Pandas':
+            self.context.evaluation.confusion_matrix = confusion_matrix(self.context.data_test.y,
+                                                                        self.context.data_test.y_pred)
         self.task_terminated_evaluate = True
 
     def task_fairness(self):

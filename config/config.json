@@ -49,10 +49,18 @@
       },
       "fairness": {
         "protected_attribute": 12,
-        "privileged_classes": [
-          "x >= 25",
-          "x >= 35"
-        ]
+        "privileged_classes": "x >= 25"
+      }
+    },
+    "DataSetDE": {
+      "type": "FileDataSet",
+      "storage": "Dask",
+      "parameters": {
+        "directory": "dataset",
+        "filename": "unittest_de.csv"
+      },
+      "metadata": {
+        "y_col_name": "rating"
       }
     }
   },
@@ -60,30 +68,17 @@
     "knn-base": {
       "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
       "hyperparameters": {
-        "n_neighbors": [
-          2,
-          3,
-          4
-        ],
+        "n_neighbors": 2,
         "algorithm": "auto",
         "weights": "uniform",
         "leaf_size": 30,
-        "metric": [
-          "minkowski",
-          "manhattan",
-          "euclidean",
-          "chebyshev"
-        ]
+        "metric": "minkowski"
       }
     },
-    "smv-base": {
+    "svm-base": {
       "algorithm-family": "sklearn.svm.SVC",
       "hyperparameters": {
-        "C": [
-          0.9,
-          0.1,
-          1
-        ],
+        "C": 0.9,
         "kernel": "rbf",
         "gamma": "auto"
       }
@@ -113,7 +108,7 @@
     "traintest20": {
       "type": "traintest",
       "parameters": {
-        "test_size": 40,
+        "test_size": 10,
         "random_state": 0,
         "shuffle": true
       }
@@ -125,13 +120,13 @@
       "DataSetCircle",
       "DataSetMoon",
       "DataSetIris",
-      "DataSetGermanCredit"
+      "DataSetGermanCredit",
+      "DataSetDE"
     ],
     "split": "traintest20",
     "algorithm": [
       "knn-base",
-      "smv-base",
-      "nn-base"
+      "svm-base"
     ]
   }
 }

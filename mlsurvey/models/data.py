@@ -24,8 +24,10 @@ class Data:
         """
         :param df: dataframe containing data
         :param df_contains: 'xy' or 'xyypred' if the dataframe contains x, y or x, y and y_pred
-        :param y_col_name:
-        :param y_pred_col_name:
+        :param y_col_name: name of the y column.
+                           By default 'target' and the last column in the dataframe  (if df_contains = 'xy')
+        :param y_pred_col_name: name the y_pred column.
+                                if df_contains='xyypred', 'target_pred' and the last column in the dataframe
         """
         if y_col_name is None:
             y_col_name = 'target'
@@ -82,7 +84,8 @@ class Data:
         if isinstance(self.__inner_data, pd.DataFrame) and isinstance(y_pred_values, dd.DataFrame):
             raise mls.exceptions.ModelError("__inner_data and y_pred_values must be the same type (pandas.Dataframe)")
         else:
-            self.__inner_data[self.y_pred_col_name] = y_pred_values.iloc[:, 0]
+            # self.__inner_data[self.y_pred_col_name] = y_pred_values.iloc[:, 0]
+            self.__inner_data = self.__inner_data.merge(y_pred_values, left_index=True, right_index=True)
         self.df_contains = 'xyypred'
         self.max_x_column = -2
 

@@ -13,7 +13,9 @@
 * A is Architecture
 
 ## TODO
+* F : Rethink about task_init_terminated because it is not used at the moment
 * F : Use the column names in all the processes (sl, fairness, visualization)
+* F : Move categorical transformation from FileDataSet to a preprocessing task
 * F : Change config format to introduce definition section for non compact format
 * F : Parameters in config. Allow multiple parameters to be dependant (e.g. fairness.protected_attribute and fairness.privileged_classes)
 * F : Generate a "full" config file for sci-kit-learn

@@ -2,7 +2,9 @@ import os
 
 # this line made a warning, because package is liac-arff and main file is arff :-S
 import arff
+import dask.dataframe as dd
 import pandas as pd
+from dask_ml import preprocessing
 
 import mlsurvey as mls
 from .dataset import DataSet
@@ -24,6 +26,30 @@ class FileDataSet(DataSet):
         """ set base directory used to search the file in generate()"""
         self.base_directory = d
 
+    def __load_arff(self, fullname):
+        """ load arff file and return a pandas or dask dataframe"""
+        try:
+            with open(fullname) as f:
+                data = arff.load(f)
+                f.close()
+        except FileNotFoundError as e:
+            raise mls.exceptions.ConfigError(e)
+
+        result = mls.Utils.func_create_dataframe(self.storage)(data['data'])
+        return result
+
+    def __load_csv(self, fullname):
+        """ load csv file and return a pandas or dask dataframe"""
+        try:
+            result = None
+            if self.storage == 'Pandas':
+                result = pd.read_csv(fullname, sep='\t')
+            if self.storage == 'Dask':
+                result = dd.read_csv(fullname, sep='\t')
+        except FileNotFoundError as e:
+            raise mls.exceptions.ConfigError(e)
+        return result
+
     def generate(self):
         """
         load file of arff file using params ['directory'] and ['filename']. Assume that y is the last column.
@@ -32,23 +58,28 @@ class FileDataSet(DataSet):
         try:
             path = self.params['directory']
             filename = self.params['filename']
+            (_, extension) = os.path.splitext(filename)
         except KeyError as e:
             raise mls.exceptions.ConfigError(e)
 
         fullname = os.path.join(self.base_directory, path, filename)
 
-        try:
-            with open(fullname) as f:
-                data = arff.load(f)
-                f.close()
-        except FileNotFoundError as e:
-            raise mls.exceptions.ConfigError(e)
+        df = None
+        if extension == '.arff':
+            df = self.__load_arff(fullname)
+        if extension == '.csv':
+            df = self.__load_csv(fullname)
 
-        df = pd.DataFrame(data['data'])
-        # convert categorical to int
+        # convert categorical to int (temporary)
         cat_columns = df.select_dtypes(['object']).columns
-        df[cat_columns] = df[cat_columns].astype('category')
-        df[cat_columns] = df[cat_columns].apply(lambda c: c.cat.codes)
+        if self.storage == 'Pandas':
+            df[cat_columns] = df[cat_columns].astype('category')
+            df[cat_columns] = df[cat_columns].apply(lambda c: c.cat.codes)
+        if self.storage == 'Dask':
+            ce = preprocessing.Categorizer()
+            oe = preprocessing.OrdinalEncoder()
+            df = ce.fit_transform(df)
+            df = oe.fit_transform(df)
         return df
 
     class Factory:

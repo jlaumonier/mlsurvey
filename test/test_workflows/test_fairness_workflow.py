@@ -205,7 +205,7 @@ class TestFairnessWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(fw.log.directory + 'config.json'))
         self.assertEqual('03d9ab96b2677c8e7efcd8a063781472', mls.Utils.md5_file(fw.log.directory + 'config.json'))
         self.assertTrue(os.path.isfile(fw.log.directory + 'dataset.json'))
-        self.assertEqual('5f022a7a58c420fe9ecdd80e553d5754', mls.Utils.md5_file(fw.log.directory + 'dataset.json'))
+        self.assertEqual('974b0c85beea523957266b744c296d99', mls.Utils.md5_file(fw.log.directory + 'dataset.json'))
         self.assertTrue(os.path.isfile(fw.log.directory + 'evaluation.json'))
         self.assertEqual('8cbacb12d164526b675b9d819f6872d3', mls.Utils.md5_file(fw.log.directory + 'evaluation.json'))
         self.assertTrue(os.path.isfile(fw.log.directory + 'input.json'))

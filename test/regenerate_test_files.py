@@ -13,6 +13,10 @@ def main():
                                                    logging_dir='visualization/blobs')
     mlw.run()
 
+    mlw = mls.workflows.SupervisedLearningWorkflow(config_directory='files/visualization/dask_de',
+                                                   logging_dir='visualization/dask_de')
+    mlw.run()
+
     mlw = mls.workflows.SupervisedLearningWorkflow(config_directory='files/visualization/germancredit',
                                                    logging_dir='visualization/germancredit')
     mlw.run()
