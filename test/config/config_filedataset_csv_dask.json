@@ -13,12 +13,12 @@
     }
   },
   "algorithms": {
-    "knn-base": {
-      "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+    "svm-base": {
+      "algorithm-family": "sklearn.svm.SVC",
       "hyperparameters": {
-        "n_neighbors": 2,
-        "algorithm": "auto",
-        "weights": "uniform"
+        "C": 0.9,
+        "kernel": "rbf",
+        "gamma": "auto"
       }
     }
   },
@@ -35,6 +35,6 @@
   "learning_process": {
     "input": "DataSetDE",
     "split": "traintest20",
-    "algorithm": "knn-base"
+    "algorithm": "svm-base"
   }
 }

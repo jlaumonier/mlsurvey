@@ -7,19 +7,6 @@ import mlsurvey as mls
 
 class Data:
 
-    # def __init__(self, x, y=None, y_pred=None, columns=None):
-    #     if columns is None and x.ndim > 1:
-    #         columns = []
-    #         for idx_col in range(x.shape[1]):
-    #             col_name = 'C' + str(idx_col)
-    #             columns.append(col_name)
-    #     self.__inner_data = pd.DataFrame(data=x, columns=columns)
-    #     print(self.x.shape)
-    #     self.set_data(None, y)
-    #     print(self.x.shape)
-    #     self.set_pred_data(y_pred)
-    #     print(self.x.shape)
-
     def __init__(self, df, df_contains='xy', y_col_name=None, y_pred_col_name=None):
         """
         :param df: dataframe containing data
@@ -101,15 +88,6 @@ class Data:
         new_columns = columns.insert(self.max_x_column, new_column_name)
         self.__inner_data = self.__inner_data[new_columns]
 
-    # deprecated
-    # def add_column_in_data(self, new_column, column_name=None):
-    #     """
-    #     add a new column at the end of the data
-    #     """
-    #     if column_name is None:
-    #         column_name = 'C' + str(len(self.__inner_data.columns) + self.max_x_column)
-    #     self.__inner_data.insert(len(self.__inner_data.columns) + self.max_x_column, column_name, new_column)
-
     @property
     def x(self):
         if isinstance(self.df, pd.DataFrame):
@@ -170,16 +148,6 @@ class Data:
         :return: numpy.array or dask.array containing all data
         """
         result = self.__inner_data.values
-        return result
-
-    def copy(self):
-        """
-        copy the object into another
-        :return: the new object
-        """
-        result = Data(x=self.x.copy(),
-                      y=self.y.copy(),
-                      y_pred=self.y_pred.copy())
         return result
 
     def copy_with_new_data(self, data_array):
