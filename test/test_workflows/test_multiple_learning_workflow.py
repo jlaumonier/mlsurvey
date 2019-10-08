@@ -7,16 +7,18 @@ import mlsurvey as mls
 
 class TestMultipleLearningWorkflow(unittest.TestCase):
     cd = ''
+    bd = ''
 
     @classmethod
     def setUpClass(cls):
         directory = os.path.dirname(__file__)
         cls.cd = os.path.join(directory, '../config/')
+        cls.bd = os.path.join(directory, '../')
 
     @classmethod
     def tearDownClass(cls):
         log = mls.Logging()
-        shutil.rmtree(log.base_dir)
+        shutil.rmtree(log.base_dir, ignore_errors=True)
 
     def test_init_multiple_learning_workflow_should_initialized(self):
         mlw = mls.workflows.MultipleLearningWorkflow('multiple_config.json', config_directory=self.cd)
@@ -151,6 +153,21 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
 
     def test_run_all_step_should_be_executed(self):
         mlw = mls.workflows.MultipleLearningWorkflow('multiple_config.json', config_directory=self.cd)
+        self.assertFalse(mlw.terminated)
+        mlw.run()
+
+        # expand task
+        self.assertTrue(mlw.task_terminated_expand_config)
+        # run each config task
+        self.assertTrue(mlw.task_terminated_run_each_config)
+
+        # all tasks are finished
+        self.assertTrue(mlw.terminated)
+
+    def test_run_all_step_should_be_executed_with_dask(self):
+        mlw = mls.workflows.MultipleLearningWorkflow('multiple_config_dask.json',
+                                                     config_directory=self.cd,
+                                                     base_directory=self.bd)
         self.assertFalse(mlw.terminated)
         mlw.run()
 

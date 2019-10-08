@@ -71,8 +71,10 @@ class SupervisedLearningWorkflow(LearningWorkflow):
             dataset_fairness = self.config.data['datasets'][dataset_name]['fairness']
             self.context.dataset.set_fairness_parameters(dataset_fairness)
 
-        self.context.raw_data = mls.models.Data(self.context.dataset.generate(),
-                                                y_col_name=self.context.dataset.metadata['y_col_name'])
+        self.context.raw_data = mls.models.DataFactory.create_data(self.context.dataset.storage,
+                                                                   self.context.dataset.generate(),
+                                                                   y_col_name=self.context.dataset.metadata[
+                                                                       'y_col_name'])
         self.task_terminated_get_data = True
 
     def task_prepare_data(self):

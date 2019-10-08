@@ -1,6 +1,8 @@
 import unittest
 
+import dask.dataframe as dd
 import numpy as np
+import pandas as pd
 import sklearn.neighbors as neighbors
 
 import mlsurvey as mls
@@ -260,4 +262,46 @@ class TestUtils(unittest.TestCase):
                                     {'__type__': '__tuple__', '__value__': '(4, 5, 6)'}],
                            'nottupleeither': 'string'}
         result = mls.Utils.check_dict_python_ready(base_dictionary)
+        self.assertFalse(result)
+
+    def test_is_dataframe_empty_pandas_is_empty(self):
+        """
+        :test : mlsurvey.Utils.is_dataframe_empty()
+        :condition : dataframe is pandas and empty
+        :main_result : True
+        """
+        df = pd.DataFrame()
+        result = mls.Utils.is_dataframe_empty(df)
+        self.assertTrue(result)
+
+    def test_is_dataframe_empty_pandas_is_not_empty(self):
+        """
+        :test : mlsurvey.Utils.is_dataframe_empty()
+        :condition : dataframe is pandas and not empty
+        :main_result : False
+        """
+        x = np.array([[1, 2], [3, 4]])
+        df = pd.DataFrame(data=x)
+        result = mls.Utils.is_dataframe_empty(df)
+        self.assertFalse(result)
+
+    def test_is_dataframe_empty_dask_is_empty(self):
+        """
+        :test : mlsurvey.Utils.is_dataframe_empty()
+        :condition : dataframe is dask and empty
+        :main_result : True
+        """
+        df = dd.from_array(np.array([]))
+        result = mls.Utils.is_dataframe_empty(df)
+        self.assertTrue(result)
+
+    def test_is_dataframe_empty_dask_is_not_empty(self):
+        """
+        :test : mlsurvey.Utils.is_dataframe_empty()
+        :condition : dataframe is pandas and not empty
+        :main_result : False
+        """
+        x = np.array([[1, 2], [3, 4]])
+        df = dd.from_array(x)
+        result = mls.Utils.is_dataframe_empty(df)
         self.assertFalse(result)

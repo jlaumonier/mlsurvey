@@ -40,6 +40,7 @@ class FairnessWorkflow(LearningWorkflow):
                 dataset_name = self.config.data['fairness_process']['input']
                 dataset_params = self.config.data['datasets'][dataset_name]['parameters']
                 dataset_type = self.config.data['datasets'][dataset_name]['type']
+                dataset_storage = 'Pandas'
                 self.context.dataset = mls.datasets.DataSetFactory.create_dataset(dataset_type)
 
                 # this line is only for FileDataSet testing...
@@ -50,7 +51,8 @@ class FairnessWorkflow(LearningWorkflow):
                 self.context.dataset.set_generation_parameters(dataset_params)
                 dataset_fairness = self.config.data['datasets'][dataset_name]['fairness']
                 self.context.dataset.set_fairness_parameters(dataset_fairness)
-                self.context.data = mls.models.Data(self.context.dataset.generate())
+                self.context.data = mls.models.DataFactory.create_data(dataset_storage,
+                                                                       self.context.dataset.generate())
             else:
                 self.context.dataset = self.parent_context.dataset
                 if not self.context.dataset.fairness:

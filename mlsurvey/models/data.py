@@ -1,11 +1,9 @@
-import dask.dataframe as dd
-import numpy as np
-import pandas as pd
+from abc import ABC, abstractmethod
 
 import mlsurvey as mls
 
 
-class Data:
+class Data(ABC):
 
     def __init__(self, df, df_contains='xy', y_col_name=None, y_pred_col_name=None):
         """
@@ -27,11 +25,7 @@ class Data:
         if df_contains == 'xyypred':
             self.max_x_column = -2
 
-        empty = False
-        if isinstance(df, pd.DataFrame):
-            empty = df.empty
-        if isinstance(df, dd.DataFrame) or isinstance(df, dd.Series):
-            empty = (df.npartitions == 0)
+        empty = mls.Utils.is_dataframe_empty(df)
         if not empty:
             if not isinstance(df.columns[0], str):
                 # if columns are not set in the dataframe, we create some names
@@ -43,7 +37,7 @@ class Data:
                 if df_contains == 'xyypred':
                     columns.append(y_pred_col_name)
                 df.columns = columns
-            self.__inner_data = df
+            self._inner_data = df
             self.y_col_name = y_col_name
             self.y_pred_col_name = y_pred_col_name
         else:
@@ -68,11 +62,7 @@ class Data:
             else:
                 # col name is not given but is set into the dataframe => use the dataframe column name
                 self.y_pred_col_name = y_pred_values.columns[0]
-        if isinstance(self.__inner_data, pd.DataFrame) and isinstance(y_pred_values, dd.DataFrame):
-            raise mls.exceptions.ModelError("__inner_data and y_pred_values must be the same type (pandas.Dataframe)")
-        else:
-            # self.__inner_data[self.y_pred_col_name] = y_pred_values.iloc[:, 0]
-            self.__inner_data = self.__inner_data.merge(y_pred_values, left_index=True, right_index=True)
+        self._inner_data = self._inner_data.merge(y_pred_values, left_index=True, right_index=True)
         self.df_contains = 'xyypred'
         self.max_x_column = -2
 
@@ -83,35 +73,29 @@ class Data:
         :param on_column: string containing the name of the column to apply the condition
         :param new_column_name: string containing the name of the new column containing the values
         """
-        columns = self.__inner_data.columns
-        self.__inner_data[new_column_name] = self.__inner_data[on_column].map(eval('lambda x:' + condition))
+        columns = self._inner_data.columns
+        self._inner_data[new_column_name] = self._inner_data[on_column].map(eval('lambda x:' + condition))
         new_columns = columns.insert(self.max_x_column, new_column_name)
-        self.__inner_data = self.__inner_data[new_columns]
+        self._inner_data = self._inner_data[new_columns]
 
     @property
+    @abstractmethod
     def x(self):
-        if isinstance(self.df, pd.DataFrame):
-            return self.__inner_data.iloc[:, 0:self.max_x_column].to_numpy()
-        if isinstance(self.df, dd.DataFrame):
-            return self.__inner_data.iloc[:, 0:self.max_x_column].to_dask_array(lengths=True)
+        ...
 
     @property
+    @abstractmethod
     def y(self):
-        if isinstance(self.df, pd.DataFrame):
-            return self.__inner_data[self.y_col_name].to_numpy()
-        if isinstance(self.df, dd.DataFrame):
-            return self.__inner_data[self.y_col_name].to_dask_array(lengths=True)
+        ...
 
     @property
+    @abstractmethod
     def y_pred(self):
-        if isinstance(self.df, pd.DataFrame):
-            return self.__inner_data[self.y_pred_col_name].to_numpy()
-        if isinstance(self.df, dd.DataFrame):
-            return self.__inner_data[self.y_pred_col_name].to_dask_array(lengths=True)
+        ...
 
     @property
     def df(self):
-        return self.__inner_data
+        return self._inner_data
 
     def to_dict(self):
         """
@@ -124,22 +108,15 @@ class Data:
         return result
 
     @staticmethod
+    @abstractmethod
     def from_dict(dictionary, df):
         """
-        Transform a dictionary containing 'data.x' and 'data.y' to the input object
+        Transform a dictionary to the input object
         :param dictionary: source dictionary
         :param df: dataframe containing data
         Raise mlsurvey.exception.ModelError if dictionary does not contain all keys
         """
-        try:
-            result = Data(df,
-                          dictionary['df_contains'],
-                          dictionary['y_col_name'],
-                          dictionary['y_pred_col_name']
-                          )
-        except KeyError as e:
-            raise mls.exceptions.ModelError(e)
-        return result
+        ...
 
     def merge_all(self):
         """
@@ -147,23 +124,14 @@ class Data:
         Only for a pandas dataframe.
         :return: numpy.array or dask.array containing all data
         """
-        result = self.__inner_data.values
+        result = self._inner_data.values
         return result
 
+    @abstractmethod
     def copy_with_new_data(self, data_array):
         """
         create a new instance of data with the same parameters but with different data values
         :param data_array: new data values as numpy array
         :return: an instance of data
         """
-        data_array = np.concatenate((data_array[0], np.array([data_array[1]]).T), axis=1)
-        create_function = None
-        if isinstance(self.df, pd.DataFrame):
-            create_function = pd.DataFrame
-        if isinstance(self.df, dd.DataFrame):
-            create_function = dd.from_array
-        df = create_function(data_array, columns=self.df.columns)
-        data = mls.models.Data(df,
-                               df_contains=self.df_contains,
-                               y_col_name=self.y_col_name)
-        return data
+        ...
