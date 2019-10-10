@@ -164,12 +164,12 @@ class Utils:
         return result
 
     @classmethod
-    def flatten_dict(cls, dd, separator='_', prefix=''):
+    def flatten_dict(cls, dictionary, separator='_', prefix=''):
         """SRC : https://www.geeksforgeeks.org/python-convert-nested-dictionary-into-flattened-dictionary/"""
         return {prefix + separator + k if prefix else k: v
-                for kk, vv in dd.items()
+                for kk, vv in dictionary.items()
                 for k, v in Utils.flatten_dict(vv, separator, kk).items()
-                } if isinstance(dd, dict) else {prefix: dd}
+                } if isinstance(dictionary, dict) else {prefix: dd}
 
     @classmethod
     def func_create_dataframe(cls, storage):

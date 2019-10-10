@@ -6,7 +6,7 @@ class DataFactory:
         """
         Add a DataFactory into all the factories
         :param name: the name of the factory
-        :param dataset_factory: the instance of the factory
+        :param data_factory: the instance of the factory
         """
         DataFactory.factories[name] = data_factory
 

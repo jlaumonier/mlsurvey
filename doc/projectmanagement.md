@@ -45,6 +45,7 @@
 * F : adding a base_directory for LearningWorkflows and child
 * B : Demographic parity is not defined if, in a dataset, no instance belong to privileged or unpriviliged class.
 * F : Adding Theil index as fairness criteria
+* T : Optimize Dask
 
 ## Current
 * A : Change Dataset.generate() to return more than x and y (column, chunk...). Change to return dask.Dataframe

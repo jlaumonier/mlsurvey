@@ -71,8 +71,9 @@ class MultipleLearningWorkflow(LearningWorkflow):
     def task_run_one_config(p):
         """
         Run one supervised learning workflow
-        :param c: configuration for the supervised learning workflow
-        :param bd: base directory for all file loaded with config
+        :param p : tupple parameter containing
+                    c: configuration for the supervised learning workflow
+                    bd: base directory for all file loaded with config
         :return: the supervised learning workflow after a run
         """
         c = p[0]
