@@ -11,6 +11,7 @@
 * F is functionality
 * T is technical debt
 * A is Architecture
+* R is Research
 
 ## TODO
 * F : Rethink about task_init_terminated because it is not used at the moment
@@ -48,8 +49,7 @@
 * T : Optimize Dask
 
 ## Current
-* A : Change Dataset.generate() to return more than x and y (column, chunk...). Change to return dask.Dataframe
-* F : Allowing very large datasets (Dask ?)
+* R :
 
 ## Done
 * Git repository : local
@@ -108,6 +108,8 @@
 * B : Visualisation : No results found when a tuple parameter is searched
 * F : Implements some fairness criteria
 * F : Generate plots for one evaluation (y) according to one parameter (x)
+* A : Change Dataset.generate() to return more than x and y (column, chunk...). Change to return dask.Dataframe
+* F : Allowing very large datasets (Dask ?)
 
 
 

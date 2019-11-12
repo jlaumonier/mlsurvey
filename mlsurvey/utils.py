@@ -166,10 +166,11 @@ class Utils:
     @classmethod
     def flatten_dict(cls, dictionary, separator='_', prefix=''):
         """SRC : https://www.geeksforgeeks.org/python-convert-nested-dictionary-into-flattened-dictionary/"""
-        return {prefix + separator + k if prefix else k: v
-                for kk, vv in dictionary.items()
-                for k, v in Utils.flatten_dict(vv, separator, kk).items()
-                } if isinstance(dictionary, dict) else {prefix: dd}
+        result = {prefix + separator + k if prefix else k: v
+                  for kk, vv in dictionary.items()
+                  for k, v in Utils.flatten_dict(vv, separator, kk).items()
+                  } if isinstance(dictionary, dict) else {prefix: dictionary}
+        return result
 
     @classmethod
     def func_create_dataframe(cls, storage):

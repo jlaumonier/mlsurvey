@@ -74,7 +74,9 @@
         "n_neighbors": [
           2,
           3,
-          4
+          4,
+          5,
+          6
         ],
         "algorithm": "auto",
         "weights": "uniform",
@@ -124,7 +126,7 @@
     "traintest20": {
       "type": "traintest",
       "parameters": {
-        "test_size": 10,
+        "test_size": 20,
         "random_state": 0,
         "shuffle": true
       }
@@ -136,8 +138,7 @@
       "DataSetCircle",
       "DataSetMoon",
       "DataSetIris",
-      "DataSetGermanCredit",
-      "DataSetDE"
+      "DataSetGermanCredit"
     ],
     "split": "traintest20",
     "algorithm": [
