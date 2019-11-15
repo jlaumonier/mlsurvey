@@ -5,7 +5,7 @@ def main():
     # client = Client(processes=False, threads_per_worker=4,
     #                 n_workers=1, memory_limit='2GB')
 
-    mlw = mls.workflows.MultipleLearningWorkflow()
+    mlw = mls.sl.workflows.MultipleLearningWorkflow()
     mlw.run()
 
 

@@ -58,7 +58,7 @@ class Logging:
         result = {}
         for k, v in data.items():
             df = mls.FileOperation.read_hdf(v['data_path'], self.directory, v['df_format'])
-            i = mls.models.DataFactory.create_data_from_dict(v['df_format'], v['metadata'], df)
+            i = mls.sl.models.DataFactory.create_data_from_dict(v['df_format'], v['metadata'], df)
             result[k] = i
         return result
 

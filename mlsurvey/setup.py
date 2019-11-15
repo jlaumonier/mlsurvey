@@ -13,5 +13,13 @@ setup(
                       'joblib',
                       'bokeh',
                       'json2html',
-                      'colorcet']
+                      'colorcet',
+                      'plotly',
+                      'tqdm',
+                      'tinydb',
+                      'liac - arff',
+                      'dask[complete]',
+                      'dask_ml',
+                      'tables'
+                      ]
 )

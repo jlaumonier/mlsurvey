@@ -1,7 +1,6 @@
-from . import datasets
+from mlsurvey.sl import models, visualize
 from . import exceptions
-from . import models
-from . import visualize
+from . import sl
 from . import workflows
 from .config import Config
 from .fairness_utils import FairnessUtils

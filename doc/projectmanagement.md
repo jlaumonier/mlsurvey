@@ -49,7 +49,7 @@
 * T : Optimize Dask
 
 ## Current
-* R :
+* F : Include reinforcement learning
 
 ## Done
 * Git repository : local
