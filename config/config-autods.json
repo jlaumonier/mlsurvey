@@ -1,0 +1,106 @@
+{
+  "datasets": {
+    "DataSetAuto": {
+      "type": "FileDataSet",
+      "parameters": {
+        "directory": "dataset/",
+        "filename": "ausprivauto0405-classif.csv"
+      },
+      "metadata": {
+        "y_col_name": "ClaimOcc"
+      }
+    }
+  },
+  "algorithms": {
+    "knn-base": {
+      "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+      "hyperparameters": {
+        "n_neighbors": [
+          6,
+          7,
+          8,
+          9
+        ],
+        "algorithm": "auto",
+        "weights": "uniform",
+        "leaf_size": 30,
+        "metric": [
+          "minkowski",
+          "manhattan",
+          "euclidean",
+          "chebyshev"
+        ]
+      }
+    },
+    "svm-base": {
+      "algorithm-family": "sklearn.svm.SVC",
+      "hyperparameters": {
+        "C": [
+          0.9,
+          0.1,
+          1
+        ],
+        "kernel": [
+          "rbf",
+          "poly"
+        ],
+        "gamma": "auto"
+      }
+    },
+    "nn-base": {
+      "algorithm-family": "sklearn.neural_network.MLPClassifier",
+      "hyperparameters": {
+        "activation": [
+          "relu",
+          "tanh"
+        ],
+        "max_iter": 2000,
+        "hidden_layer_sizes": [
+          {
+            "__type__": "__tuple__",
+            "__value__": "(30, 15, 7)"
+          },
+          {
+            "__type__": "__tuple__",
+            "__value__": "(20, 10, 5)"
+          }
+        ]
+      }
+    },
+    "rf-base": {
+      "algorithm-family": "sklearn.ensemble.RandomForestClassifier",
+      "hyperparameters": {
+        "n_estimators": [
+          100,
+          200,
+          1000
+        ],
+        "criterion": [
+          "gini",
+          "entropy"
+        ]
+      }
+    }
+  },
+  "splits": {
+    "traintest20": {
+      "type": "traintest",
+      "parameters": {
+        "test_size": 6000,
+        "random_state": 0,
+        "shuffle": true
+      }
+    }
+  },
+  "learning_process": {
+    "input": [
+      "DataSetAuto"
+    ],
+    "split": "traintest20",
+    "algorithm": [
+      "knn-base",
+      "svm-base",
+      "rf-base"
+    ]
+  }
+}
