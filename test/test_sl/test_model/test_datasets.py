@@ -199,7 +199,7 @@ class TestGenericDataSet(unittest.TestCase):
         self.assertIsInstance(circle_data, dd.DataFrame)
         self.assertEqual(2, circle_data.iloc[:, 0:-1].shape[1])
         self.assertEqual(params['n_samples'], circle_data.iloc[:, 0:-1].compute().shape[0])
-        self.assertEqual(params['n_samples'], circle_data.iloc[:, -1].shape[0])
+        self.assertEqual(params['n_samples'], circle_data.iloc[:, -1].compute().shape[0])
 
     def test_generate_generic_dataset_unknown_dataset_should_cause_error(self):
         """

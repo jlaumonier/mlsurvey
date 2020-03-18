@@ -15,6 +15,7 @@
 
 ## TODO
 * F : Rethink about task_init_terminated because it is not used at the moment
+* F : Load CSV : choose the separator.
 * F : Use the column names in all the processes (sl, fairness, visualization)
 * F : Move categorical transformation from FileDataSet to a preprocessing task
 * F : Change config format to introduce definition section for non compact format

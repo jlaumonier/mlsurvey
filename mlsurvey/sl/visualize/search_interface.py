@@ -167,7 +167,7 @@ class SearchInterface:
         if derived_virtual_selected_rows is not None and len(derived_virtual_selected_rows) != 0:
             for idx in derived_virtual_selected_rows:
                 directory = derived_virtual_data[idx]['Directory']
-                vw = mls.workflows.VisualizationWorkflow(directory)
+                vw = mls.sl.workflows.VisualizationWorkflow(directory)
                 vw.run()
 
                 data_test_section = html.Details(children=[html.Summary('Test Data'),
