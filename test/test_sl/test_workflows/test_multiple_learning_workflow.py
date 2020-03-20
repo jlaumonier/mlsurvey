@@ -153,10 +153,9 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
         self.assertTrue(mlw.task_terminated_run_each_config)
 
     def test_run_all_step_should_be_executed(self):
-        # TODO Investigate to see why this test crash
         mlw = mls.sl.workflows.MultipleLearningWorkflow('multiple_config.json', config_directory=self.cd)
         self.assertFalse(mlw.terminated)
-        # mlw.run()
+        mlw.run()
 
         # expand task
         self.assertTrue(mlw.task_terminated_expand_config)

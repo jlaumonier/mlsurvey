@@ -14,6 +14,7 @@ def main():
     mlw.run()
 
     mlw = mls.sl.workflows.SupervisedLearningWorkflow(config_directory='files/visualization/dask_de',
+                                                      base_directory='files',
                                                       logging_dir='visualization/dask_de')
     mlw.run()
 

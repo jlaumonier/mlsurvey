@@ -113,8 +113,6 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         """ calculate the score of the classifier with test data """
         self.context.evaluation.score = self.context.classifier.score(self.context.data_test.x,
                                                                       self.context.data_test.y)
-        if self.context.dataset.storage == 'Dask':
-            self.context.evaluation.score = self.context.evaluation.score.compute()
         func_create_df = mls.Utils.func_create_dataframe(self.context.dataset.storage)
         df = func_create_df(self.context.classifier.predict(self.context.data.x), columns=['target_pred'])
         self.context.data.set_pred_data(df)
