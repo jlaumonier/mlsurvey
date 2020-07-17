@@ -160,8 +160,6 @@ class VisualizationWorkflow(LearningWorkflow):
 
     def __display_confusion_matrix__(self):
         data_y = self.context.data.y
-        if self.context.dataset.storage == 'Dask':
-            data_y = data_y.compute()
         x = ['Pred ' + str(i) for i in set(data_y)]
         y = ['True ' + str(i) for i in set(data_y)]
         f = ff.create_annotated_heatmap(self.context.evaluation.confusion_matrix,
@@ -175,8 +173,6 @@ class VisualizationWorkflow(LearningWorkflow):
 
     def __display_data_test_table__(self):
         merged_data = self.context.data_test.merge_all()
-        if self.context.dataset.storage == 'Dask':
-            merged_data = merged_data.compute()
         columns = [{"name": str(i), "id": str(i)} for i in range(merged_data.shape[1])]
         data = []
         for d in merged_data:

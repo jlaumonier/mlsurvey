@@ -1,1 +1,15 @@
-{"type": "FileDataSet", "storage": "Pandas", "parameters": {"directory": "files/dataset", "filename": "credit-g.arff"}, "metadata": {"y_col_name": "target"}, "fairness": {"protected_attribute": 12, "privileged_classes": "x >= 25"}}
+{
+  "type": "FileDataSet",
+  "storage": "Pandas",
+  "parameters": {
+    "directory": "files/dataset",
+    "filename": "credit-g.arff"
+  },
+  "metadata": {
+    "y_col_name": "target"
+  },
+  "fairness": {
+    "protected_attribute": 12,
+    "privileged_classes": "x >= 25"
+  }
+}

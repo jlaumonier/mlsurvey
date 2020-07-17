@@ -15,7 +15,7 @@ class GenericDataSet(DataSet):
         """
         Initialize the generic dataset,
         :param t: type of the dataset, a function name into sklearn.datasets
-        :param storage : the type of dataframe to store the data. By default 'Pandas'. Other option is 'Dask'
+        :param storage : the type of dataframe to store the data. By default 'Pandas' (only value of the moment)
         """
         super().__init__(t, storage)
         self.types = {'load_iris': ['load_iris', {'return_X_y': True}]}
@@ -41,7 +41,7 @@ class GenericDataSet(DataSet):
         Generate data from parameters and type.
         Raise an AttributeError if self.t is not a valid function name of sklearn.datasets
         Raise a TypeError if one parameter in self.params is not expected by the function
-        :return: dask.dataframe with first columns are x (data) and last is y (label)
+        :return: Dataframe with first columns are x (data) and last is y (label)
         """
         if self.t in self.types.keys():
             make_dataset = getattr(datasets, self.types[self.t][0])

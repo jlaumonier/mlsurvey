@@ -46,8 +46,7 @@ class Data(ABC):
     def set_pred_data(self, y_pred_values, y_pred_col_name=None):
         """
         set the y predicted data with values
-        :param y_pred_values: Pandas or Dask dataframe containing one column, the y predicted by a classifier.
-                              Must not be a Dask Serie
+        :param y_pred_values: Pandas dataframe containing one column, the y predicted by a classifier.
                               If __inner_data is a pandas Dataframe, y_pred_value must be also a pandas dataframe
         :param y_pred_col_name: name of the column into the final dataset
         """
@@ -122,7 +121,7 @@ class Data(ABC):
         """
         transform the dataframe to an array containing all values
         Only for a pandas dataframe.
-        :return: numpy.array or dask.array containing all data
+        :return: numpy.array containing all data
         """
         result = self._inner_data.values
         return result

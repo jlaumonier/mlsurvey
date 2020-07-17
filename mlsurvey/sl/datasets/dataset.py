@@ -9,7 +9,7 @@ class DataSet:
         """
         initialize the dataset
         :param t: type of the dataset (usually the name of the class or the name of the function called)
-        :param storage : the type of dataframe to store the data. By default 'Pandas'. Other option is 'Dask'
+        :param storage : the type of dataframe to store the data. By default 'Pandas' (only value at the moment).
         """
         self.params = {}
         self.t = t

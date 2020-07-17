@@ -57,7 +57,7 @@
     },
     "DataSetDE": {
       "type": "FileDataSet",
-      "storage": "Dask",
+      "storage": "Pandas",
       "parameters": {
         "directory": "dataset",
         "filename": "unittest_de.csv"

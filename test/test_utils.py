@@ -1,6 +1,5 @@
 import unittest
 
-import dask.dataframe as dd
 import numpy as np
 import pandas as pd
 import sklearn.neighbors as neighbors
@@ -282,26 +281,5 @@ class TestUtils(unittest.TestCase):
         """
         x = np.array([[1, 2], [3, 4]])
         df = pd.DataFrame(data=x)
-        result = mls.Utils.is_dataframe_empty(df)
-        self.assertFalse(result)
-
-    def test_is_dataframe_empty_dask_is_empty(self):
-        """
-        :test : mlsurvey.Utils.is_dataframe_empty()
-        :condition : dataframe is dask and empty
-        :main_result : True
-        """
-        df = dd.from_array(np.array([]))
-        result = mls.Utils.is_dataframe_empty(df)
-        self.assertTrue(result)
-
-    def test_is_dataframe_empty_dask_is_not_empty(self):
-        """
-        :test : mlsurvey.Utils.is_dataframe_empty()
-        :condition : dataframe is pandas and not empty
-        :main_result : False
-        """
-        x = np.array([[1, 2], [3, 4]])
-        df = dd.from_array(x)
         result = mls.Utils.is_dataframe_empty(df)
         self.assertFalse(result)

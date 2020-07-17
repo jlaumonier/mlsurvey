@@ -85,8 +85,3 @@ Three exceptions are used
 1. ConfigError : Raised when an error occurs related to the content of the config files
 1. ModelError: Raised during models processing
 1. WorkflowError : Raised during workflow treatment
-
-# Dask
-
-Hum.. you can use Dask to store your dataframe using the configuration 'storage': 'Dask' in the dataset definition. However, even if it works, it is highly experimental (i.e. it does not work as it use too much memory...). I will work on that later.
-

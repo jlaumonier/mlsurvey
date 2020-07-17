@@ -1,6 +1,5 @@
 import unittest
 
-import dask.dataframe as dd
 import pandas as pd
 
 import mlsurvey as mls
@@ -19,9 +18,9 @@ class TestDataSet(unittest.TestCase):
 
     def test_init_parameters_type_fairness_storage(self):
         expected_type = 'typ'
-        data = mls.sl.datasets.DataSet(expected_type, 'Dask')
+        data = mls.sl.datasets.DataSet(expected_type, 'Pandas')
         self.assertEqual(expected_type, data.t)
-        self.assertEqual('Dask', data.storage)
+        self.assertEqual('Pandas', data.storage)
         self.assertDictEqual({}, data.params)
         self.assertDictEqual({}, data.fairness)
         self.assertDictEqual({'y_col_name': 'target'}, data.metadata)
@@ -180,26 +179,6 @@ class TestGenericDataSet(unittest.TestCase):
         self.assertEqual(2, circle_data.iloc[:, 0:-1].shape[1])
         self.assertEqual(params['n_samples'], circle_data.iloc[:, 0:-1].shape[0])
         self.assertEqual(params['n_samples'], circle_data.iloc[:, -1].shape[0])
-
-    def test_generate_generic_dataset_circle_is_generated_with_parameters_dask(self):
-        circle_dataset = mls.sl.datasets.DataSetFactory.create_dataset('make_circles', 'Dask')
-        params = {
-            'n_samples': 200,
-            # not tested
-            'shuffle': False,
-            # not tested
-            'noise': 0.5,
-            # not tested
-            'random_state': 10,
-            # not tested
-            'factor': 0.3
-        }
-        circle_dataset.set_generation_parameters(params)
-        circle_data = circle_dataset.generate()
-        self.assertIsInstance(circle_data, dd.DataFrame)
-        self.assertEqual(2, circle_data.iloc[:, 0:-1].shape[1])
-        self.assertEqual(params['n_samples'], circle_data.iloc[:, 0:-1].compute().shape[0])
-        self.assertEqual(params['n_samples'], circle_data.iloc[:, -1].compute().shape[0])
 
     def test_generate_generic_dataset_unknown_dataset_should_cause_error(self):
         """

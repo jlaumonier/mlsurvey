@@ -2,7 +2,6 @@ from .algorithm import Algorithm
 from .context import Context
 from .data import Data
 from .data_factory import DataFactory
-from .datadask import DataDask
 from .datapandas import DataPandas
 from .evaluation import Evaluation
 from .evaluation_factory import EvaluationFactory

@@ -1,7 +1,6 @@
 import json
 import os
 
-import dask.dataframe as dd
 import pandas as pd
 
 import mlsurvey as mls
@@ -59,12 +58,10 @@ class FileOperation:
         Create the directory of not exists
         :param filename: name of the file
         :param directory: directory to save the file
-        :param df_format: 'Pandas' or 'Dask'
+        :param df_format: 'Pandas'
         """
         full_path = os.path.join(directory, filename)
         data = None
         if df_format == 'Pandas':
             data = pd.read_hdf(full_path, 'key')
-        if df_format == 'Dask':
-            data = dd.read_hdf(full_path, 'key')
         return data

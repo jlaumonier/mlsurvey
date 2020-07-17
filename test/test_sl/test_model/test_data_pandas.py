@@ -1,6 +1,5 @@
 import unittest
 
-import dask.dataframe as dd
 import numpy as np
 import pandas as pd
 
@@ -55,7 +54,6 @@ class TestDataPanda(unittest.TestCase):
         :test : mlsurvey.model.DataPandas()
         :condition : pandas dataframe created with x and y data as numpy arrays. No y col name is set
         :main_result : x and y data are set. y col name is 'target'
-        :note : not tested with Dask. Should be the same.
         """
         x = np.array([[1, 2], [3, 4]])
         y = np.array([0, 1])
@@ -190,25 +188,6 @@ class TestDataPanda(unittest.TestCase):
         self.assertEqual('RealNameCol3', data.y_pred_col_name)
         self.assertEqual('xyypred', data.df_contains)
         self.assertListEqual(expected_column_name, list(data.df.columns))
-
-    def test_set_pred_data_data_set_pandas_and_dask(self):
-        """
-        :test : mlsurvey.model.DataPandas.set_pred_data()
-        :condition : data is a panda dataframe whereas y prediction data is given as dask dataframe
-        :main_result : a ModelError is raised
-        """
-        x = np.array([[1, 2], [3, 4]])
-        y = np.array([0, 1])
-        data_array = np.concatenate((x, np.array([y]).T), axis=1)
-        df = pd.DataFrame(data=data_array)
-        data = mls.sl.models.DataPandas(df)
-        y_pred = np.array([1, 0])
-        df_y_pred = dd.from_array(y_pred).to_frame()
-        try:
-            data.set_pred_data(df_y_pred)
-            self.assertTrue(False)
-        except mls.exceptions.ModelError:
-            self.assertTrue(True)
 
     def test_add_calculated_column_column_added_pandas(self):
         """

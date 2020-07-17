@@ -95,8 +95,6 @@ class MultipleLearningWorkflow(LearningWorkflow):
             return result
 
         configs_pandas = [(c, self.base_directory) for c in self.expanded_config if dataset_storage(c) == 'Pandas']
-        configs_dask = [(c, self.base_directory) for c in self.expanded_config if dataset_storage(c) == 'Dask']
-        # Only pandas with pool
         print('Pandas execution')
         pool = Pool()
         with tqdm(total=len(configs_pandas)) as pbar:
@@ -107,13 +105,6 @@ class MultipleLearningWorkflow(LearningWorkflow):
                 pbar.update()
         pool.close()
         pool.join()
-
-        # Dask is not launched with multithread.Pool()
-        print('Dask execution')
-        for i, params in enumerate(configs_dask):
-            res = MultipleLearningWorkflow.task_run_one_config(params)
-            self.slw.append(res)
-            print(str(i + 1) + '/' + str(len(configs_dask)))
 
         self.task_terminated_run_each_config = True
 

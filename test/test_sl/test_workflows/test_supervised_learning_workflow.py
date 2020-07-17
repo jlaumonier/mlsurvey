@@ -2,7 +2,6 @@ import os
 import shutil
 import unittest
 
-import dask.dataframe as dd
 import numpy as np
 import pandas as pd
 from sklearn import neighbors
@@ -220,7 +219,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertTrue(slw.task_terminated_get_data)
 
     def test_task_get_data_filedataset_data_is_obtained_pandas_explicit(self):
-        slw = mls.sl.workflows.SupervisedLearningWorkflow('config_filedataset.json',
+        slw = mls.sl.workflows.SupervisedLearningWorkflow('config_filedataset_pandas_explicit.json',
                                                           config_directory=self.cd,
                                                           base_directory=self.bd)
         slw.task_get_data()
@@ -233,24 +232,10 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertIsNone(slw.context.data)
         self.assertTrue(slw.task_terminated_get_data)
 
-    def test_task_get_data_filedataset_data_is_obtained_csv_dask_metadata_explicit(self):
-        slw = mls.sl.workflows.SupervisedLearningWorkflow('config_filedataset_csv_dask.json',
-                                                          config_directory=self.cd,
-                                                          base_directory=self.bd)
-        slw.task_get_data()
-        self.assertIsInstance(slw.context.dataset, mls.sl.datasets.FileDataSet)
-        self.assertIsNotNone(slw.context.raw_data)
-        self.assertIsInstance(slw.context.raw_data.df, dd.DataFrame)
-        self.assertEqual('rating', slw.context.raw_data.y_col_name)
-        self.assertEqual(39, len(slw.context.raw_data.x))
-        self.assertEqual(39, len(slw.context.raw_data.y))
-        self.assertIsNone(slw.context.data)
-        self.assertTrue(slw.task_terminated_get_data)
-
     def test_task_prepare_data_data_should_be_prepared(self):
         """
         :test : mlsurvey.workflows.SupervisedLearningWorkflow.prepare_data()
-        :condition : data is generated as pandas dataframe (should work with dask)
+        :condition : data is generated as pandas dataframe
         :main_result : data is transformed with StandardScaler()
         """
         slw = mls.sl.workflows.SupervisedLearningWorkflow('complete_config_loaded.json', config_directory=self.cd)
@@ -267,7 +252,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
     def test_task_split_data_data_should_be_split_train_test_pandas(self):
         """
         :test : mlsurvey.workflows.SupervisedLearningWorkflow.task_split_data()
-        :condition : data loaded as pandas. Should work with dask
+        :condition : data loaded as pandas.
         :main_result : data is split
         """
         slw = mls.sl.workflows.SupervisedLearningWorkflow('complete_config_loaded.json', config_directory=self.cd)
@@ -317,48 +302,6 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         self.assertEqual(20, len(slw.context.data_test.y_pred))
         self.assertTrue(not np.isnan(slw.context.data_test.y_pred).all())
         self.assertIsNone(slw.context.evaluation.sub_evaluation)
-        self.assertTrue(slw.task_terminated_evaluate)
-
-    def test_task_evaluate_classifier_should_have_evaluate_dask(self):
-        """
-        :test : mlsurvey.workflows.SupervisedLearningWorkflow.task_evaluate()
-        :condition : data loaded as dask
-        :main_result : the evaluation is completed
-        """
-        slw = mls.sl.workflows.SupervisedLearningWorkflow('complete_config_loaded_dask.json', config_directory=self.cd)
-        slw.task_get_data()
-        slw.task_prepare_data()
-        slw.task_split_data()
-        slw.task_learn()
-        slw.task_evaluate()
-        expected_cm = np.array([[13, 0], [1, 6]])
-        self.assertEqual(0.95, slw.context.evaluation.score)
-        np.testing.assert_array_equal(expected_cm, slw.context.evaluation.confusion_matrix)
-        self.assertEqual(100, len(slw.context.raw_data.y_pred))
-        self.assertTrue(not np.isnan(slw.context.raw_data.y_pred).all())
-        self.assertEqual(100, len(slw.context.data.y_pred))
-        self.assertTrue(not np.isnan(slw.context.data.y_pred).all())
-        self.assertEqual(80, len(slw.context.data_train.y_pred))
-        self.assertTrue(not np.isnan(slw.context.data_train.y_pred).all())
-        self.assertEqual(20, len(slw.context.data_test.y_pred))
-        self.assertTrue(not np.isnan(slw.context.data_test.y_pred).all())
-        self.assertIsNone(slw.context.evaluation.sub_evaluation)
-        self.assertTrue(slw.task_terminated_evaluate)
-
-    def test_task_evaluate_classifier_should_have_evaluate_dask_csv(self):
-        """
-        :test : mlsurvey.workflows.SupervisedLearningWorkflow.task_evaluate()
-        :condition : csv data loaded as dask
-        :main_result : the evaluation is terminated
-        """
-        slw = mls.sl.workflows.SupervisedLearningWorkflow('config_filedataset_csv_dask.json',
-                                                          config_directory=self.cd,
-                                                          base_directory=self.bd)
-        slw.task_get_data()
-        slw.task_prepare_data()
-        slw.task_split_data()
-        slw.task_learn()
-        slw.task_evaluate()
         self.assertTrue(slw.task_terminated_evaluate)
 
     def test_task_fairness_classifier_should_have_calculate_fairness(self):

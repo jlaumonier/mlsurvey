@@ -12,7 +12,6 @@ class TestData(unittest.TestCase):
         """
         :test : mlsurvey.model.Data.to_dict()
         :condition : x,y, y_pred data are filled.
-                    Use DataPandas but should work also with Dask
         :main_result : the dictionary generated is the same as expected
         """
         x = np.array([[1, 2, 3], [4, 5, 6]])
@@ -31,7 +30,6 @@ class TestData(unittest.TestCase):
         """
         :test : mlsurvey.model.DataPandas.from_dict()
         :condition : the input dict is set and an empty dataframe is given.
-                     Use DataPandas but should work also with Dask
         :main_result : a ModelError occurs
         """
         df = pd.DataFrame(data=np.array([]))
@@ -66,4 +64,3 @@ class TestData(unittest.TestCase):
         except mls.exceptions.ModelError:
             self.assertIsNone(data)
             self.assertTrue(True)
-

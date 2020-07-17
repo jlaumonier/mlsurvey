@@ -123,10 +123,6 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         self.context.data_train.set_pred_data(df)
         df = func_create_df(self.context.classifier.predict(self.context.data_test.x), columns=['target_pred'])
         self.context.data_test.set_pred_data(df)
-        if self.context.dataset.storage == 'Dask':
-            # confusion_matrix does not work with Dask array...
-            self.context.evaluation.confusion_matrix = confusion_matrix(self.context.data_test.y.compute(),
-                                                                        self.context.data_test.y_pred.compute())
         if self.context.dataset.storage == 'Pandas':
             self.context.evaluation.confusion_matrix = confusion_matrix(self.context.data_test.y,
                                                                         self.context.data_test.y_pred)

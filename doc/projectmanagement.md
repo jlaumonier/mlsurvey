@@ -51,6 +51,7 @@
 * T : Optimize Dask
 
 ## Current
+* A : Removing Dask (too much complexity)
 
 ## Done
 * Git repository : local

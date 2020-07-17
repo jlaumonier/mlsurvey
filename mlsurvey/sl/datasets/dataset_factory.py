@@ -15,7 +15,7 @@ class DataSetFactory:
         """
         create a dataset from its name (generic, function name in sklearn.dataset or an existing class in mlsurvey)
         :param name: the name of the dataset
-        :param storage : the type of dataframe to store the data. By default 'Pandas'. Other option is 'Dask'
+        :param storage : the type of dataframe to store the data. By default 'Pandas' (only value at the moment).
         :return: the instance of the dataset
         """
         factory_name = name

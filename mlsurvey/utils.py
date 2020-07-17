@@ -3,7 +3,6 @@ import hashlib
 import importlib
 import itertools
 
-import dask.dataframe as dd
 import numpy as np
 import pandas as pd
 
@@ -177,14 +176,10 @@ class Utils:
         """ return the function that create a DataFrame from an array"""
         if storage == 'Pandas':
             return pd.DataFrame
-        if storage == 'Dask':
-            return dd.from_array
 
     @classmethod
     def is_dataframe_empty(cls, df):
         result = True
         if isinstance(df, pd.DataFrame):
             result = df.empty
-        if isinstance(df, dd.DataFrame) or isinstance(df, dd.Series):
-            result = (df.npartitions == 0)
         return result

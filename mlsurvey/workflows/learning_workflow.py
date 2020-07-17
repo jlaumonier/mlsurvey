@@ -16,4 +16,3 @@ class LearningWorkflow:
     @abstractmethod
     def run(self):
         pass
-

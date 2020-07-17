@@ -1,5 +1,3 @@
-import dask.array as da
-
 import mlsurvey as mls
 
 
@@ -28,9 +26,6 @@ class Algorithm:
         except AttributeError as e:
             raise mls.exceptions.ConfigError(e)
         classifier = classifier_class(**self.hyperparameters)
-        if isinstance(x, da.Array):
-            x = x.compute()
-            y = y.compute()
         classifier.fit(x, y)
         return classifier
 

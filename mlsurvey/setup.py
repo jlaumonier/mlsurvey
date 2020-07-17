@@ -18,8 +18,6 @@ setup(
                       'tqdm',
                       'tinydb',
                       'liac - arff',
-                      'dask[complete]',
-                      'dask_ml',
                       'tables'
                       ]
 )

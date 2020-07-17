@@ -1,4 +1,3 @@
-import dask.dataframe as dd
 import numpy as np
 import pandas as pd
 
@@ -8,16 +7,6 @@ from .data_factory import DataFactory
 
 
 class DataPandas(Data):
-
-    def set_pred_data(self, y_pred_values, y_pred_col_name=None):
-        """
-        set the y predicted data with values. see mls.models.Data.set_pred_data()
-        Raise an exception if y_pred_values id not a pandas dataframe
-        """
-        if isinstance(self._inner_data, pd.DataFrame) and isinstance(y_pred_values, dd.DataFrame):
-            raise mls.exceptions.ModelError("__inner_data and y_pred_values must be the same type (pandas.Dataframe)")
-        else:
-            super().set_pred_data(y_pred_values, y_pred_col_name)
 
     @property
     def x(self):

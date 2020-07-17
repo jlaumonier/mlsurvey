@@ -14,7 +14,7 @@ class DataFactory:
     def create_data(storage, df, df_contains='xy', y_col_name=None, y_pred_col_name=None):
         """
         create a data from its storage type
-        :param storage : the type of dataframe to store the data. By default 'Pandas'. Other option is 'Dask'
+        :param storage : the type of dataframe to store the data. By default 'Pandas' (only value at the moment)
         :param df : see mls.models.Data()
         :param df_contains : see mls.models.Data()
         :param y_col_name : see mls.models.Data()
@@ -27,7 +27,7 @@ class DataFactory:
     def create_data_from_dict(storage, d, df):
         """
         create a data from a dictionary and a dataframe
-        :param storage : the type of dataframe to store the data. By default 'Pandas'. Other option is 'Dask'
+        :param storage : the type of dataframe to store the data. By default 'Pandas' (only value at the moment)
         :param d: the dictionary
         :param df: dataframe containing data
         :return: the instance of the dataset

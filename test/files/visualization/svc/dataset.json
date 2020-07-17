@@ -1,1 +1,12 @@
-{"type": "make_blobs", "storage": "Pandas", "parameters": {"n_samples": 100, "shuffle": true, "random_state": 0}, "metadata": {"y_col_name": "target"}}
+{
+  "type": "make_blobs",
+  "storage": "Pandas",
+  "parameters": {
+    "n_samples": 100,
+    "shuffle": true,
+    "random_state": 0
+  },
+  "metadata": {
+    "y_col_name": "target"
+  }
+}

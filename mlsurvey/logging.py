@@ -2,7 +2,6 @@ import datetime
 import os
 import random
 
-import dask.dataframe as dd
 import joblib
 import pandas as pd
 
@@ -36,8 +35,6 @@ class Logging:
                 filename = k + '.h5'
                 mls.FileOperation.save_hdf(filename, self.directory, v.df)
                 df_format = ''
-                if isinstance(v.df, dd.DataFrame):
-                    df_format = 'Dask'
                 if isinstance(v.df, pd.DataFrame):
                     df_format = 'Pandas'
                 output[k] = {'data_path': filename,

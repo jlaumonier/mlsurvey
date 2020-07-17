@@ -20,7 +20,6 @@ class TestVisualizationWorkflow(unittest.TestCase):
         cls.directory_blobs = os.path.join(directory, '../../files/visualization/blobs/')
         cls.directory_svc = os.path.join(directory, '../../files/visualization/svc/')
         cls.directory_germancredit = os.path.join(directory, '../../files/visualization/germancredit/')
-        cls.directory_dask_de = os.path.join(directory, '../../files/visualization/dask_de/')
 
     def test_init_should_init(self):
         vw = mls.sl.workflows.VisualizationWorkflow(directory=self.directory)
@@ -80,11 +79,6 @@ class TestVisualizationWorkflow(unittest.TestCase):
         vw = mls.sl.workflows.VisualizationWorkflow(directory=self.directory_germancredit)
         vw.task_load_data()
         self.assertAlmostEqual(-0.12854990969960323, vw.context.evaluation.sub_evaluation.demographic_parity)
-
-    def test_task_load_data_dask_de_data_loaded(self):
-        vw = mls.sl.workflows.VisualizationWorkflow(directory=self.directory_dask_de)
-        vw.task_load_data()
-        self.assertEqual(0.7, vw.context.evaluation.score)
 
     def test_task_display_data_figure_generated(self):
         vw = mls.sl.workflows.VisualizationWorkflow(directory=self.directory)

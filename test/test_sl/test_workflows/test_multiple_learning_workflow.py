@@ -165,22 +165,6 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
         # all tasks are finished
         self.assertTrue(mlw.terminated)
 
-    def test_run_all_step_should_be_executed_with_dask(self):
-        # TODO check why this test fail
-        mlw = mls.sl.workflows.MultipleLearningWorkflow('multiple_config_dask.json',
-                                                        config_directory=self.cd,
-                                                        base_directory=self.bd)
-        self.assertFalse(mlw.terminated)
-        mlw.run()
-
-        # expand task
-        self.assertTrue(mlw.task_terminated_expand_config)
-        # run each config task
-        self.assertTrue(mlw.task_terminated_run_each_config)
-
-        # all tasks are finished
-        self.assertTrue(mlw.terminated)
-
     def test_run_all_step_init_not_terminated_should_not_be_executed(self):
         """
         :test : mlsurvey.workflows.MultipleLearningWorkflow.run()

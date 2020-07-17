@@ -2,9 +2,7 @@ import os
 
 # this line made a warning, because package is liac-arff and main file is arff :-S
 import arff
-import dask.dataframe as dd
 import pandas as pd
-from dask_ml import preprocessing
 
 import mlsurvey as mls
 from .dataset import DataSet
@@ -17,7 +15,7 @@ class FileDataSet(DataSet):
         """
         Initialize the arff file dataset,
         :param t: type of the dataset, a function name into sklearn.datasets
-        :param storage : the type of dataframe to store the data. By default 'Pandas'. Other option is 'Dask'
+        :param storage : the type of dataframe to store the data. By default 'Pandas' (only value at the moment).
         """
         super().__init__(t, storage)
         self.base_directory = ''
@@ -27,7 +25,7 @@ class FileDataSet(DataSet):
         self.base_directory = d
 
     def __load_arff(self, fullname):
-        """ load arff file and return a pandas or dask dataframe"""
+        """ load arff file and return a pandas dataframe"""
         try:
             with open(fullname) as f:
                 data = arff.load(f)
@@ -39,13 +37,11 @@ class FileDataSet(DataSet):
         return result
 
     def __load_csv(self, fullname):
-        """ load csv file and return a pandas or dask dataframe"""
+        """ load csv file and return a pandas dataframe"""
         try:
             result = None
             if self.storage == 'Pandas':
                 result = pd.read_csv(fullname, sep='\t')
-            if self.storage == 'Dask':
-                result = dd.read_csv(fullname, sep='\t')
         except FileNotFoundError as e:
             raise mls.exceptions.ConfigError(e)
         return result
@@ -75,11 +71,6 @@ class FileDataSet(DataSet):
         if self.storage == 'Pandas':
             df[cat_columns] = df[cat_columns].astype('category')
             df[cat_columns] = df[cat_columns].apply(lambda c: c.cat.codes)
-        if self.storage == 'Dask':
-            ce = preprocessing.Categorizer()
-            oe = preprocessing.OrdinalEncoder()
-            df = ce.fit_transform(df)
-            df = oe.fit_transform(df)
         return df
 
     class Factory:
