@@ -102,7 +102,7 @@ class TestLogging(unittest.TestCase):
         classifier = neighbors.KNeighborsClassifier()
         log.save_classifier(classifier)
         self.assertTrue(os.path.isfile(log.directory + 'model.joblib'))
-        self.assertEqual('a3392177662e9fe9b640f8bcb0a42076', mls.Utils.md5_file(log.directory + 'model.joblib'))
+        self.assertEqual('001924a9978db2a80bee66e62cb374cb', mls.Utils.md5_file(log.directory + 'model.joblib'))
 
     def test_load_classifier(self):
         dir_name = 'files/slw'

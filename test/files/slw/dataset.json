@@ -1,14 +1,1 @@
-{
-  "type": "NClassRandomClassificationWithNoise",
-  "storage": "Pandas",
-  "parameters": {
-    "n_samples": 100,
-    "shuffle": true,
-    "noise": 0,
-    "random_state": 0,
-    "factor": 0.3
-  },
-  "metadata": {
-    "y_col_name": "target"
-  }
-}
+{"type": "NClassRandomClassificationWithNoise", "storage": "Pandas", "parameters": {"n_samples": 100, "shuffle": true, "noise": 0, "random_state": 0, "factor": 0.3}, "metadata": {"y_col_name": "target"}}

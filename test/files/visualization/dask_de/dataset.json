@@ -1,11 +1,1 @@
-{
-  "type": "FileDataSet",
-  "storage": "Dask",
-  "parameters": {
-    "directory": "dataset",
-    "filename": "unittest_de.csv"
-  },
-  "metadata": {
-    "y_col_name": "rating"
-  }
-}
+{"type": "FileDataSet", "storage": "Dask", "parameters": {"directory": "dataset", "filename": "unittest_de.csv"}, "metadata": {"y_col_name": "rating"}}

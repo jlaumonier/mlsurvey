@@ -14,6 +14,7 @@
 * R is Research
 
 ## TODO
+* F : Include reinforcement learning
 * F : Rethink about task_init_terminated because it is not used at the moment
 * F : Load CSV : choose the separator.
 * F : Use the column names in all the processes (sl, fairness, visualization)
@@ -50,7 +51,6 @@
 * T : Optimize Dask
 
 ## Current
-* F : Include reinforcement learning
 
 ## Done
 * Git repository : local

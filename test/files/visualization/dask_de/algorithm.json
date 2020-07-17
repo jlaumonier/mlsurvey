@@ -1,10 +1,1 @@
-{
-  "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
-  "hyperparameters": {
-    "n_neighbors": 2,
-    "algorithm": "auto",
-    "weights": "uniform",
-    "leaf_size": 30,
-    "metric": "minkowski"
-  }
-}
+{"algorithm-family": "sklearn.neighbors.KNeighborsClassifier", "hyperparameters": {"n_neighbors": 2, "algorithm": "auto", "weights": "uniform", "leaf_size": 30, "metric": "minkowski"}}
