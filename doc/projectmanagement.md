@@ -14,7 +14,7 @@
 * R is Research
 
 ## TODO
-* F : Include reinforcement learning
+
 * F : Rethink about task_init_terminated because it is not used at the moment
 * F : Load CSV : choose the separator.
 * F : Use the column names in all the processes (sl, fairness, visualization)
@@ -51,9 +51,10 @@
 * T : Optimize Dask
 
 ## Current
-* A : Removing Dask (too much complexity)
+* F : RL - Create simple main loop : agent, environment, engine
 
 ## Done
+* A : Removing Dask (too much complexity)
 * Git repository : local
 * Basic architecture
 * Make a mlsurvey package including all classes
