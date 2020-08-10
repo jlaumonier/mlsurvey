@@ -13,9 +13,12 @@ class TestEnvironment(unittest.TestCase):
         """
         env = mls.rl.common.Environment()
         self.assertIsInstance(env, mls.rl.common.Environment)
+        self.assertIsInstance(env.agents, dict)
+        self.assertDictEqual(env.agents, dict())
         self.assertFalse(env.end_episode)
         self.assertEqual(env.current_step, 0)
         self.assertEqual(env.max_step, -1)
+        self.assertIsInstance(env.current_state, mls.rl.common.State)
 
     def test_init_max_step(self):
         """
@@ -31,18 +34,18 @@ class TestEnvironment(unittest.TestCase):
 
     def test_getObservationForAgent(self):
         """
-        :test : mls.rl.common.Environment.getObservationForAgent()
+        :test : mls.rl.common.Environment.get_observation_for_agent()
         :condition: -
         :main_result: the observation of the agent
         """
-        expected_observation = '0'
         env = mls.rl.common.Environment()
+        expected_observation = env.current_state
         real_observation = env.get_observation_for_agent()
-        self.assertEqual(real_observation, expected_observation)
+        self.assertEqual(expected_observation, real_observation)
 
     def test_calculate_end_episode(self):
         """
-        :test : mls.rl.common.Environment.calculateEndEpisode()
+        :test : mls.rl.common.Environment.calculate_end_episode()
         :condition: no execution of the environment
         :main_result: episode is not terminated
         """
@@ -54,10 +57,26 @@ class TestEnvironment(unittest.TestCase):
 
     def test_calculate_next_state(self):
         """
-        :test : mls.rl.common.Environment.calculateNextState()
+        :test : mls.rl.common.Environment.calculate_next_state()
         :condition : Environment is initialized
         :main_result: one step is pass
         """
         env = mls.rl.common.Environment()
+        old_state = env.current_state
         env.calculate_next_state()
         self.assertEqual(env.current_step, 1)
+        self.assertIsInstance(env.current_state, mls.rl.common.State)
+        self.assertNotEqual(env.current_state, old_state)
+
+    def test_create_agent(self):
+        """
+        :test : mls.rl.common.Environment.create_agent()
+        :condition : Environment is initialized
+        :main_result: an agent is created and added into the environment
+        """
+        env = mls.rl.common.Environment()
+        expected_name = 'AgentName1'
+        ag = env.create_agent(expected_name)
+        self.assertEqual(len(env.agents), 1)
+        self.assertEqual(env.agents[expected_name], ag)
+        self.assertEqual(ag.name, expected_name)

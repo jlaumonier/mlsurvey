@@ -1,3 +1,6 @@
+import mlsurvey as mls
+
+
 class Environment:
 
     def __init__(self, max_step=-1):
@@ -7,14 +10,16 @@ class Environment:
         """
         self.end_episode = False
         self.current_step = 0
+        self.current_state = mls.rl.common.State()
         self.max_step = max_step
+        self.agents = dict()
 
     def get_observation_for_agent(self):
         """
-        get the current observation
+        get the current observation. current state at the moment
         :return: the current observation
         """
-        return str(self.current_step)
+        return self.current_state
 
     def calculate_end_episode(self):
         """
@@ -30,4 +35,14 @@ class Environment:
         Increase the step
         """
         self.current_step = self.current_step + 1
+        self.current_state = mls.rl.common.State()
 
+    def create_agent(self, name):
+        """
+        Create an agent. Add it into the agent set
+        :param name the identification name of the agent
+        :return: the agent instance
+        """
+        result = mls.rl.common.Agent(name=name)
+        self.agents[name] = result
+        return result

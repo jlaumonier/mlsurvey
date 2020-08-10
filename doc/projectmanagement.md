@@ -14,7 +14,6 @@
 * R is Research
 
 ## TODO
-
 * F : Rethink about task_init_terminated because it is not used at the moment
 * F : Load CSV : choose the separator.
 * F : Use the column names in all the processes (sl, fairness, visualization)
@@ -51,9 +50,10 @@
 * T : Optimize Dask
 
 ## Current
-* F : RL - Create simple main loop : agent, environment, engine
+* F : RL - Adding State (explain2)
 
 ## Done
+* F : RL - Create simple main loop : agent, environment, engine
 * A : Removing Dask (too much complexity)
 * Git repository : local
 * Basic architecture
