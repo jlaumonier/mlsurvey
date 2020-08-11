@@ -1,10 +1,8 @@
-import uuid
-
-
 class State:
 
-    def __init__(self):
+    def __init__(self, id_state):
         """
         initialized the state
+        :param id_state The id of the state.
         """
-        self.id = uuid.uuid1()
+        self.id = id_state

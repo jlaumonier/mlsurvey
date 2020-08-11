@@ -17,20 +17,8 @@ class TestEnvironment(unittest.TestCase):
         self.assertDictEqual(env.agents, dict())
         self.assertFalse(env.end_episode)
         self.assertEqual(env.current_step, 0)
-        self.assertEqual(env.max_step, -1)
-        self.assertIsInstance(env.current_state, mls.rl.common.State)
-
-    def test_init_max_step(self):
-        """
-        :test : mls.rl.common.Environment()
-        :condition : initialized max_step
-        :main_result : Environment is initialized
-        """
-        env = mls.rl.common.Environment(max_step=10)
-        self.assertIsInstance(env, mls.rl.common.Environment)
-        self.assertFalse(env.end_episode)
-        self.assertEqual(env.current_step, 0)
-        self.assertEqual(env.max_step, 10)
+        self.assertIsNone(env.game)
+        self.assertIsNone(env.current_state)
 
     def test_getObservationForAgent(self):
         """
@@ -39,21 +27,24 @@ class TestEnvironment(unittest.TestCase):
         :main_result: the observation of the agent
         """
         env = mls.rl.common.Environment()
+        env.game = mls.rl.common.Game(max_step=10)
+        env.current_state = env.game.init_state()
         expected_observation = env.current_state
         real_observation = env.get_observation_for_agent()
         self.assertEqual(expected_observation, real_observation)
 
-    def test_calculate_end_episode(self):
+    def test_calculate_end_episode_not_end(self):
         """
         :test : mls.rl.common.Environment.calculate_end_episode()
-        :condition: no execution of the environment
+        :condition: no execution of the environment. game is set
         :main_result: episode is not terminated
         """
-        env = mls.rl.common.Environment(max_step=10)
-        env.current_step = 10
+        env = mls.rl.common.Environment()
+        env.game = mls.rl.common.Game(max_step=10)
+        env.current_state = env.game.init_state()
         env.calculate_end_episode()
         is_episode_terminated = env.end_episode
-        self.assertTrue(is_episode_terminated)
+        self.assertFalse(is_episode_terminated)
 
     def test_calculate_next_state(self):
         """
@@ -62,6 +53,8 @@ class TestEnvironment(unittest.TestCase):
         :main_result: one step is pass
         """
         env = mls.rl.common.Environment()
+        env.game = mls.rl.common.Game(max_step=10)
+        env.current_state = env.game.init_state()
         old_state = env.current_state
         env.calculate_next_state()
         self.assertEqual(env.current_step, 1)

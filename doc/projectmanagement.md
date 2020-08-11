@@ -50,9 +50,10 @@
 * T : Optimize Dask
 
 ## Current
-* F : RL - Adding State (explain2)
+* F : RL - Introducing Game as a description of the structure and dynamic of the Environment
 
 ## Done
+* F : RL - Adding State (explain2)
 * F : RL - Create simple main loop : agent, environment, engine
 * A : Removing Dask (too much complexity)
 * Git repository : local

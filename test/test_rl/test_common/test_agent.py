@@ -24,7 +24,7 @@ class TestAgent(unittest.TestCase):
         :condition: observation is set
         :main_return : the action of the action is set
         """
-        observation = mls.rl.common.State()
+        observation = mls.rl.common.State(id_state=0)
         expected_action = 'action3'
         ag = mls.rl.common.Agent('AgentName1')
         ag.observation = observation

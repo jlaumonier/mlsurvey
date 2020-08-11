@@ -8,7 +8,9 @@ class Engine:
         initialization of the engine
         :param max_step maximum step of the environment. temporary. will be change when adding Game
         """
-        self.environment = mls.rl.common.Environment(max_step=max_step)
+        self.environment = mls.rl.common.Environment()
+        self.environment.game = mls.rl.common.Game(max_step=max_step)
+        self.environment.current_state = self.environment.game.init_state()
 
     def execute(self):
         """

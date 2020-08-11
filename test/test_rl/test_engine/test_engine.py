@@ -14,6 +14,8 @@ class TestEngine(unittest.TestCase):
         engine = mls.rl.engine.Engine()
         self.assertIsInstance(engine, mls.rl.engine.Engine)
         self.assertIsInstance(engine.environment, mls.rl.common.Environment)
+        self.assertIsInstance(engine.environment.game, mls.rl.common.Game)
+        self.assertIsInstance(engine.environment.current_state, mls.rl.common.State)
 
     def test_execute_one_loop(self):
         """
