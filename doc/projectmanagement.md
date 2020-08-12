@@ -51,9 +51,10 @@
 * T : Optimize Dask
 
 ## Current
-* F : Managing pre/init workflow : create venv, get data from s3
+
 
 ## Done
+* F : Managing pre/init workflow : create venv, get data from s3
 * F : RL - Introducing Game as a description of the structure and dynamic of the Environment
 * F : RL - Adding State (explain2)
 * F : RL - Create simple main loop : agent, environment, engine
