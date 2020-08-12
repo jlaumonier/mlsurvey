@@ -13,3 +13,5 @@ tqdm
 tinydb
 liac-arff
 tables
+boto3
+luigi
