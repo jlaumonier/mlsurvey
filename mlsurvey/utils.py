@@ -8,6 +8,9 @@ import pandas as pd
 
 
 class Utils:
+    """
+    Utils functions
+    """
 
     @classmethod
     def md5_file(cls, filename):
@@ -52,18 +55,13 @@ class Utils:
 
     @classmethod
     def make_meshgrid(cls, x, y, h=.02):
-        """Create a mesh of points to plot in
+        """
+        Create a mesh of points to plot in
         (src, thanks : https://scikit-learn.org/stable/auto_examples/svm/plot_iris.html)
-
-        Parameters
-        ----------
-        x: data to base x-axis meshgrid on (type numpy.ndarray)
-        y: data to base y-axis meshgrid on (type numpy.ndarray)
-        h: stepsize for meshgrid, optional
-
-        Returns
-        -------
-        xx, yy : ndarray
+        :param x: data to base x-axis meshgrid on (type numpy.ndarray)
+        :param y: data to base y-axis meshgrid on (type numpy.ndarray)
+        :param h: stepsize for meshgrid, optional
+        :return: xx, yy : ndarray
         """
         x_min, x_max = x.min() - 1, x.max() + 1
         y_min, y_max = y.min() - 1, y.max() + 1
@@ -75,14 +73,13 @@ class Utils:
     def transform_to_dict(cls, dictionary: dict, tuple_to_string=False):
         """
         Transform a dictionary containing dictionary such as
-            { "__type__": "__tuple__", "__value__": "(1, 2, 3)"}
-            to dictionary containing the real type (tuple)
+        { "__type__": "__tuple__", "__value__": "(1, 2, 3)"}
+        to dictionary containing the real type (tuple)
         :param dictionary: dictionary containing __tuple__ values
         :param tuple_to_string: if True the tuple identified with "__type__": "__tuple__" are store as string in the
-               dictionary. If False, the tuple is converted to a tuple type
-        :return: dictionary containing the real type
+            dictionary. If False, the tuple is converted to a tuple type
+        :return dictionary containing the real type
         """
-
         def change_one_dict_element(value):
             if '__type__' in value:
                 if value['__type__'] == '__tuple__':
@@ -114,12 +111,11 @@ class Utils:
     @classmethod
     def transform_to_json(cls, dictionary):
         """
-        Transform a dictionary containing tuple to dictionary such as
-            { "__type__": "__tuple__", "__value__": "(1, 2, 3)"}
+        Transform a dictionary containing tuple to dictionary
+        such as { "__type__": "__tuple__", "__value__": "(1, 2, 3)"}
         :param dictionary: dictionary containing tuple
-        :return: dictionary containing __tuple__ values
+        :return dictionary containing __tuple__ values
         """
-
         def change_one_dict_element(value):
             result_element = {'__type__': '__tuple__', '__value__': value.__str__()}
             return result_element

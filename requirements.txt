@@ -15,3 +15,5 @@ liac-arff
 tables
 boto3
 luigi
+sphinx
+sphinx-rtd-theme
