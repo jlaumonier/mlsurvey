@@ -5,7 +5,9 @@ Welcome to MLSurvey's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   modules.rst
+   architecture.rst
+   rl.rst
+   projectmanagement.rst
 
 Indices and tables
 ==================

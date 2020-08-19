@@ -1,20 +1,24 @@
-# Backlog
+Backlog
+=======
 
-## Done definition
+Done definition
+---------------
 1. Code 
 2. Unit test
 3. Documentation
 4. Pushed in git
 
-## Notes for TODO
+Notes for TODO
+--------------
 * B is Bug
 * F is functionality
 * T is technical debt
 * A is Architecture
 * R is Research
 
-## TODO
-* F : Integrate https://s3ninja.net/ to test GetRawDataWorkFlow without a real s3 endpoint
+TODO
+^^^^
+
 * F : Rethink about task_init_terminated because it is not used at the moment
 * F : Load CSV : choose the separator.
 * F : Use the column names in all the processes (sl, fairness, visualization)
@@ -50,10 +54,14 @@
 * F : Adding Theil index as fairness criteria
 * T : Optimize Dask
 
-## Current
+Current
+^^^^^^^
 
 
-## Done
+
+Done
+^^^^
+* T : use rst instead of md for documentation to use sphinx
 * F : Managing pre/init workflow : create venv, get data from s3
 * F : RL - Introducing Game as a description of the structure and dynamic of the Environment
 * F : RL - Adding State (explain2)

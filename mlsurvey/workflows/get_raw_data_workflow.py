@@ -15,6 +15,9 @@ class GetRawDataWorkflow(luigi.Task):
     bucket_name = luigi.Parameter()
 
     def run(self):
+        """
+        Open a s3 session, download files
+        """
         s3_session = boto3.session.Session(profile_name=str(self.base_url))
         s3_client = s3_session.client('s3', endpoint_url=str(self.base_url))
 
