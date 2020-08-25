@@ -36,4 +36,8 @@ class DataSetFactory:
         storage = d['storage'] if 'storage' in d else 'Pandas'
         dataset = DataSetFactory.factories[factory_name].create(d['type'], storage)
         dataset.set_generation_parameters(d['parameters'])
+        if 'metadata' in d:
+            dataset.set_metadata_parameters(d['metadata'])
+        if 'fairness' in d:
+            dataset.set_fairness_parameters(d['fairness'])
         return dataset

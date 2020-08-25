@@ -19,7 +19,6 @@ Notes for TODO
 TODO
 ^^^^
 
-* F : Rethink about task_init_terminated because it is not used at the moment
 * F : Load CSV : choose the separator.
 * F : Use the column names in all the processes (sl, fairness, visualization)
 * F : Move categorical transformation from FileDataSet to a preprocessing task
@@ -40,8 +39,7 @@ TODO
 * T : Doc website
 * F : Create generic factory
 * T : Fairness utils : make the calculation of conditional proba more robust (more test)
-* F : Defining and validating a json schema for config files
-* B : Scikit learning : use a predict() on classifier change the joblib saved file (before and after predict()). Write small test program  
+* B : Scikit learning : use a predict() on classifier change the joblib saved file (before and after predict()). Write small test program
 * A : Analyse if y_pred is in a correct location (Data)
 * F : dash adding dcc.Loading. Warning, this provokes bug in display (update option, blank page)
 * B : joblib md5 depends on the version of python/joblib... :S search other method to test the save file. Not simple
@@ -52,12 +50,12 @@ TODO
 * F : adding a base_directory for LearningWorkflows and child
 * B : Demographic parity is not defined if, in a dataset, no instance belong to privileged or unpriviliged class.
 * F : Adding Theil index as fairness criteria
-* T : Optimize Dask
+* F : Defining and validating a json schema for config files
 
 Current
 ^^^^^^^
 
-
+* A : Refactoring supervised learning workflow : get data task and prepare data task
 
 Done
 ^^^^
