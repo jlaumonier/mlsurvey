@@ -49,14 +49,49 @@ class TestDataSetFactory(unittest.TestCase):
         self.assertEqual('NotExistedFactory', data.t)
 
     def test_create_dataset_from_dict_created(self):
+        """
+        :test : mlsurvey.sl.dataset.DatasetFactory.create_dataset_from_dict()
+        :condition : config contains type, storage, parameters, metadata, fairness
+        :main_result : dataset created with correct parameters
+        """
+        params = {'param1': 1, 'param2': 3, 'return_X_y': False}
+        metadata = {"y_col_name": "one_target"}
+        fairness = {"protected_attribute": 12, "privileged_classes": "x >= 25"}
         source = {'type': 'load_iris',
                   'storage': 'Pandas',
-                  'parameters': {'param1': 1, 'param2': 3, 'return_X_y': False}}
+                  'parameters': params,
+                  "metadata": metadata,
+                  'fairness': fairness
+                  }
         dataset_factory = mls.sl.datasets.DataSetFactory()
         mls.sl.datasets.DataSetFactory.add_factory('generic',
                                                    mls.sl.datasets.GenericDataSet.Factory)
-        params = {'param1': 1, 'param2': 3, 'return_X_y': False}
+
         dataset = dataset_factory.create_dataset_from_dict(source)
         self.assertEqual(dataset.storage, 'Pandas')
         self.assertEqual('load_iris', dataset.t)
         self.assertDictEqual(params, dataset.params)
+        self.assertDictEqual(fairness, dataset.fairness)
+        self.assertDictEqual(metadata, dataset.metadata)
+
+    def test_create_dataset_from_dict_created_no_optional_params(self):
+        """
+        :test : mlsurvey.sl.dataset.DatasetFactory.create_dataset_from_dict()
+        :condition : config contains type, parameters, no storage,  no metadata, no fairness
+        :main_result : dataset created with correct parameters
+        """
+        params = {'param1': 1, 'param2': 3, 'return_X_y': False}
+        metadata = {"y_col_name": "target"}
+        source = {'type': 'load_iris',
+                  'parameters': params
+                  }
+        dataset_factory = mls.sl.datasets.DataSetFactory()
+        mls.sl.datasets.DataSetFactory.add_factory('generic',
+                                                   mls.sl.datasets.GenericDataSet.Factory)
+
+        dataset = dataset_factory.create_dataset_from_dict(source)
+        self.assertEqual(dataset.storage, 'Pandas')
+        self.assertEqual('load_iris', dataset.t)
+        self.assertDictEqual(params, dataset.params)
+        self.assertDictEqual({}, dataset.fairness)
+        self.assertDictEqual(metadata, dataset.metadata)

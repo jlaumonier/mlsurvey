@@ -55,6 +55,21 @@ class TestLogging(unittest.TestCase):
         self.assertTrue(os.path.isfile(log.directory + 'input.json'))
         self.assertEqual('e995f8b528af0c0c47e2c572955c91bc', mls.Utils.md5_file(log.directory + 'input.json'))
 
+    def test_save_inputs_other_name_input_saved(self):
+        """
+        :test : mlsurvey.Logging.save_input()
+        :condition : filename is set
+        :main_result : input are saved
+        """
+        dir_name = 'testing/'
+        d_data = mls.sl.datasets.DataSetFactory.create_dataset('make_moons')
+        d_data.params['random_state'] = 0
+        i_data = mls.sl.models.DataFactory.create_data('Pandas', d_data.generate())
+        log = mls.Logging(dir_name)
+        inputs = {'data': i_data}
+        log.save_input(inputs, metadata_filename='test.json')
+        self.assertTrue(os.path.isfile(log.directory + 'test.json'))
+
     def test_save_inputs_inputs_none_input_saved(self):
         dir_name = 'testing-none-input/'
         log = mls.Logging(dir_name)

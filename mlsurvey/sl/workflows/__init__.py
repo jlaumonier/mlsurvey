@@ -1,4 +1,6 @@
+from . import tasks
 from .fairness_workflow import FairnessWorkflow
 from .multiple_learning_workflow import MultipleLearningWorkflow
 from .supervised_learning_workflow import SupervisedLearningWorkflow
 from .visualization_workflow import VisualizationWorkflow
+

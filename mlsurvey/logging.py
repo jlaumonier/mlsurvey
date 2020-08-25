@@ -24,10 +24,11 @@ class Logging:
         self.dir_name = dir_name
         self.directory = os.path.join(self.base_dir, dir_name, '')
 
-    def save_input(self, inpts):
+    def save_input(self, inpts, metadata_filename='input.json'):
         """
-        save the dictionary of inputs into a file
+        save the dictionary of inputs into a file (.json for metadata, h5 for data). One json may contain multiple data
         :param inpts: dictionary of inputs
+        :param metadata_filename: name of the json file containing metadata
         """
         output = {}
         for k, v in inpts.items():
@@ -43,7 +44,7 @@ class Logging:
                              }
             else:
                 output[k] = None
-        self.save_dict_as_json('input.json', output)
+        self.save_dict_as_json(metadata_filename, output)
 
     def load_input(self, filename):
         """
