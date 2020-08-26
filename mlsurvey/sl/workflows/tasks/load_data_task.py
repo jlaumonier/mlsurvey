@@ -1,8 +1,8 @@
 import mlsurvey as mls
-from mlsurvey.sl.workflows.tasks import SupervisedLearningTask
+from mlsurvey.workflows.tasks import BaseTask
 
 
-class LoadDataTask(SupervisedLearningTask):
+class LoadDataTask(BaseTask):
     """
     Load/generate raw data from dataset described in a config file
     """

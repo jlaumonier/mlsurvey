@@ -54,7 +54,7 @@ TODO
 
 Current
 ^^^^^^^
-
+* A : Get Raw Data workflow refactoring
 
 Done
 ^^^^
