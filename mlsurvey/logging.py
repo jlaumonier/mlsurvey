@@ -69,12 +69,12 @@ class Logging:
         data = mls.FileOperation.load_json_as_dict(filename, self.directory)
         return data
 
-    def save_classifier(self, classifier):
+    def save_classifier(self, classifier, filename='model.joblib'):
         """ save a scikitlearn classifier"""
         os.makedirs(self.directory, exist_ok=True)
-        joblib.dump(classifier, self.directory + 'model.joblib')
+        joblib.dump(classifier, os.path.join(self.directory, filename))
 
-    def load_classifier(self):
+    def load_classifier(self, filename='model.joblib'):
         """ load a scikitlearn classifier"""
         os.makedirs(self.directory, exist_ok=True)
-        return joblib.load(self.directory + 'model.joblib')
+        return joblib.load(os.path.join(self.directory, filename))

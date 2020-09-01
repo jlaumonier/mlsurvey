@@ -54,10 +54,11 @@ TODO
 
 Current
 ^^^^^^^
-* A : Get Raw Data workflow refactoring
++ F : Split data task, learn task, Evaluate task
 
 Done
 ^^^^
+* A : Get Raw Data workflow refactoring
 * A : Refactoring supervised learning workflow : get data task and prepare data task
 * T : use rst instead of md for documentation to use sphinx
 * F : Managing pre/init workflow : create venv, get data from s3
