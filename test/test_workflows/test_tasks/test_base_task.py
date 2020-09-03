@@ -28,14 +28,15 @@ class TestBaseTask(unittest.TestCase):
         """
         log = mls.Logging()
         task = mls.workflows.tasks.BaseTask(base_directory=self.base_directory,
-                                            logging_base_directory=log.base_dir,
+                                            logging_base_directory=os.path.join(self.base_directory, log.base_dir),
                                             logging_directory=log.dir_name,
                                             config_filename='complete_config_loaded.json',
                                             config_directory=self.config_directory)
-        task.init_log_config()
         self.assertIsInstance(task.config, mls.Config)
         self.assertIsNotNone(task.config.data)
         self.assertIsInstance(task.log, mls.Logging)
+        self.assertEqual(os.path.join(self.base_directory, 'logs/', ), task.log.base_dir)
+        self.assertEqual(os.path.join(self.base_directory, 'logs/', task.log.dir_name), task.log.directory)
 
     def test_init_log_config_base_directory_not_loaded(self):
         """
@@ -45,11 +46,28 @@ class TestBaseTask(unittest.TestCase):
         """
         log = mls.Logging()
         try:
-            _ = mls.workflows.tasks.BaseTask(base_directory='../',
-                                             logging_base_directory=log.base_dir,
+            _ = mls.workflows.tasks.BaseTask(base_directory=self.base_directory,
+                                             logging_base_directory=os.path.join(self.base_directory, log.base_dir),
                                              logging_directory=log.dir_name,
-                                             config_filename='complete_config_loaded.json',
+                                             config_filename='not_existed_file.json',
                                              config_directory=self.config_directory)
             self.assertTrue(False)
         except FileNotFoundError:
+            self.assertTrue(True)
+
+    def test_init_log_config_config_not_json(self):
+        """
+        :test : mlsurvey.sl.workflows.tasks.LoadDataTask.init_log_config()
+        :condition : config file is not a json file
+        :main_result : Log and Config objects are not initialized
+        """
+        log = mls.Logging()
+        try:
+            _ = mls.workflows.tasks.BaseTask(base_directory=self.base_directory,
+                                             logging_base_directory=os.path.join(self.base_directory, log.base_dir),
+                                             logging_directory=log.dir_name,
+                                             config_filename='config_loaded_not_json.json',
+                                             config_directory=self.config_directory)
+            self.assertTrue(False)
+        except mls.exceptions.ConfigError:
             self.assertTrue(True)

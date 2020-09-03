@@ -276,3 +276,28 @@ class TestDataPanda(unittest.TestCase):
         np.testing.assert_array_equal(new_x, new_data.x)
         np.testing.assert_array_equal(y, new_data.y)
         self.assertListEqual(expected_column_name, list(new_data.df.columns))
+
+    def test_ccopy_with_new_data_dataframe_pandas(self):
+        """
+        :test : mlsurvey.modles.Data.copy_with_new_data_dataframe()
+        :condition : Dataframe is pandas, x and y a set
+        :main_result : new data instance is return with new data values but same columns names and other paramters
+        """
+        x = np.array([[1, 2], [3, 4]])
+        y = np.array([0, 1])
+        data_array = np.concatenate((x, np.array([y]).T), axis=1)
+        expected_column_name = ['Col1', 'Col2', 'Col3']
+        df = pd.DataFrame(data_array, columns=expected_column_name)
+        data = mls.sl.models.DataPandas(df, df_contains='xy', y_col_name=expected_column_name[2])
+        new_x = np.array([[10, 20], [30, 40]])
+        new_data_array = np.concatenate((new_x, np.array([y]).T), axis=1)
+        new_df = pd.DataFrame(new_data_array, columns=expected_column_name)
+
+        new_data = data.copy_with_new_data_dataframe(new_df)
+        self.assertIsInstance(new_data.df, data.df.__class__)
+        self.assertIsInstance(new_data, mls.sl.models.DataPandas)
+        self.assertEqual('xy', new_data.df_contains)
+        self.assertEqual('Col3', new_data.y_col_name)
+        np.testing.assert_array_equal(new_x, new_data.x)
+        np.testing.assert_array_equal(y, new_data.y)
+        self.assertListEqual(expected_column_name, list(new_data.df.columns))

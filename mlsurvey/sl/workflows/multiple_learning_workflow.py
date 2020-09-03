@@ -116,6 +116,5 @@ class MultipleLearningWorkflow(LearningWorkflow):
         - terminated the workflow
         """
         if self.task_terminated_init:
-            self.task_expand_config()
             self.task_run_each_config()
             self.set_terminated()

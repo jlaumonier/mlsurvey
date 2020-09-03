@@ -54,10 +54,11 @@ TODO
 
 Current
 ^^^^^^^
-+ F : Split data task, learn task, Evaluate task
+* Fairness task
 
 Done
 ^^^^
+* F : Split data task, learn task, Evaluate task
 * A : Get Raw Data workflow refactoring
 * A : Refactoring supervised learning workflow : get data task and prepare data task
 * T : use rst instead of md for documentation to use sphinx

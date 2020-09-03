@@ -17,12 +17,12 @@ class TestLogging(unittest.TestCase):
     def test_init_log_directory_created_with_date(self):
         log = mls.Logging()
         self.assertIsNotNone(log.dir_name)
-        self.assertEqual(log.base_dir + log.dir_name + '/', log.directory)
+        self.assertEqual(os.path.join(log.base_dir, log.dir_name), log.directory)
 
     def test_init_log_directory_create_with_fixed_name(self):
         dir_name = 'testing/'
         log = mls.Logging(dir_name=dir_name)
-        self.assertEqual('logs/' + dir_name, log.directory)
+        self.assertEqual(os.path.join('logs/', dir_name), log.directory)
 
     def test_init_log_directory_dir_exists(self):
         """
@@ -32,7 +32,7 @@ class TestLogging(unittest.TestCase):
         """
         base_dir = 'files/'
         dir_name = 'slw'
-        self.assertTrue(os.path.isdir(base_dir + dir_name))
+        self.assertTrue(os.path.isdir(os.path.join(base_dir, dir_name)))
         _ = mls.Logging(base_dir=base_dir, dir_name=dir_name)
         self.assertTrue(True)
 
@@ -53,7 +53,7 @@ class TestLogging(unittest.TestCase):
         self.assertTrue(os.path.isfile(log.directory + 'train.h5'))
         self.assertTrue(os.path.isfile(log.directory + 'test.h5'))
         self.assertTrue(os.path.isfile(log.directory + 'input.json'))
-        self.assertEqual('e995f8b528af0c0c47e2c572955c91bc', mls.Utils.md5_file(log.directory + 'input.json'))
+        self.assertEqual('ee699de167bedbea119cb7908fd48d9b', mls.Utils.md5_file(log.directory + 'input.json'))
 
     def test_save_inputs_other_name_input_saved(self):
         """

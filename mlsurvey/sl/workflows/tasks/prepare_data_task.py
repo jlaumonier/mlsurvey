@@ -12,7 +12,8 @@ class PrepareDataTask(BaseTask):
         return mls.sl.workflows.tasks.LoadDataTask(logging_directory=self.logging_directory,
                                                    logging_base_directory=self.logging_base_directory,
                                                    config_filename=self.config_filename,
-                                                   config_directory=self.config_directory)
+                                                   config_directory=self.config_directory,
+                                                   base_directory=self.base_directory)
 
     def run(self):
         """

@@ -27,6 +27,11 @@ class LoadDataTask(BaseTask):
         dataset_params_contents = self.config.data['datasets'][dataset_name]
         dataset = self.init_dataset(dataset_params_contents)
 
+        # this line is only for FileDataSet testing...
+        # Not sure if it is the most Pythonic and most TDDic way....
+        if hasattr(dataset, 'set_base_directory'):
+            dataset.set_base_directory(self.base_directory)
+
         # init data
         raw_data = mls.sl.models.DataFactory.create_data(dataset.storage,
                                                          dataset.generate(),

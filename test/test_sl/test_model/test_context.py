@@ -59,28 +59,36 @@ class TestContext(unittest.TestCase):
         log = mls.Logging()
         context.save(log)
         self.assertEqual(5, len(os.listdir(log.directory)))
-        self.assertTrue(os.path.isfile(log.directory + 'dataset.json'))
-        self.assertEqual('1e0d460125a76c6990750a9cafb49d86', mls.Utils.md5_file(log.directory + 'dataset.json'))
-        self.assertTrue(os.path.isfile(log.directory + 'input.json'))
-        self.assertEqual('e024075ecfdd447815a1226dc9eff25d', mls.Utils.md5_file(log.directory + 'input.json'))
-        self.assertTrue(os.path.isfile(log.directory + 'algorithm.json'))
-        self.assertEqual('77ead84d71a01a8e83c8706b2b96cf57', mls.Utils.md5_file(log.directory + 'algorithm.json'))
-        self.assertTrue(os.path.isfile(log.directory + 'model.joblib'))
-        self.assertEqual('4dc6000a33a1ca18a3aaedb7f9802955', mls.Utils.md5_file(log.directory + 'model.joblib'))
-        self.assertTrue(os.path.isfile(log.directory + 'evaluation.json'))
-        self.assertEqual('c8a8c328f655178bdfd600a7710cf8e1', mls.Utils.md5_file(log.directory + 'evaluation.json'))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'dataset.json')))
+        self.assertEqual('1e0d460125a76c6990750a9cafb49d86',
+                         mls.Utils.md5_file(os.path.join(log.directory, 'dataset.json')))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'input.json')))
+        self.assertEqual('e024075ecfdd447815a1226dc9eff25d',
+                         mls.Utils.md5_file(os.path.join(log.directory, 'input.json')))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'algorithm.json')))
+        self.assertEqual('77ead84d71a01a8e83c8706b2b96cf57',
+                         mls.Utils.md5_file(os.path.join(log.directory, 'algorithm.json')))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'model.joblib')))
+        self.assertEqual('4dc6000a33a1ca18a3aaedb7f9802955',
+                         mls.Utils.md5_file(os.path.join(log.directory, 'model.joblib')))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'evaluation.json')))
+        self.assertEqual('c8a8c328f655178bdfd600a7710cf8e1',
+                         mls.Utils.md5_file(os.path.join(log.directory, 'evaluation.json')))
 
     def test_save_context_no_algorithm_neither_classifier_should_save(self):
         context = mls.sl.models.Context(eval_type=mls.sl.models.EvaluationSupervised)
         log = mls.Logging()
         context.save(log)
         self.assertEqual(3, len(os.listdir(log.directory)))
-        self.assertTrue(os.path.isfile(log.directory + 'dataset.json'))
-        self.assertEqual('1e0d460125a76c6990750a9cafb49d86', mls.Utils.md5_file(log.directory + 'dataset.json'))
-        self.assertTrue(os.path.isfile(log.directory + 'input.json'))
-        self.assertEqual('e024075ecfdd447815a1226dc9eff25d', mls.Utils.md5_file(log.directory + 'input.json'))
-        self.assertTrue(os.path.isfile(log.directory + 'evaluation.json'))
-        self.assertEqual('c8a8c328f655178bdfd600a7710cf8e1', mls.Utils.md5_file(log.directory + 'evaluation.json'))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'dataset.json')))
+        self.assertEqual('1e0d460125a76c6990750a9cafb49d86',
+                         mls.Utils.md5_file(os.path.join(log.directory, 'dataset.json')))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'input.json')))
+        self.assertEqual('e024075ecfdd447815a1226dc9eff25d',
+                         mls.Utils.md5_file(os.path.join(log.directory, 'input.json')))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'evaluation.json')))
+        self.assertEqual('c8a8c328f655178bdfd600a7710cf8e1',
+                         mls.Utils.md5_file(os.path.join(log.directory, 'evaluation.json')))
 
     def test_load_context(self):
         context = mls.sl.models.Context(eval_type=mls.sl.models.EvaluationSupervised)

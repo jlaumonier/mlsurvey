@@ -13,6 +13,10 @@ class DataPandas(Data):
         return self._inner_data.iloc[:, 0:self.max_x_column].to_numpy()
 
     @property
+    def x_df(self):
+        return self._inner_data.iloc[:, 0:self.max_x_column]
+
+    @property
     def y(self):
         return self._inner_data[self.y_col_name].to_numpy()
 
@@ -38,6 +42,13 @@ class DataPandas(Data):
         data_array = np.concatenate((data_array[0], np.array([data_array[1]]).T), axis=1)
         df = pd.DataFrame(data_array, columns=self.df.columns)
         data = mls.sl.models.DataPandas(df,
+                                        df_contains=self.df_contains,
+                                        y_col_name=self.y_col_name)
+        return data
+
+    def copy_with_new_data_dataframe(self, dataframe):
+        """  see mls.models.Data.copy_with_new_data_dataframe() """
+        data = mls.sl.models.DataPandas(dataframe,
                                         df_contains=self.df_contains,
                                         y_col_name=self.y_col_name)
         return data

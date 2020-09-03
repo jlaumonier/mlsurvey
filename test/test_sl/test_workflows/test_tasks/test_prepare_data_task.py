@@ -21,7 +21,7 @@ class TestPrepareDataTask(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         log = mls.Logging()
-        shutil.rmtree(log.base_dir, ignore_errors=True)
+        shutil.rmtree(os.path.join(cls.base_directory, log.base_dir), ignore_errors=True)
 
     def test_run(self):
         """
@@ -29,12 +29,14 @@ class TestPrepareDataTask(unittest.TestCase):
         :condition : data file are loaded, saved in hdf database and logged
         :main_result : data are prepared.
         """
-        log = mls.Logging()
-        luigi.build([mls.sl.workflows.tasks.PrepareDataTask(logging_directory=log.dir_name,
-                                                            logging_base_directory=log.base_dir,
+        temp_log = mls.Logging()
+        luigi.build([mls.sl.workflows.tasks.PrepareDataTask(logging_directory=temp_log.dir_name,
+                                                            logging_base_directory=os.path.join(self.base_directory,
+                                                                                                temp_log.base_dir),
                                                             config_filename='complete_config_loaded.json',
                                                             config_directory=self.config_directory)],
                     local_scheduler=True)
+        log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
         df_raw_data = mls.FileOperation.read_hdf('raw_data.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
         raw_data = mls.sl.models.DataFactory.create_data('Pandas', df_raw_data)
         lx = len(raw_data.x)

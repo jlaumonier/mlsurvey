@@ -22,7 +22,7 @@ class Logging:
         if dir_name is None:
             dir_name = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f") + '-' + str(salt_random_number)
         self.dir_name = dir_name
-        self.directory = os.path.join(self.base_dir, dir_name, '')
+        self.directory = os.path.join(self.base_dir, dir_name)
 
     def save_input(self, inpts, metadata_filename='input.json'):
         """
@@ -40,7 +40,8 @@ class Logging:
                     df_format = 'Pandas'
                 output[k] = {'data_path': filename,
                              'df_format': df_format,
-                             'metadata': v.to_dict()
+                             'metadata': v.to_dict(),
+                             'shape': v.df.shape
                              }
             else:
                 output[k] = None

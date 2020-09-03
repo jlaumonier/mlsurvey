@@ -20,22 +20,24 @@ class TestEvaluateTask(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         log = mls.Logging()
-        shutil.rmtree(log.base_dir, ignore_errors=True)
+        shutil.rmtree(os.path.join(cls.base_directory, log.base_dir), ignore_errors=True)
 
     def test_run(self):
         """
         :test : mlsurvey.sl.workflows.tasks.EvaluateTask.run()
-        :condition : model is trained
-        :main_result : model is evaluated
+        :condition : model is trained, config is made to learn on dataset without fairness config
+        :main_result : model is evaluated, fairness is not calculated
         """
-        log = mls.Logging()
-        luigi.build([mls.sl.workflows.tasks.EvaluateTask(logging_directory=log.dir_name,
-                                                         logging_base_directory=log.base_dir,
+        temp_log = mls.Logging()
+        luigi.build([mls.sl.workflows.tasks.EvaluateTask(logging_directory=temp_log.dir_name,
+                                                         logging_base_directory=os.path.join(self.base_directory,
+                                                                                             temp_log.base_dir),
                                                          config_filename='complete_config_loaded.json',
                                                          config_directory=self.config_directory,
-                                                         evaluation_type='mls.sl.models.EvaluationSupervised')],
+                                                         base_directory=self.base_directory)],
                     local_scheduler=True)
-        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'evaluation.json')))
+        log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'evaluation.json')))
         evaluation_dict = log.load_json_as_dict('evaluation.json')
         evaluation = mls.sl.models.EvaluationFactory.create_instance_from_dict(evaluation_dict)
 
@@ -43,4 +45,52 @@ class TestEvaluateTask(unittest.TestCase):
         self.assertEqual(0.95, evaluation.score)
         np.testing.assert_array_equal(expected_cm, evaluation.confusion_matrix)
         self.assertIsNone(evaluation.sub_evaluation)
+
+    def test_run_with_fairness_evaluated(self):
+        """
+        :test : mlsurvey.sl.workflows.tasks.EvaluateTask.run()
+        :condition : model is trained
+        :main_result : model is evaluated with fairness metrics
+        """
+        temp_log = mls.Logging()
+        luigi.build([mls.sl.workflows.tasks.EvaluateTask(logging_directory=temp_log.dir_name,
+                                                         logging_base_directory=os.path.join(self.base_directory,
+                                                                                             temp_log.base_dir),
+                                                         config_filename='config_filedataset.json',
+                                                         config_directory=self.config_directory,
+                                                         base_directory=self.base_directory)],
+                    local_scheduler=True)
+        log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
+        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'evaluation.json')))
+        evaluation_dict = log.load_json_as_dict('evaluation.json')
+        evaluation = mls.sl.models.EvaluationFactory.create_instance_from_dict(evaluation_dict)
+
+        self.assertIsNotNone(evaluation.sub_evaluation)
+        self.assertAlmostEqual(-0.3666666, evaluation.sub_evaluation.demographic_parity, delta=1e-07)
+        self.assertAlmostEqual(0.476190476, evaluation.sub_evaluation.disparate_impact_rate, delta=1e-07)
+        self.assertAlmostEqual(1.0, evaluation.sub_evaluation.equal_opportunity, delta=1e-07)
+        self.assertAlmostEqual(-0.8, evaluation.sub_evaluation.statistical_parity, delta=1e-07)
+        self.assertAlmostEqual(-0.6666666, evaluation.sub_evaluation.average_equalized_odds, delta=1e-07)
+
+    def test_run_with_fairness_evaluated_with_real_data(self):
+        """
+        :test : mlsurvey.sl.workflows.tasks.EvaluateTask.run()
+        :condition : model is trained with real data
+        :main_result : model is evaluated with fairness metrics
+        """
+        temp_log = mls.Logging()
+        luigi.build([mls.sl.workflows.tasks.EvaluateTask(logging_directory=temp_log.dir_name,
+                                                         logging_base_directory=os.path.join(self.base_directory,
+                                                                                             temp_log.base_dir),
+                                                         config_filename='config_filedataset_real_data.json',
+                                                         config_directory=self.config_directory,
+                                                         base_directory=self.base_directory)],
+                    local_scheduler=True)
+        log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
+        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'evaluation.json')))
+        evaluation_dict = log.load_json_as_dict('evaluation.json')
+        evaluation = mls.sl.models.EvaluationFactory.create_instance_from_dict(evaluation_dict)
+
+        self.assertIsNotNone(evaluation.sub_evaluation)
+        self.assertIsNotNone(evaluation.sub_evaluation.demographic_parity)
 

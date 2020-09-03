@@ -84,6 +84,11 @@ class Data(ABC):
 
     @property
     @abstractmethod
+    def x_df(self):
+        ...
+
+    @property
+    @abstractmethod
     def y(self):
         ...
 
@@ -131,6 +136,15 @@ class Data(ABC):
         """
         create a new instance of data with the same parameters but with different data values
         :param data_array: new data values as numpy array
+        :return: an instance of data
+        """
+        ...
+
+    @abstractmethod
+    def copy_with_new_data_dataframe(self, dataframe):
+        """
+        create a new instance of data with the same parameters but with different data values
+        :param dataframe: new data values as dataframe
         :return: an instance of data
         """
         ...

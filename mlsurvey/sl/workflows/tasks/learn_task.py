@@ -11,7 +11,8 @@ class LearnTask(BaseTask):
         return mls.sl.workflows.tasks.SplitDataTask(logging_directory=self.logging_directory,
                                                     logging_base_directory=self.logging_base_directory,
                                                     config_filename=self.config_filename,
-                                                    config_directory=self.config_directory)
+                                                    config_directory=self.config_directory,
+                                                    base_directory=self.base_directory)
 
     def run(self):
         loaded_data = self.log.load_input(self.input()['split_data'].filename)
