@@ -55,10 +55,11 @@ TODO
 
 Current
 ^^^^^^^
-* Big refactoring : Fairness task, multiple learning workflow with luigi. Visualize WF adapted but not with luigi
+
 
 Done
 ^^^^
+* A : Big refactoring : Fairness task, multiple learning workflow with luigi. Visualize WF adapted but not with luigi
 * F : Split data task, learn task, Evaluate task
 * A : Get Raw Data workflow refactoring
 * A : Refactoring supervised learning workflow : get data task and prepare data task
