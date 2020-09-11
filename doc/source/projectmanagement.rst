@@ -18,7 +18,8 @@ Notes for TODO
 
 TODO
 ^^^^
-
+* A : Refactoring : remove context ?
+* A : Refactoring visualisation ?
 * F : Load CSV : choose the separator.
 * F : Use the column names in all the processes (sl, fairness, visualization)
 * F : Move categorical transformation from FileDataSet to a preprocessing task
@@ -54,7 +55,7 @@ TODO
 
 Current
 ^^^^^^^
-* Fairness task
+* Big refactoring : Fairness task, multiple learning workflow with luigi. Visualize WF adapted but not with luigi
 
 Done
 ^^^^

@@ -10,14 +10,12 @@ class SupervisedLearningWorkflow(LearningWorkflow):
 
     def __init__(self,
                  config_file='config.json',
-                 config=None,
                  config_directory='config/',
                  base_directory='',
                  logging_dir=None):
         """
         Initialized the supervised learning workflow
         :param config_file: config file for initializing the workflow, Used if config is None
-        :param config: dictionary for config. If set, replace config file
         """
         super().__init__(config_directory=config_directory, base_directory=base_directory)
         self.config_file = config_file

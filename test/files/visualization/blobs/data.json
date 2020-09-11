@@ -1,0 +1,1 @@
+{"data": {"data_path": "data.h5", "df_format": "Pandas", "metadata": {"df_contains": "xy", "y_col_name": "target", "y_pred_col_name": "target_pred"}, "shape": {"__type__": "__tuple__", "__value__": "(1000, 3)"}}}

@@ -37,7 +37,7 @@ class MultipleLearningTask(BaseTask):
     def run(self):
 
         slw = []
-        configs_pandas = [(c.filename, c.directory, self.base_directory) for c in self.input()]
+        configs_pandas = [(c.filename, c.directory, self.base_directory) for c in self.input()['expanded_config']]
         pool = Pool()
         with tqdm(total=len(configs_pandas)) as pbar:
             enumr = enumerate(pool.imap_unordered(MultipleLearningTask.task_run_one_config,

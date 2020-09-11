@@ -11,8 +11,9 @@ class AnalyzeLogs:
 
     def __init__(self, directory):
         self.directory = directory
-        self.list_dir = sorted(os.listdir(self.directory))
-        self.list_full_dir = list(map(concat, [self.directory] * len(self.list_dir), self.list_dir))
+        list_dir = sorted(os.listdir(self.directory))
+        self.list_full_dir = list(map(concat, [self.directory] * len(list_dir), list_dir))
+        self.list_full_dir = list(filter(AnalyzeLogs._log_dir_is_not_multiple_learning_result, self.list_full_dir))
         self.algorithms_list = []
         self.datasets_list = []
         self.parameters_df = None
@@ -20,6 +21,10 @@ class AnalyzeLogs:
 
     def __del__(self):
         self.db.close()
+
+    @staticmethod
+    def _log_dir_is_not_multiple_learning_result(directory):
+        return not os.path.isfile(os.path.join(directory, 'results.json'))
 
     def store_config(self):
         """

@@ -16,14 +16,11 @@ class TestAnalyzeLogs(unittest.TestCase):
 
     def test_init_should_init(self):
         analyse_logs = mls.sl.visualize.AnalyzeLogs(self.directory)
-        expected_list_dir = ['directory1', 'directory2', 'directory3', 'directory4']
         expected_list_full_dir = [os.path.join(self.directory, 'directory1'),
                                   os.path.join(self.directory, 'directory2'),
                                   os.path.join(self.directory, 'directory3'),
                                   os.path.join(self.directory, 'directory4')]
         self.assertEqual(self.directory, analyse_logs.directory)
-        self.assertEqual(len(analyse_logs.list_dir), len(analyse_logs.list_full_dir))
-        self.assertListEqual(expected_list_dir, analyse_logs.list_dir)
         self.assertListEqual(expected_list_full_dir, analyse_logs.list_full_dir)
         self.assertListEqual([], analyse_logs.algorithms_list)
         self.assertListEqual([], analyse_logs.datasets_list)

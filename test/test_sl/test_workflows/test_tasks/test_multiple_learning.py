@@ -25,7 +25,7 @@ class TestMultipleLearningTask(unittest.TestCase):
     def test_run(self):
         """
         :test : mlsurvey.sl.workflows.tasks.TestMultipleLearningTask.run()
-        :condition : config file contains lists in fairness parameters
+        :condition : config file contains multiple learning config
         :main_result : all learning have ran
         """
         temp_log = mls.Logging()
@@ -41,3 +41,4 @@ class TestMultipleLearningTask(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'results.json')))
         result_dict = log.load_json_as_dict('results.json')
         self.assertEqual(3, result_dict['NbLearning'])
+

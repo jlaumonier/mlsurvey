@@ -22,61 +22,27 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
 
     def test_init_multiple_learning_workflow_should_initialized(self):
         mlw = mls.sl.workflows.MultipleLearningWorkflow('multiple_config.json', config_directory=self.cd)
-        self.assertIsNotNone(mlw.config.data)
         self.assertEqual(self.cd, mlw.config_directory)
-        self.assertFalse(mlw.task_terminated_expand_config)
-        self.assertFalse(mlw.task_terminated_run_each_config)
+        self.assertIsInstance(mlw.log, mls.Logging)
 
-    def test_init_config_file_not_exists_should_be_not_terminated(self):
+    def test_init_multiple_learning_workflow_logging_in_specified_dir(self):
         """
         :test : mlsurvey.workflows.MultipleLearningWorkflow()
-        :condition : config file not exists
-        :main_result : init is not terminated
+        :condition : set the logging directory
+        :main_result : logging directory is set as specified
         """
-        mlw = mls.sl.workflows.MultipleLearningWorkflow('multiple_config_not_exist.json', config_directory=self.cd)
-        self.assertIsInstance(mlw, mls.sl.workflows.MultipleLearningWorkflow)
-        self.assertFalse(mlw.task_terminated_init)
+        expected_dir = 'testlog/'
+        mlw = mls.sl.workflows.MultipleLearningWorkflow(logging_dir=expected_dir)
+        self.assertEqual(os.path.join('logs/', expected_dir), mlw.log.directory)
 
-    def test_init_config_file_not_a_json_file_should_stop(self):
+    def test_run_all_should_be_ran(self):
         """
-        :test : mlsurvey.workflows.MultipleLearningWorkflow()
-        :condition : config file is not a json file
-        :main_result : init is not terminated
+        :test : mlsurvey.sl.workflows.MultipleLearningWorkflow.run()
+        :condition : config file contains lists in fairness parameters
+        :main_result : all learning have ran
         """
-        mlw = mls.sl.workflows.MultipleLearningWorkflow('config_loaded_not_json.json', config_directory=self.cd)
-        self.assertIsInstance(mlw, mls.sl.workflows.MultipleLearningWorkflow)
-        self.assertFalse(mlw.task_terminated_init)
-
-    def test_run_each_config_all_should_be_ran(self):
         mlw = mls.sl.workflows.MultipleLearningWorkflow(config_file='multiple_config.json', config_directory=self.cd)
-        mlw.task_expand_config()
-        mlw.task_run_each_config()
-        self.assertEqual(3, len(mlw.slw))
-        self.assertTrue(mlw.slw[0].terminated)
-        self.assertTrue(mlw.slw[1].terminated)
-        self.assertTrue(mlw.slw[2].terminated)
-        self.assertTrue(mlw.task_terminated_run_each_config)
-
-    def test_run_all_step_should_be_executed(self):
-        mlw = mls.sl.workflows.MultipleLearningWorkflow('multiple_config.json', config_directory=self.cd)
-        self.assertFalse(mlw.terminated)
         mlw.run()
-
-        # expand task
-        self.assertTrue(mlw.task_terminated_expand_config)
-        # run each config task
-        self.assertTrue(mlw.task_terminated_run_each_config)
-
-        # all tasks are finished
-        self.assertTrue(mlw.terminated)
-
-    def test_run_all_step_init_not_terminated_should_not_be_executed(self):
-        """
-        :test : mlsurvey.workflows.MultipleLearningWorkflow.run()
-        :condition : config file not exists
-        :main_result : should not run
-        """
-        mlw = mls.sl.workflows.MultipleLearningWorkflow('multiple_config_not_exist.json', config_directory=self.cd)
-        self.assertFalse(mlw.terminated)
-        mlw.run()
-        self.assertFalse(mlw.terminated)
+        self.assertTrue(os.path.isfile(os.path.join(mlw.log.base_dir, mlw.log.dir_name, 'results.json')))
+        result_dict = mlw.log.load_json_as_dict('results.json')
+        self.assertEqual(3, result_dict['NbLearning'])

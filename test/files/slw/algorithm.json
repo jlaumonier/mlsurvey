@@ -1,8 +1,1 @@
-{
-  "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
-  "hyperparameters": {
-    "n_neighbors": 15,
-    "algorithm": "auto",
-    "weights": "uniform"
-  }
-}
+{"algorithm-family": "sklearn.neighbors.KNeighborsClassifier", "hyperparameters": {"n_neighbors": 15, "algorithm": "auto", "weights": "uniform"}}
