@@ -3,9 +3,12 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+with open("__git_commit__", "r") as fc:
+    git_revision = fc.read()
+
 setuptools.setup(
     name="mlsurvey",  # Replace with your own username
-    version="0.0.1",
+    version="0.0.1" + "-" + git_revision,
     author="Julien Laumônier",
     author_email="julien.laumonier@iid.ulaval.ca",
     description="Package used to test the implementation/use of machine learning tools",
