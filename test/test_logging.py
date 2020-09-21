@@ -116,16 +116,20 @@ class TestLogging(unittest.TestCase):
         log = mls.Logging(dir_name)
         classifier = neighbors.KNeighborsClassifier()
         log.save_classifier(classifier)
-        self.assertTrue(os.path.isfile(log.directory + 'model.joblib'))
-        self.assertEqual('001924a9978db2a80bee66e62cb374cb', mls.Utils.md5_file(log.directory + 'model.joblib'))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'model.joblib')))
+        classifier = log.load_classifier()
+        self.assertIsInstance(classifier, neighbors.KNeighborsClassifier)
+        self.assertEqual(30, classifier.get_params()['leaf_size'])
 
     def test_save_classifier_filename_provided(self):
         dir_name = 'testing/'
         log = mls.Logging(dir_name)
         classifier = neighbors.KNeighborsClassifier()
         log.save_classifier(classifier, filename='test_model.joblib')
-        self.assertTrue(os.path.isfile(log.directory + 'test_model.joblib'))
-        self.assertEqual('001924a9978db2a80bee66e62cb374cb', mls.Utils.md5_file(log.directory + 'test_model.joblib'))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory + 'test_model.joblib')))
+        classifier = log.load_classifier(filename='test_model.joblib')
+        self.assertIsInstance(classifier, neighbors.KNeighborsClassifier)
+        self.assertEqual(30, classifier.get_params()['leaf_size'])
 
     def test_load_classifier(self):
         dir_name = 'files/slw'
