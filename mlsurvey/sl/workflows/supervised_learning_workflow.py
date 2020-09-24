@@ -8,19 +8,6 @@ from mlsurvey.workflows.learning_workflow import LearningWorkflow
 
 class SupervisedLearningWorkflow(LearningWorkflow):
 
-    def __init__(self,
-                 config_file='config.json',
-                 config_directory='config/',
-                 base_directory='',
-                 logging_dir=None):
-        """
-        Initialized the supervised learning workflow
-        :param config_file: config file for initializing the workflow, Used if config is None
-        """
-        super().__init__(config_directory=config_directory, base_directory=base_directory)
-        self.config_file = config_file
-        self.log = mls.Logging(dir_name=logging_dir)
-
     def run(self):
         """
         Run all tasks

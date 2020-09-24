@@ -20,21 +20,6 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         log = mls.Logging()
         shutil.rmtree(os.path.join(cls.base_directory, log.base_dir), ignore_errors=True)
 
-    def test_init_SL_workflow_should_initialized(self):
-        slw = mls.sl.workflows.SupervisedLearningWorkflow(config_directory=self.cd)
-        self.assertEqual(self.cd, slw.config_directory)
-        self.assertIsInstance(slw.log, mls.Logging)
-
-    def test_init_SL_workflow_logging_in_specified_dir(self):
-        """
-        :test : mlsurvey.workflows.SupervisedLearningWorkflow()
-        :condition : set the logging directory
-        :main_result : logging directory is set as specified
-        """
-        expected_dir = 'testlog/'
-        slw = mls.sl.workflows.SupervisedLearningWorkflow(logging_dir=expected_dir)
-        self.assertEqual('logs/' + expected_dir, slw.log.directory)
-
     def test_run_all_step_should_be_executed(self):
         slw = mls.sl.workflows.SupervisedLearningWorkflow('complete_config_loaded.json',
                                                           config_directory=self.cd,

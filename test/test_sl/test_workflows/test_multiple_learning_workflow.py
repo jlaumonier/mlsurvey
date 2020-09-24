@@ -20,21 +20,6 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
         log = mls.Logging()
         shutil.rmtree(log.base_dir, ignore_errors=True)
 
-    def test_init_multiple_learning_workflow_should_initialized(self):
-        mlw = mls.sl.workflows.MultipleLearningWorkflow('multiple_config.json', config_directory=self.cd)
-        self.assertEqual(self.cd, mlw.config_directory)
-        self.assertIsInstance(mlw.log, mls.Logging)
-
-    def test_init_multiple_learning_workflow_logging_in_specified_dir(self):
-        """
-        :test : mlsurvey.workflows.MultipleLearningWorkflow()
-        :condition : set the logging directory
-        :main_result : logging directory is set as specified
-        """
-        expected_dir = 'testlog/'
-        mlw = mls.sl.workflows.MultipleLearningWorkflow(logging_dir=expected_dir)
-        self.assertEqual(os.path.join('logs/', expected_dir), mlw.log.directory)
-
     def test_run_all_should_be_ran(self):
         """
         :test : mlsurvey.sl.workflows.MultipleLearningWorkflow.run()

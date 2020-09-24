@@ -55,10 +55,11 @@ TODO
 
 Current
 ^^^^^^^
-* F : Introducing parameters for process in config files
+* T : Put attributes in parent workflow instead of duplicating them into child workflows
 
 Done
 ^^^^
+* F : Introducing parameters for process in config files
 * A : Big refactoring : Fairness task, multiple learning workflow with luigi. Visualize WF adapted but not with luigi
 * F : Split data task, learn task, Evaluate task
 * A : Get Raw Data workflow refactoring
