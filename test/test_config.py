@@ -34,7 +34,8 @@ class TestConfig(unittest.TestCase):
     def test_load_multiple_config_config_loaded(self):
         config = mls.Config('multiple_config.json')
         self.assertEqual('NClassRandomClassificationWithNoise', config.data['datasets']['DataSet1']['type'])
-        self.assertListEqual(['DataSet1', 'DataSet2', 'DataSet3'], config.data['learning_process']['input'])
+        self.assertListEqual(['DataSet1', 'DataSet2', 'DataSet3'],
+                             config.data['learning_process']['parameters']['input'])
         self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_load_config_file_not_python_ready_config_loaded(self):
@@ -92,27 +93,30 @@ class TestConfig(unittest.TestCase):
                                                                            'random_state': 0,
                                                                            'shuffle': True},
                                                             'type': 'NClassRandomClassificationWithNoise'}},
-                       'learning_process': {'algorithm': 'knn-base',
-                                            'input': 'DataSetNClassRandom',
-                                            'split': 'traintest20'},
+                       'learning_process': {'parameters': {'algorithm': 'knn-base',
+                                                           'input': 'DataSetNClassRandom',
+                                                           'split': 'traintest20'},
+                                            },
                        'splits': {'traintest20': {'parameters': {'random_state': 0,
                                                                  'shuffle': True,
                                                                  'test_size': 20},
                                                   'type': 'traintest'}}}
         expected_config = {
-            'learning_process': {'algorithm': {'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
-                                               'hyperparameters': {'algorithm': 'auto',
-                                                                   'n_neighbors': 2,
-                                                                   'weights': 'uniform'}},
-                                 'input': {'parameters': {'n_samples': 100,
-                                                          'noise': 0,
-                                                          'random_state': 0,
-                                                          'shuffle': True},
-                                           'type': 'NClassRandomClassificationWithNoise'},
-                                 'split': {'parameters': {'random_state': 0,
-                                                          'shuffle': True,
-                                                          'test_size': 20},
-                                           'type': 'traintest'}}
+            'learning_process': {
+                'parameters': {'algorithm': {'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
+                                             'hyperparameters': {'algorithm': 'auto',
+                                                                 'n_neighbors': 2,
+                                                                 'weights': 'uniform'}},
+                               'input': {'parameters': {'n_samples': 100,
+                                                        'noise': 0,
+                                                        'random_state': 0,
+                                                        'shuffle': True},
+                                         'type': 'NClassRandomClassificationWithNoise'},
+                               'split': {'parameters': {'random_state': 0,
+                                                        'shuffle': True,
+                                                        'test_size': 20},
+                                         'type': 'traintest'}}
+                }
         }
         actual_config_result = mls.Config.compact(base_config)
         self.assertDictEqual(expected_config, actual_config_result)

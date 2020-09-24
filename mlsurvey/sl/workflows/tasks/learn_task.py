@@ -18,7 +18,7 @@ class LearnTask(BaseTask):
         loaded_data = self.log.load_input(self.input()['split_data'].filename)
         data_train = loaded_data['train']
 
-        algorithm_name = self.config.data['learning_process']['algorithm']
+        algorithm_name = self.config.data['learning_process']['parameters']['algorithm']
         algorithm = mls.sl.models.Algorithm(self.config.data['algorithms'][algorithm_name])
         classifier = algorithm.learn(data_train.x, data_train.y)
         self.log.save_dict_as_json(self.output()['algorithm'].filename, algorithm.to_dict())

@@ -9,6 +9,8 @@
     }
   },
   "learning_process": {
-    "input": "DataSetGermanCredit"
+    "parameters": {
+      "input": "DataSetGermanCredit"
+    }
   }
 }

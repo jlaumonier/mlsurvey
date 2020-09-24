@@ -28,7 +28,8 @@ class SearchInterface:
                  list_of_not_unique_key: List of parameters which does not have a unique value.
         """
         sorted_df = pd.DataFrame({'x': [], 'y': []})
-        flatten_results = [mls.Utils.flatten_dict(doc['learning_process'], separator='.') for doc in search_result]
+        flatten_results = [mls.Utils.flatten_dict(doc['learning_process']['parameters'], separator='.') for doc in
+                           search_result]
         result_df = pd.DataFrame(flatten_results)
         nb_value = {}
         values = {}
@@ -73,7 +74,7 @@ class SearchInterface:
                 criteria_operator = dict_criteria['criteria_operator']
                 criteria_value = dict_criteria['criteria_value']
                 criteria_split = criteria.split('.')
-                q = reduce(tdb.Query.__getitem__, criteria_split, query.learning_process)
+                q = reduce(tdb.Query.__getitem__, criteria_split, query.learning_process.parameters)
                 operator = operators[criteria_operator]
                 dt = self.analyse_logs.parameters_df.dtypes[criteria]
                 if dt == np.float64:
@@ -84,21 +85,23 @@ class SearchInterface:
                 queries.append(one_query)
         if queries:
             search_result = db.search(reduce(lambda a, b: a & b, queries)
-                                      & query.learning_process.algorithm['algorithm-family'].matches(value_algo)
-                                      & query.learning_process.input.type.matches(value_ds)
+                                      & query.learning_process.parameters.algorithm['algorithm-family'].matches(
+                value_algo)
+                                      & query.learning_process.parameters.input.type.matches(value_ds)
                                       )
         else:
-            search_result = db.search(query.learning_process.algorithm['algorithm-family'].matches(value_algo)
-                                      & query.learning_process.input.type.matches(value_ds))
+            search_result = db.search(
+                query.learning_process.parameters.algorithm['algorithm-family'].matches(value_algo)
+                & query.learning_process.parameters.input.type.matches(value_ds))
         for res in search_result:
-            if 'fairness' in res['learning_process']['input']:
-                str_fairness_params = str(res['learning_process']['input']['fairness'])
+            if 'fairness' in res['learning_process']['parameters']['input']:
+                str_fairness_params = str(res['learning_process']['parameters']['input']['fairness'])
             else:
                 str_fairness_params = str({})
-            one_row = {'Algorithm': res['learning_process']['algorithm']['algorithm-family'],
-                       'AlgoParams': str(res['learning_process']['algorithm']['hyperparameters']),
-                       'Dataset': res['learning_process']['input']['type'],
-                       'DSParams': str(res['learning_process']['input']['parameters']),
+            one_row = {'Algorithm': res['learning_process']['parameters']['algorithm']['algorithm-family'],
+                       'AlgoParams': str(res['learning_process']['parameters']['algorithm']['hyperparameters']),
+                       'Dataset': res['learning_process']['parameters']['input']['type'],
+                       'DSParams': str(res['learning_process']['parameters']['input']['parameters']),
                        'FairnessParams': str_fairness_params,
                        'Directory': res['location']}
             result.append(one_row)

@@ -133,18 +133,20 @@
     }
   },
   "learning_process": {
-    "input": [
-      "DataSetNClassRandom",
-      "DataSetCircle",
-      "DataSetMoon",
-      "DataSetIris",
-      "DataSetGermanCredit"
-    ],
-    "split": "traintest20",
-    "algorithm": [
-      "knn-base",
-      "svm-base",
-      "nn-base"
-    ]
+    "parameters": {
+      "input": [
+        "DataSetNClassRandom",
+        "DataSetCircle",
+        "DataSetMoon",
+        "DataSetIris",
+        "DataSetGermanCredit"
+      ],
+      "split": "traintest20",
+      "algorithm": [
+        "knn-base",
+        "svm-base",
+        "nn-base"
+      ]
+    }
   }
 }

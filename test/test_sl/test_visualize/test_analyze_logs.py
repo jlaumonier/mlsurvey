@@ -12,7 +12,7 @@ class TestAnalyzeLogs(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         d = os.path.dirname(__file__)
-        cls.directory = os.path.join(d, '../../files/visualize-log//')
+        cls.directory = os.path.join(d, '../../files/visualize-log/')
 
     def test_init_should_init(self):
         analyse_logs = mls.sl.visualize.AnalyzeLogs(self.directory)
@@ -38,21 +38,22 @@ class TestAnalyzeLogs(unittest.TestCase):
         analyse_logs.store_config()
         q = tdb.Query()
         r = analyse_logs.db.search(
-            q.learning_process.algorithm['algorithm-family'] == 'sklearn.neighbors.KNeighborsClassifier')
+            q.learning_process.parameters.algorithm['algorithm-family'] == 'sklearn.neighbors.KNeighborsClassifier')
         expected_result = {
-            'learning_process': {'algorithm': {'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
-                                               'hyperparameters': {'algorithm': 'auto',
-                                                                   'n_neighbors': 2,
-                                                                   'weights': 'uniform'}},
-                                 'input': {'parameters': {'n_samples': 100,
-                                                          'noise': 0,
-                                                          'random_state': 0,
-                                                          'shuffle': True},
-                                           'type': 'NClassRandomClassificationWithNoise'},
-                                 'split': {'parameters': {'random_state': 0,
-                                                          'shuffle': True,
-                                                          'test_size': 20},
-                                           'type': 'traintest'}},
+            'learning_process': {
+                'parameters': {'algorithm': {'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
+                                             'hyperparameters': {'algorithm': 'auto',
+                                                                 'n_neighbors': 2,
+                                                                 'weights': 'uniform'}},
+                               'input': {'parameters': {'n_samples': 100,
+                                                        'noise': 0,
+                                                        'random_state': 0,
+                                                        'shuffle': True},
+                                         'type': 'NClassRandomClassificationWithNoise'},
+                               'split': {'parameters': {'random_state': 0,
+                                                        'shuffle': True,
+                                                        'test_size': 20},
+                                         'type': 'traintest'}}},
             'location': os.path.join(self.directory, 'directory1')
         }
         self.assertEqual(4, len(analyse_logs.db.all()))
@@ -68,7 +69,7 @@ class TestAnalyzeLogs(unittest.TestCase):
         analyse_logs.store_config()
         q = tdb.Query()
         r = analyse_logs.db.search(
-            q.learning_process.input.type == 'NClassRandomClassificationWithNoise')
+            q.learning_process.parameters.input.type == 'NClassRandomClassificationWithNoise')
         self.assertEqual(4, len(r))
 
     def test_store_config_should_answer_query2(self):
@@ -82,8 +83,8 @@ class TestAnalyzeLogs(unittest.TestCase):
         analyse_logs.store_config()
         q = tdb.Query()
         r = analyse_logs.db.search(
-            (q.learning_process.input.parameters.n_samples == 100)
-            | (q.learning_process.input.parameters.n_samples == 10000))
+            (q.learning_process.parameters.input.parameters.n_samples == 100)
+            | (q.learning_process.parameters.input.parameters.n_samples == 10000))
         self.assertEqual(4, len(r))
 
     def test_store_config_should_fill_list(self):
@@ -104,15 +105,15 @@ class TestAnalyzeLogs(unittest.TestCase):
         :condition : config files present in self.directory
         :main_result : algorithms_list and datasets_list filled with possibles choices
         """
-        doc1 = {'learning_process': {'algorithm': {'algorithm-family': 'Algorithm 1'},
-                                     'input': {'type': 'Dataset 1'},
-                                     'split': {'type': 'traintest'}}}
-        doc2 = {'learning_process': {'algorithm': {'algorithm-family': 'Algorithm 2'},
-                                     'input': {'type': 'Dataset 1'},
-                                     'split': {'type': 'traintest'}}}
-        doc3 = {'learning_process': {'algorithm': {'algorithm-family': 'Algorithm 2'},
-                                     'input': {'type': 'Dataset 1'},
-                                     'split': {'type': 'traintest'}}}
+        doc1 = {'learning_process': {'parameters': {'algorithm': {'algorithm-family': 'Algorithm 1'},
+                                                    'input': {'type': 'Dataset 1'},
+                                                    'split': {'type': 'traintest'}}}}
+        doc2 = {'learning_process': {'parameters': {'algorithm': {'algorithm-family': 'Algorithm 2'},
+                                                    'input': {'type': 'Dataset 1'},
+                                                    'split': {'type': 'traintest'}}}}
+        doc3 = {'learning_process': {'parameters': {'algorithm': {'algorithm-family': 'Algorithm 2'},
+                                                    'input': {'type': 'Dataset 1'},
+                                                    'split': {'type': 'traintest'}}}}
         expected_algorithms_list = ['.', 'Algorithm 1', 'Algorithm 2']
         expected_datasets_list = ['.', 'Dataset 1']
         expected_paramaters_df = [['Algorithm 1', 'Dataset 1', 'traintest'],

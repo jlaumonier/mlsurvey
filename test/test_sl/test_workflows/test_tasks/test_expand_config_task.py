@@ -37,7 +37,7 @@ class TestExpandConfigTask(unittest.TestCase):
                                                              base_directory=self.base_directory)], local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
         self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'config.json')))
-        self.assertEqual('28d8dd0628170ccbacd9c42eb94db17f',
+        self.assertEqual('3a3b8e5990237ac3fc7bc12113655dec',
                          mls.Utils.md5_file(os.path.join(log.directory, 'config.json')))
         list_files = [name for name in os.listdir(log.directory) if os.path.isfile(os.path.join(log.directory, name))]
         list_files = list(filter(lambda x: x.startswith('expand_config'), list_files))  # keeps only the expanded config
@@ -50,7 +50,7 @@ class TestExpandConfigTask(unittest.TestCase):
         configs = []
         for id_file, file in enumerate(list_files):
             configs.append(mls.Config(file, directory=log.directory))
-            self.assertDictEqual(d[id_file], configs[id_file].data['learning_process'])
+            self.assertDictEqual(d[id_file], configs[id_file].data['learning_process']['parameters'])
         self.assertEqual('NClassRandomClassificationWithNoise', configs[0].data['datasets']['DataSet1']['type'])
         self.assertEqual(100, configs[0].data['datasets']['DataSet1']['parameters']['n_samples'])
         self.assertEqual('make_circles', configs[1].data['datasets']['DataSet2']['type'])
@@ -93,7 +93,7 @@ class TestExpandConfigTask(unittest.TestCase):
         configs = []
         for id_file, file in enumerate(list_files):
             configs.append(mls.Config(file, directory=log.directory))
-        self.assertDictEqual(lp0, configs[0].data['learning_process'])
+        self.assertDictEqual(lp0, configs[0].data['learning_process']['parameters'])
         self.assertDictEqual(ds0, configs[0].data['datasets']['DataSet1'])
         self.assertDictEqual(al32, configs[32].data['algorithms']['nn-multiple-layer-choice'])
         self.assertEqual(1, len(configs[0].data['datasets']))

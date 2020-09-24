@@ -58,7 +58,7 @@ class TestLoadDataTask(unittest.TestCase):
                                                          base_directory=self.base_directory)], local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
         self.assertTrue(os.path.isfile(os.path.join(log.directory, 'config.json')))
-        self.assertEqual('ae28ce16852d7a5ddbecdb07ea755339',
+        self.assertEqual('27bfbe56dc37c1c3cdbc633ee00bd900',
                          mls.Utils.md5_file(os.path.join(log.directory, 'config.json')))
         self.assertTrue(os.path.isfile(os.path.join(log.directory, 'dataset.json')))
         self.assertEqual('8c61e35b282706649f63fba48d3d103e',

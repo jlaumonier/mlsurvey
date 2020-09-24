@@ -33,7 +33,7 @@ class SplitDataTask(BaseTask):
         loaded_raw_data = self.log.load_input(self.input()[0]['raw_data'].filename)
         raw_data = loaded_raw_data['raw_data']
 
-        split_name = self.config.data['learning_process']['split']
+        split_name = self.config.data['learning_process']['parameters']['split']
         split_param = self.config.data['splits'][split_name]['parameters']
         if self.config.data['splits'][split_name]['type'] == 'traintest':
             # TODO test shuffle False

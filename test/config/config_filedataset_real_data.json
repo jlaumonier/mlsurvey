@@ -33,8 +33,10 @@
     }
   },
   "learning_process": {
-    "input": "DataSetGermanCredit",
-    "split": "traintest20",
-    "algorithm": "knn-base"
+    "parameters": {
+      "input": "DataSetGermanCredit",
+      "split": "traintest20",
+      "algorithm": "knn-base"
+    }
   }
 }

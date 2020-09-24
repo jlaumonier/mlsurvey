@@ -40,16 +40,16 @@ class Config:
         compact config does not include definition but only learning process. Does not support Fairness process.
         :return: compact config
         """
-        dataset_name = config['learning_process']['input']
+        dataset_name = config['learning_process']['parameters']['input']
         dataset_dict = config['datasets'][dataset_name]
-        split_name = config['learning_process']['split']
+        split_name = config['learning_process']['parameters']['split']
         split_dict = config['splits'][split_name]
-        algorithm_name = config['learning_process']['algorithm']
+        algorithm_name = config['learning_process']['parameters']['algorithm']
         algorithm_dict = config['algorithms'][algorithm_name]
 
-        compact_config = {'learning_process': {}}
-        compact_config['learning_process']['input'] = dataset_dict
-        compact_config['learning_process']['split'] = split_dict
-        compact_config['learning_process']['algorithm'] = algorithm_dict
+        compact_config = {'learning_process': {'parameters': {}}}
+        compact_config['learning_process']['parameters']['input'] = dataset_dict
+        compact_config['learning_process']['parameters']['split'] = split_dict
+        compact_config['learning_process']['parameters']['algorithm'] = algorithm_dict
 
         return compact_config

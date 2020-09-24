@@ -23,7 +23,7 @@ class LoadDataTask(BaseTask):
         """
 
         # init dataset
-        dataset_name = self.config.data['learning_process']['input']
+        dataset_name = self.config.data['learning_process']['parameters']['input']
         dataset_params_contents = self.config.data['datasets'][dataset_name]
         dataset = self.init_dataset(dataset_params_contents)
 

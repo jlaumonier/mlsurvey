@@ -42,13 +42,14 @@ class AnalyzeLogs:
         Fill algorithms_list and datasets_list
         """
         all_doc = self.db.all()
-        a = [doc['learning_process']['algorithm']['algorithm-family'] for doc in all_doc]
+        a = [doc['learning_process']['parameters']['algorithm']['algorithm-family'] for doc in all_doc]
         self.algorithms_list = list(set(a))
         self.algorithms_list.sort()
         self.algorithms_list.insert(0, '.')
-        d = [doc['learning_process']['input']['type'] for doc in all_doc]
+        d = [doc['learning_process']['parameters']['input']['type'] for doc in all_doc]
         self.datasets_list = list(set(d))
         self.datasets_list.sort()
         self.datasets_list.insert(0, '.')
-        parameters_list = [mls.Utils.flatten_dict(doc['learning_process'], separator='.') for doc in all_doc]
+        parameters_list = [mls.Utils.flatten_dict(doc['learning_process']['parameters'], separator='.') for doc in
+                           all_doc]
         self.parameters_df = pd.DataFrame(parameters_list)

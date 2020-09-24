@@ -15,7 +15,8 @@ class ExpandConfigTask(BaseTask):
         :return: a list of dictionary, each one is a config usable by a supervised learning workflow
         """
         expanded_config = []
-        for lp_element in list(mls.Utils.dict_generator_cartesian_product(self.config.data['learning_process'])):
+        for lp_element in list(
+                mls.Utils.dict_generator_cartesian_product(self.config.data['learning_process']['parameters'])):
             input_parameters = self.config.data['datasets'][lp_element['input']]['parameters']
             if 'fairness' in self.config.data['datasets'][lp_element['input']]:
                 fairness_parameters = self.config.data['datasets'][lp_element['input']]['fairness']
@@ -43,7 +44,7 @@ class ExpandConfigTask(BaseTask):
                             one_config = {'datasets': one_dataset,
                                           'algorithms': one_algo,
                                           'splits': one_split,
-                                          'learning_process': lp_element}
+                                          'learning_process': {'parameters': lp_element}}
                             expanded_config.append(one_config)
         return expanded_config
 
@@ -55,7 +56,7 @@ class ExpandConfigTask(BaseTask):
     def output(self):
         targets_expanded_configs = []
         for id_config, config in enumerate(self.expanded_config):
-            config_json_filename = 'expand_config'+str(id_config).zfill(len(str(len(self.expanded_config))))+'.json'
+            config_json_filename = 'expand_config' + str(id_config).zfill(len(str(len(self.expanded_config)))) + '.json'
             target_config = mls.sl.workflows.tasks.FileDirLocalTarget(directory=self.log.directory,
                                                                       filename=config_json_filename)
             targets_expanded_configs.append(target_config)

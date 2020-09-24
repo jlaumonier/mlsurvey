@@ -55,7 +55,7 @@ TODO
 
 Current
 ^^^^^^^
-
+* F : Introducing parameters for process in config files
 
 Done
 ^^^^

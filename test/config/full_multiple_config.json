@@ -89,17 +89,19 @@
     }
   },
   "learning_process": {
-    "input": [
-      "DataSet1",
-      "DataSet2",
-      "DataSet3"
-    ],
-    "split": "traintest20",
-    "algorithm": [
-      "knn-base",
-      "svm",
-      "nn-base",
-      "nn-multiple-layer-choice"
-    ]
+    "parameters": {
+      "input": [
+        "DataSet1",
+        "DataSet2",
+        "DataSet3"
+      ],
+      "split": "traintest20",
+      "algorithm": [
+        "knn-base",
+        "svm",
+        "nn-base",
+        "nn-multiple-layer-choice"
+      ]
+    }
   }
 }

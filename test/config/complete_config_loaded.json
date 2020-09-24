@@ -31,8 +31,10 @@
     }
   },
   "learning_process": {
-    "input": "DataSet1",
-    "split": "traintest20",
-    "algorithm": "knn-base"
+    "parameters" : {
+      "input": "DataSet1",
+      "split": "traintest20",
+      "algorithm": "knn-base"
+      }
   }
 }

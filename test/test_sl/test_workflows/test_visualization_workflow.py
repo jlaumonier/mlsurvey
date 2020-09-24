@@ -59,7 +59,7 @@ class TestVisualizationWorkflow(unittest.TestCase):
     def test_task_load_data_data_loaded(self):
         vw = mls.sl.workflows.VisualizationWorkflow(directory=self.directory)
         vw.task_load_data()
-        self.assertTrue('DataSet1', vw.config.data['learning_process']['input'])
+        self.assertTrue('DataSet1', vw.config.data['learning_process']['parameters']['input'])
         self.assertEqual(100, len(vw.context.data.x))
         self.assertEqual(100, len(vw.context.data.y))
         self.assertEqual(20, len(vw.context.data_test.x))

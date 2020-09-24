@@ -165,7 +165,7 @@ class TestSearchResults(unittest.TestCase):
         search_interface = mls.sl.visualize.SearchInterface(self.analyse_logs)
         query = tdb.Query()
         search_result = self.analyse_logs.db.search(
-            query.learning_process.algorithm['algorithm-family'].matches('sklearn.svm.SVC'))
+            query.learning_process.parameters.algorithm['algorithm-family'].matches('sklearn.svm.SVC'))
         result_df, list_of_not_unique_key = search_interface.get_result_figure_summary(search_result)
         self.assertListEqual([0.1, 0.7], result_df['algorithm.hyperparameters.C'].to_list())
         self.assertListEqual([1.0, 1.0], result_df['score'].to_list())
