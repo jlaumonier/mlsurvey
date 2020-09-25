@@ -1,4 +1,5 @@
 import os
+from typing import Dict
 
 # this line made a warning, because package is liac-arff and main file is arff :-S
 import arff
@@ -46,6 +47,27 @@ class FileDataSet(DataSet):
             raise mls.exceptions.ConfigError(e)
         return result
 
+    def __load_xlsx(self, fullname):
+        """
+        load xlsx file and return a pandas dataframe. merge all sheets if the file contains multiple sheets
+        :param fullname
+        """
+
+        def _merge_if_multiples_sheets(data):
+            # merge all the sheets data into one DataFrame
+            if isinstance(data, Dict):
+                data = pd.concat(data, ignore_index=True)
+            return data
+
+        try:
+            result = None
+            if self.storage == 'Pandas':
+                result = pd.read_excel(fullname, sheet_name=None)
+                result = _merge_if_multiples_sheets(result)
+        except FileNotFoundError as e:
+            raise mls.exceptions.ConfigError(e)
+        return result
+
     def generate(self):
         """
         load file of arff file using params ['directory'] and ['filename']. Assume that y is the last column.
@@ -65,12 +87,9 @@ class FileDataSet(DataSet):
             df = self.__load_arff(fullname)
         if extension == '.csv':
             df = self.__load_csv(fullname)
+        if extension == '.xlsx':
+            df = self.__load_xlsx(fullname)
 
-        # convert categorical to int (temporary)
-        cat_columns = df.select_dtypes(['object']).columns
-        if self.storage == 'Pandas':
-            df[cat_columns] = df[cat_columns].astype('category')
-            df[cat_columns] = df[cat_columns].apply(lambda c: c.cat.codes)
         return df
 
     class Factory:

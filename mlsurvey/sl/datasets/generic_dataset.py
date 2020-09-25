@@ -48,9 +48,12 @@ class GenericDataSet(DataSet):
         else:
             make_dataset = getattr(datasets, self.t)
         x, y = make_dataset(**self.params)
+        if isinstance(x, list):
+            x = np.reshape(x, (len(x), 1))
         y = np.reshape(y, (y.shape[0], 1))
         func_create_df = mls.Utils.func_create_dataframe(self.storage)
-        result = func_create_df(np.concatenate((x, y), axis=1))
+        c = np.concatenate((x, y), axis=1)
+        result = func_create_df(c)
         return result
 
     class Factory:

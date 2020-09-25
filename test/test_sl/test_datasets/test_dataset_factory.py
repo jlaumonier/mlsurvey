@@ -56,7 +56,11 @@ class TestDataSetFactory(unittest.TestCase):
         """
         params = {'param1': 1, 'param2': 3, 'return_X_y': False}
         metadata = {"y_col_name": "one_target"}
-        fairness = {"protected_attribute": 12, "privileged_classes": "x >= 25"}
+        fairness = {"protected_attribute": 12,
+                    "privileged_classes": "x >= 25",
+                    "target_is_one": 1,
+                    "target_is_zero": 0
+                    }
         source = {'type': 'load_iris',
                   'storage': 'Pandas',
                   'parameters': params,

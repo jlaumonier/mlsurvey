@@ -1,17 +1,9 @@
 {
   "datasets": {
-    "DataSetGermanCredit": {
-      "type": "FileDataSet",
-      "storage": "Pandas",
+    "DataSet1": {
+      "type": "fetch_20newsgroups",
       "parameters": {
-        "directory": "files/dataset",
-        "filename": "test-fairness.arff"
-      },
-      "fairness": {
-        "protected_attribute": 1,
-        "privileged_classes": "x >= 25",
-        "target_is_one": "good",
-        "target_is_zero": "bad"
+        "return_X_y": true
       }
     }
   },
@@ -19,7 +11,7 @@
     "knn-base": {
       "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
       "hyperparameters": {
-        "n_neighbors": 2,
+        "n_neighbors": 15,
         "algorithm": "auto",
         "weights": "uniform"
       }
@@ -29,17 +21,17 @@
     "traintest20": {
       "type": "traintest",
       "parameters": {
-        "test_size": 5,
+        "test_size": 20,
         "random_state": 0,
         "shuffle": true
       }
     }
   },
   "learning_process": {
-    "parameters": {
-      "input": "DataSetGermanCredit",
+    "parameters" : {
+      "input": "DataSet1",
       "split": "traintest20",
       "algorithm": "knn-base"
-    }
+      }
   }
 }

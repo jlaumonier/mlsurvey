@@ -34,7 +34,9 @@ class DataSet:
         if fairness != {} \
                 and fairness is not None \
                 and 'protected_attribute' in fairness \
-                and 'privileged_classes' in fairness:
+                and 'privileged_classes' in fairness \
+                and 'target_is_one' in fairness \
+                and 'target_is_zero' in fairness:
             self.fairness = fairness
         else:
             raise mls.exceptions.ConfigError('Fairness parameter not valid')

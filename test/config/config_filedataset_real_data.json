@@ -8,7 +8,9 @@
       },
       "fairness": {
         "protected_attribute": 1,
-        "privileged_classes": "x >= 25"
+        "privileged_classes": "x >= 25",
+        "target_is_one": "good",
+        "target_is_zero": "bad"
       }
     }
   },

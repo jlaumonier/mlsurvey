@@ -31,6 +31,7 @@ setuptools.setup(
                       'liac-arff',
                       'tables',
                       'boto3',
-                      'luigi'],
+                      'luigi',
+                      'xlrd'],
     python_requires='>=3.6'
 )

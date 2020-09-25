@@ -33,7 +33,10 @@ class TestDataSet(unittest.TestCase):
 
     def test_set_fairness_parameters(self):
         data = mls.sl.datasets.DataSet('')
-        expected_fairness = {'protected_attribute': 0, 'privileged_classes': 'x >= 25'}
+        expected_fairness = {'protected_attribute': 0,
+                             'privileged_classes': 'x >= 25',
+                             'target_is_one': '1',
+                             'target_is_zero': '0'}
         data.set_fairness_parameters(expected_fairness)
         self.assertDictEqual(data.fairness, expected_fairness)
 
@@ -59,7 +62,10 @@ class TestDataSet(unittest.TestCase):
         data = mls.sl.datasets.DataSet('')
         params = {'param1': 1, 'param2': 3}
         data.set_generation_parameters(params)
-        fairness = {'protected_attribute': 0, 'privileged_classes': 'x >= 25'}
+        fairness = {'protected_attribute': 0,
+                    'privileged_classes': 'x >= 25',
+                    'target_is_one': 1,
+                    'target_is_zero': 0}
         data.set_fairness_parameters(fairness)
         metadata = {'y_col_name': 'col1'}
         data.set_metadata_parameters(metadata)
@@ -152,6 +158,16 @@ class TestGenericDataSet(unittest.TestCase):
         self.assertEqual(0, iris_data.iloc[0, -1])
         self.assertEqual(150, iris_data.iloc[:, 0:-1].shape[0])
         self.assertEqual(150, iris_data.iloc[:, -1].shape[0])
+
+    def test_generate_generic_dataset_fetch_20newsgroups_is_generated(self):
+        fetch_20newsgroups_dataset = mls.sl.datasets.DataSetFactory.create_dataset('fetch_20newsgroups')
+        params = {'return_X_y': True}
+        fetch_20newsgroups_dataset.set_generation_parameters(params)
+        fetch_20newsgroups_data = fetch_20newsgroups_dataset.generate()
+        self.assertEqual(1, fetch_20newsgroups_data.iloc[:, 0:-1].shape[1])
+        self.assertEqual('7', fetch_20newsgroups_data.iloc[0, -1])
+        self.assertEqual(11314, fetch_20newsgroups_data.iloc[:, 0:-1].shape[0])
+        self.assertEqual(11314, fetch_20newsgroups_data.iloc[:, -1].shape[0])
 
     def test_generate_generic_dataset_classification_is_generated(self):
         classification_dataset = mls.sl.datasets.DataSetFactory.create_dataset('make_classification')

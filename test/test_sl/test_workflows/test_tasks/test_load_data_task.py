@@ -89,7 +89,10 @@ class TestLoadDataTask(unittest.TestCase):
         raw_data = mls.sl.models.DataFactory.create_data('Pandas', df_raw_data)
         dataset_dict = log.load_json_as_dict(os.path.join('dataset.json'))
         dataset = mls.sl.datasets.DataSetFactory.create_dataset_from_dict(dataset_dict)
-        self.assertDictEqual({'protected_attribute': 1, 'privileged_classes': 'x >= 25'}, dataset.fairness)
+        self.assertDictEqual({'protected_attribute': 1,
+                              'privileged_classes': 'x >= 25',
+                              'target_is_one': 'good',
+                              'target_is_zero': 'bad'}, dataset.fairness)
         self.assertEqual(13, len(raw_data.x))
         self.assertEqual(13, len(raw_data.y))
 
@@ -111,7 +114,10 @@ class TestLoadDataTask(unittest.TestCase):
         raw_data = mls.sl.models.DataFactory.create_data('Pandas', df_raw_data)
         dataset_dict = log.load_json_as_dict(os.path.join('dataset.json'))
         dataset = mls.sl.datasets.DataSetFactory.create_dataset_from_dict(dataset_dict)
-        self.assertDictEqual({'protected_attribute': 1, 'privileged_classes': 'x >= 25'}, dataset.fairness)
+        self.assertDictEqual({'protected_attribute': 1,
+                              'privileged_classes': 'x >= 25',
+                              'target_is_one': 'good',
+                              'target_is_zero': 'bad'}, dataset.fairness)
         self.assertEqual(13, len(raw_data.x))
         self.assertEqual(13, len(raw_data.y))
 

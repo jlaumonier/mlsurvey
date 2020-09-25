@@ -1,4 +1,3 @@
-import numpy as np
 from sklearn.metrics import confusion_matrix
 
 import mlsurvey as mls
@@ -52,6 +51,8 @@ class EvaluateTask(BaseTask):
         # Fairness
         if dataset.fairness:
 
+            value_target_is_one = dataset.fairness['target_is_one']
+            value_target_is_zero = dataset.fairness['target_is_zero']
             loaded_raw_data = self.log.load_input(self.input()[0]['raw_data'].filename)
             raw_data = loaded_raw_data['raw_data']
             loaded_prepared_data = self.log.load_input(self.input()[1]['data'].filename)
@@ -59,6 +60,9 @@ class EvaluateTask(BaseTask):
 
             func_create_df = mls.Utils.func_create_dataframe(dataset.storage)
             df_prepared_data = func_create_df(classifier.predict(prepared_data.x), columns=['target_pred'])
+            df_prepared_data = df_prepared_data.replace(1.0, value_target_is_one)
+            df_prepared_data = df_prepared_data.replace(0.0, value_target_is_zero)
+
             raw_data.set_pred_data(df_prepared_data)
 
             # demographic parity
@@ -67,9 +71,9 @@ class EvaluateTask(BaseTask):
 
             # Demographic parity
             # P(Y=1 | Priv_class = False) - P(Y=1 | Priv_class = True)
-            false_proba = mls.FairnessUtils.calculate_cond_probability(raw_data, [('target', 1)],
+            false_proba = mls.FairnessUtils.calculate_cond_probability(raw_data, [('target', value_target_is_one)],
                                                                        [('priv_class', False)])
-            true_proba = mls.FairnessUtils.calculate_cond_probability(raw_data, [('target', 1)],
+            true_proba = mls.FairnessUtils.calculate_cond_probability(raw_data, [('target', value_target_is_one)],
                                                                       [('priv_class', True)])
 
             sub_evaluation = mls.sl.models.EvaluationFairness()
@@ -79,30 +83,38 @@ class EvaluateTask(BaseTask):
             sub_evaluation.disparate_impact_rate = false_proba / true_proba
 
             # criteria that use the classier
-            if data_test.df_contains == 'xyypred' and not np.isnan(raw_data.y_pred).any():
+            if data_test.df_contains == 'xyypred':
                 # equal opportunity
                 # P(Y_hat=0 | Y=1, Priv_class = False) - P(Y_hat=0 | Y=1, Priv_class = True)
-                false_proba = mls.FairnessUtils.calculate_cond_probability(raw_data, [('target_pred', 0)],
-                                                                           [('target', 1), ('priv_class', False)])
-                true_proba = mls.FairnessUtils.calculate_cond_probability(raw_data, [('target_pred', 0)],
-                                                                          [('target', 1), ('priv_class', True)])
+                false_proba = mls.FairnessUtils.calculate_cond_probability(raw_data,
+                                                                           [('target_pred', value_target_is_zero)],
+                                                                           [('target', value_target_is_one),
+                                                                            ('priv_class', False)])
+                true_proba = mls.FairnessUtils.calculate_cond_probability(raw_data,
+                                                                          [('target_pred', value_target_is_zero)],
+                                                                          [('target', value_target_is_one),
+                                                                           ('priv_class', True)])
                 sub_evaluation.equal_opportunity = false_proba - true_proba
 
                 # statistical parity
                 # P(Y_hat=1 | Priv_class = False) - P(y_hat=1 | Priv_class = True)
-                false_proba = mls.FairnessUtils.calculate_cond_probability(raw_data, [('target_pred', 1)],
+                false_proba = mls.FairnessUtils.calculate_cond_probability(raw_data,
+                                                                           [('target_pred', value_target_is_one)],
                                                                            [('priv_class', False)])
-                true_proba = mls.FairnessUtils.calculate_cond_probability(raw_data, [('target_pred', 1)],
+                true_proba = mls.FairnessUtils.calculate_cond_probability(raw_data,
+                                                                          [('target_pred', value_target_is_one)],
                                                                           [('priv_class', True)])
                 sub_evaluation.statistical_parity = false_proba - true_proba
 
                 # average equalized odds
                 # Sum_i\inI [P(Y_hat=1 | Y=i, Priv_class = False) - P(Y_hat=1 | Y=i, Priv_class = True)] / |I|
                 diff = 0
-                for i in [0, 1]:
-                    false_proba = mls.FairnessUtils.calculate_cond_probability(raw_data, [('target_pred', 1)],
+                for i in [value_target_is_zero, value_target_is_one]:
+                    false_proba = mls.FairnessUtils.calculate_cond_probability(raw_data,
+                                                                               [('target_pred', value_target_is_one)],
                                                                                [('target', i), ('priv_class', False)])
-                    true_proba = mls.FairnessUtils.calculate_cond_probability(raw_data, [('target_pred', 1)],
+                    true_proba = mls.FairnessUtils.calculate_cond_probability(raw_data,
+                                                                              [('target_pred', value_target_is_one)],
                                                                               [('target', i), ('priv_class', True)])
                     diff = diff + (false_proba - true_proba)
                 sub_evaluation.average_equalized_odds = diff / 2.0
