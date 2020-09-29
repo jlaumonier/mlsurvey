@@ -33,12 +33,15 @@ class Logging:
         output = {}
         for k, v in inpts.items():
             if v is not None:
-                filename = k + '.h5'
-                mls.FileOperation.save_hdf(filename, self.directory, v.df)
+                filename = k + '-content'
+                h5_filename = filename + '.h5'
+                json_filename = filename + '.json'
+                mls.FileOperation.save_hdf(h5_filename, self.directory, v.df)
+                mls.FileOperation.save_json(json_filename, self.directory, v.df)
                 df_format = ''
                 if isinstance(v.df, pd.DataFrame):
                     df_format = 'Pandas'
-                output[k] = {'data_path': filename,
+                output[k] = {'data_path': h5_filename,
                              'df_format': df_format,
                              'metadata': v.to_dict(),
                              'shape': v.df.shape

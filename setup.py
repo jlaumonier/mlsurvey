@@ -30,7 +30,6 @@ setuptools.setup(
                       'tinydb',
                       'liac-arff',
                       'tables',
-                      'boto3',
                       'luigi',
                       'xlrd'],
     python_requires='>=3.6'

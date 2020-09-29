@@ -8,7 +8,6 @@ import mlsurvey as mls
 
 
 class TestLoadDataTask(unittest.TestCase):
-
     config_directory = ''
     base_directory = ''
 
@@ -64,9 +63,11 @@ class TestLoadDataTask(unittest.TestCase):
         self.assertEqual('8c61e35b282706649f63fba48d3d103e',
                          mls.Utils.md5_file(os.path.join(log.directory, 'dataset.json')))
         self.assertTrue(os.path.isfile(os.path.join(log.directory, 'raw_data.json')))
-        self.assertEqual('8f8f7e5c285e42cde7a0da9fd55a31f9',
+        self.assertEqual('06d2fbdd897691e283a6d08559ae99c5',
                          mls.Utils.md5_file(os.path.join(log.directory, 'raw_data.json')))
-        df_raw_data = mls.FileOperation.read_hdf('raw_data.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
+        df_raw_data = mls.FileOperation.read_hdf('raw_data-content.h5',
+                                                 os.path.join(log.base_dir, log.dir_name),
+                                                 'Pandas')
         raw_data = mls.sl.models.DataFactory.create_data('Pandas', df_raw_data)
         self.assertEqual(100, len(raw_data.x))
         self.assertEqual(100, len(raw_data.y))
@@ -85,7 +86,9 @@ class TestLoadDataTask(unittest.TestCase):
                                                          config_directory=self.config_directory,
                                                          base_directory=self.base_directory)], local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
-        df_raw_data = mls.FileOperation.read_hdf('raw_data.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
+        df_raw_data = mls.FileOperation.read_hdf('raw_data-content.h5',
+                                                 os.path.join(log.base_dir, log.dir_name),
+                                                 'Pandas')
         raw_data = mls.sl.models.DataFactory.create_data('Pandas', df_raw_data)
         dataset_dict = log.load_json_as_dict(os.path.join('dataset.json'))
         dataset = mls.sl.datasets.DataSetFactory.create_dataset_from_dict(dataset_dict)
@@ -110,7 +113,9 @@ class TestLoadDataTask(unittest.TestCase):
                                                          config_directory=self.config_directory,
                                                          base_directory=self.base_directory)], local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
-        df_raw_data = mls.FileOperation.read_hdf('raw_data.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
+        df_raw_data = mls.FileOperation.read_hdf('raw_data-content.h5',
+                                                 os.path.join(log.base_dir, log.dir_name),
+                                                 'Pandas')
         raw_data = mls.sl.models.DataFactory.create_data('Pandas', df_raw_data)
         dataset_dict = log.load_json_as_dict(os.path.join('dataset.json'))
         dataset = mls.sl.datasets.DataSetFactory.create_dataset_from_dict(dataset_dict)
@@ -140,4 +145,3 @@ class TestLoadDataTask(unittest.TestCase):
         self.assertIsInstance(dataset, mls.sl.datasets.FileDataSet)
         self.assertEqual(1, dataset.fairness['protected_attribute'])
         self.assertEqual("x >= 25", dataset.fairness['privileged_classes'])
-

@@ -36,21 +36,25 @@ class TestSplitDataTask(unittest.TestCase):
                                                           config_directory=self.config_directory)],
                     local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
-        df_data = mls.FileOperation.read_hdf('data.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
+        df_data = mls.FileOperation.read_hdf('data-content.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
         data = mls.sl.models.DataFactory.create_data('Pandas', df_data)
-        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'train.h5')))
-        df_train = mls.FileOperation.read_hdf('train.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
+        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'train-content.h5')))
+        df_train = mls.FileOperation.read_hdf('train-content.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
         data_train = mls.sl.models.DataFactory.create_data('Pandas', df_train)
-        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'test.h5')))
-        df_test = mls.FileOperation.read_hdf('test.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
+        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'test-content.h5')))
+        df_test = mls.FileOperation.read_hdf('test-content.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
         data_test = mls.sl.models.DataFactory.create_data('Pandas', df_test)
 
-        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'raw_train.h5')))
-        raw_df_train = mls.FileOperation.read_hdf('raw_train.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
+        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'raw_train-content.h5')))
+        raw_df_train = mls.FileOperation.read_hdf('raw_train-content.h5',
+                                                  os.path.join(log.base_dir, log.dir_name),
+                                                  'Pandas')
         raw_data_train = mls.sl.models.DataFactory.create_data('Pandas', raw_df_train)
 
-        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'raw_test.h5')))
-        raw_df_test = mls.FileOperation.read_hdf('raw_test.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
+        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'raw_test-content.h5')))
+        raw_df_test = mls.FileOperation.read_hdf('raw_test-content.h5',
+                                                 os.path.join(log.base_dir, log.dir_name),
+                                                 'Pandas')
         raw_data_test = mls.sl.models.DataFactory.create_data('Pandas', raw_df_test)
 
         self.assertEqual(100, len(data.x))

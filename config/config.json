@@ -52,7 +52,9 @@
         "privileged_classes": [
           "x >= 25",
           "x >= 35"
-        ]
+        ],
+        "target_is_one": "good",
+        "target_is_zero": "bad"
       }
     },
     "DataSetDE": {

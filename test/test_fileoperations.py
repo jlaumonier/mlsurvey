@@ -9,10 +9,6 @@ import mlsurvey as mls
 
 class TestFileOperation(unittest.TestCase):
 
-    # @classmethod
-    # def tearDownClass(cls):
-    #     shutil.rmtree('logs/testing/')
-
     def test_save_json_file_saves(self):
         directory = 'logs/testing/'
         data = {'testA': [[1, 2], [3, 4]], 'testB': 'Text'}
@@ -65,5 +61,27 @@ class TestFileOperation(unittest.TestCase):
         """
         directory = '../test/files/'
         df = mls.FileOperation.read_hdf('data-pandas.h5', directory, 'Pandas')
+        self.assertIsInstance(df, pd.DataFrame)
+        np.testing.assert_array_equal(np.array([[1, 2], [3, 4]]), df.values)
+
+    def test_save_json_pandas(self):
+        """
+        :test : mlsurvey.FileOperation.save_json()
+        :condition : data is pandas dataframe
+        :main_result : file exists
+        """
+        directory = 'logs/testing/'
+        data = pd.DataFrame([[1, 2], [3, 4]])
+        mls.FileOperation.save_json('data.json', directory, data)
+        self.assertTrue(os.path.isfile(os.path.join(directory, 'data.json')))
+
+    def test_load_json_pandas(self):
+        """
+        :test : mlsurvey.FileOperation.load_json()
+        :condition : data is pandas dataframe, and file exists
+        :main_result : dataframe is read
+        """
+        directory = '../test/files/'
+        df = mls.FileOperation.read_json('data-pandas.json', directory, 'Pandas')
         self.assertIsInstance(df, pd.DataFrame)
         np.testing.assert_array_equal(np.array([[1, 2], [3, 4]]), df.values)

@@ -37,6 +37,11 @@ class TestLogging(unittest.TestCase):
         self.assertTrue(True)
 
     def test_save_inputs_input_saved(self):
+        """
+        :test : mlsurvey.Logging.save_input()
+        :condition : data initialized
+        :main_result : data and metadata are saved
+        """
         dir_name = 'testing/'
         d_data = mls.sl.datasets.DataSetFactory.create_dataset('make_moons')
         d_data.params['random_state'] = 0
@@ -49,11 +54,14 @@ class TestLogging(unittest.TestCase):
         log = mls.Logging(dir_name)
         inputs = {'data': i_data, 'train': i_train, 'test': i_test}
         log.save_input(inputs)
-        self.assertTrue(os.path.isfile(log.directory + 'data.h5'))
-        self.assertTrue(os.path.isfile(log.directory + 'train.h5'))
-        self.assertTrue(os.path.isfile(log.directory + 'test.h5'))
+        self.assertTrue(os.path.isfile(log.directory + 'data-content.h5'))
+        self.assertTrue(os.path.isfile(log.directory + 'train-content.h5'))
+        self.assertTrue(os.path.isfile(log.directory + 'test-content.h5'))
+        self.assertTrue(os.path.isfile(log.directory + 'data-content.json'))
+        self.assertTrue(os.path.isfile(log.directory + 'train-content.json'))
+        self.assertTrue(os.path.isfile(log.directory + 'test-content.json'))
         self.assertTrue(os.path.isfile(log.directory + 'input.json'))
-        self.assertEqual('ee699de167bedbea119cb7908fd48d9b', mls.Utils.md5_file(log.directory + 'input.json'))
+        self.assertEqual('397a9f41ea039cbaf5bc4a8fb78c9b23', mls.Utils.md5_file(log.directory + 'input.json'))
 
     def test_save_inputs_other_name_input_saved(self):
         """
@@ -75,9 +83,9 @@ class TestLogging(unittest.TestCase):
         log = mls.Logging(dir_name)
         inputs = {'data': None, 'train': None, 'test': None}
         log.save_input(inputs)
-        self.assertFalse(os.path.isfile(log.directory + 'data.h5'))
-        self.assertFalse(os.path.isfile(log.directory + 'train.h5'))
-        self.assertFalse(os.path.isfile(log.directory + 'test.h5'))
+        self.assertFalse(os.path.isfile(log.directory + 'data-content.h5'))
+        self.assertFalse(os.path.isfile(log.directory + 'train-content.h5'))
+        self.assertFalse(os.path.isfile(log.directory + 'test-content.h5'))
         self.assertTrue(os.path.isfile(log.directory + 'input.json'))
         self.assertEqual('c6e977bcc44c3435cf59b9cced4538e0', mls.Utils.md5_file(log.directory + 'input.json'))
 

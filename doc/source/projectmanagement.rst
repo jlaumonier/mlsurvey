@@ -55,7 +55,7 @@ TODO
 
 Current
 ^^^^^^^
-
+* F : Remove get_raw_data_workflow, save input data content into json
 
 Done
 ^^^^
