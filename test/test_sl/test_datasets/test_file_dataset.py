@@ -133,3 +133,21 @@ class TestFileDataSet(unittest.TestCase):
         self.assertEqual('2ndSheet2', df['Column2 '][2])
         self.assertEqual('RRRR', df['Column 4'][2])
 
+    def test_generate_file_dataset_json(self):
+        """
+        :test : mlsurvey.sl.datasets.generate()
+        :condition : load json file
+        :main_result : file loaded
+        """
+        filename = '../../files/dataset/test-data.json'
+        dataset = mls.sl.datasets.DataSetFactory.create_dataset('FileDataSet')
+        params = {'directory': self.d, 'filename': filename, 'func_params': {'encoding': 'utf8', 'orient': 'index'}}
+        dataset.set_generation_parameters(params)
+        df = dataset.generate()
+        self.assertIsInstance(df, pd.DataFrame)
+        self.assertEqual(df.columns[0], 'Column1')
+        self.assertEqual(df.columns[1], 'Column2 ')
+        self.assertEqual(df.columns[2], 'Column3')
+        self.assertEqual(df['Column1'][0], 'A')
+        self.assertEqual(df['Column2 '][1], 'Longer sentence.')
+

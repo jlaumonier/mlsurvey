@@ -47,6 +47,16 @@ class FileDataSet(DataSet):
             raise mls.exceptions.ConfigError(e)
         return result
 
+    def __load_json(self, fullname, func_params: dict):
+        """ load csv file and return a pandas dataframe"""
+        try:
+            result = None
+            if self.storage == 'Pandas':
+                result = pd.read_json(fullname, **func_params)
+        except FileNotFoundError as e:
+            raise mls.exceptions.ConfigError(e)
+        return result
+
     def __load_xlsx(self, fullname):
         """
         load xlsx file and return a pandas dataframe. merge all sheets if the file contains multiple sheets
@@ -80,6 +90,10 @@ class FileDataSet(DataSet):
         except KeyError as e:
             raise mls.exceptions.ConfigError(e)
 
+        func_params = {}
+        if 'func_params' in self.params:
+            func_params = self.params['func_params']
+
         fullname = os.path.join(self.base_directory, path, filename)
 
         df = None
@@ -89,6 +103,8 @@ class FileDataSet(DataSet):
             df = self.__load_csv(fullname)
         if extension == '.xlsx':
             df = self.__load_xlsx(fullname)
+        if extension == '.json':
+            df = self.__load_json(fullname, func_params)
 
         return df
 
