@@ -25,41 +25,6 @@ class TestUtils(unittest.TestCase):
         except FileNotFoundError:
             self.assertTrue(True)
 
-    def test_dict_generator_cartesian_product(self):
-        source = {"element1": ["A", "B", "C"], "element2": [1, 2], "element3": [True, False], "element4": 12}
-        result = list(mls.Utils.dict_generator_cartesian_product(source))
-        self.assertEqual(12, len(result))
-        expected_first_dict = {"element1": "A", "element2": 1, "element3": True, "element4": 12}
-        self.assertDictEqual(expected_first_dict, result[0])
-        expected_second_dict = {"element1": "A", "element2": 1, "element3": False, "element4": 12}
-        self.assertDictEqual(expected_second_dict, result[1])
-
-    def test_dict_generator_cartesian_product_string_not_list(self):
-        source = {"element1": "test"}
-        result = list(mls.Utils.dict_generator_cartesian_product(source))
-        self.assertEqual(1, len(result))
-        expected_first_dict = {"element1": "test"}
-        self.assertDictEqual(expected_first_dict, result[0])
-
-    def test_dict_generator_cartesian_product_none(self):
-        """
-       :test : mlsurvey.Utils.dict_generator_cartesian_product()
-       :condition : source contains None
-       :main_result : result contains None also
-       """
-        source = {"element1": None}
-        result = list(mls.Utils.dict_generator_cartesian_product(source))
-        self.assertEqual(1, len(result))
-        expected_first_dict = {"element1": None}
-        self.assertDictEqual(expected_first_dict, result[0])
-
-    def test_dict_generator_cartesian_product_empty(self):
-        source = {}
-        result = list(mls.Utils.dict_generator_cartesian_product(source))
-        self.assertEqual(1, len(result))
-        expected_first_dict = {}
-        self.assertDictEqual(expected_first_dict, result[0])
-
     def test_import_from_dotted_path_class_created(self):
         to_import = 'sklearn.neighbors.KNeighborsClassifier'
         classdef = mls.Utils.import_from_dotted_path(to_import)

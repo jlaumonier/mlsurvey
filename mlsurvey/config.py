@@ -33,23 +33,42 @@ class Config:
         """
         self.__data__ = mls.Utils.transform_to_dict(d)
 
-    @staticmethod
-    def compact(config):
-        """
-        compact a config dictionary to a compact config dictionary
-        compact config does not include definition but only learning process. Does not support Fairness process.
-        :return: compact config
-        """
-        dataset_name = config['learning_process']['parameters']['input']
-        dataset_dict = config['datasets'][dataset_name]
-        split_name = config['learning_process']['parameters']['split']
-        split_dict = config['splits'][split_name]
-        algorithm_name = config['learning_process']['parameters']['algorithm']
-        algorithm_dict = config['algorithms'][algorithm_name]
+    def is_compacted(self):
+        return '#refs' not in self.data
 
-        compact_config = {'learning_process': {'parameters': {}}}
-        compact_config['learning_process']['parameters']['input'] = dataset_dict
-        compact_config['learning_process']['parameters']['split'] = split_dict
-        compact_config['learning_process']['parameters']['algorithm'] = algorithm_dict
+    def compact(self):
+        """
+        compact a config dictionary to a compact config dictionary. Replace ref ('@') by their values in '#refs'
+        exclude all refs in the result. DO NOT HANDLE LOOPS !
+        Modify current config
+        """
 
-        return compact_config
+        def _change_string(string: str, refs: dict):
+            ref_result = string
+            if string[0] == '@':
+                path = string[1:].split('.')
+                value_path = refs
+                for p in path:
+                    value_path = value_path[p]
+                ref_result = value_path
+            return ref_result
+
+        def _update_ref(sub_config, refs):
+            sub_result = sub_config
+            for k, v in sub_config.items():
+                if isinstance(v, dict):
+                    _update_ref(v, refs)
+                if isinstance(v, str):
+                    sub_result[k] = _change_string(v, refs)
+                if isinstance(v, list):
+                    for i, list_element in enumerate(v):
+                        if isinstance(list_element, str):
+                            sub_result[k][i] = _change_string(list_element, refs)
+                        else:
+                            sub_result[k][i] = list_element
+            return sub_result
+
+        if not self.is_compacted():
+            self.data = _update_ref(self.data, self.data['#refs'])
+            del self.data['#refs']
+

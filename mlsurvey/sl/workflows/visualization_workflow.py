@@ -205,9 +205,9 @@ class VisualizationWorkflow(LearningWorkflow):
         self.__display_fairness__()
 
         self.scoreText = html.P('Score : ' + str(self.context.evaluation.score))
-        compact_config = mls.Config.compact(self.config.data)
+        self.config.compact()
         # This line makes a cannot find reference warning and i do not know why and how i can fix it
-        self.configText = html.Div([ddsih.DangerouslySetInnerHTML(json2table.convert(compact_config))])
+        self.configText = html.Div([ddsih.DangerouslySetInnerHTML(json2table.convert(self.config.data))])
         self.task_terminated_display_data = True
 
     def run(self):

@@ -27,4 +27,5 @@ class BaseTask(luigi.Task):
         final_config_directory = os.path.join(str(self.base_directory), str(self.config_directory))
         self.log = mls.Logging(dir_name=self.logging_directory, base_dir=self.logging_base_directory)
         self.config = mls.Config(name=self.config_filename, directory=final_config_directory)
+        self.config.compact()
 

@@ -1,153 +1,155 @@
 {
-  "datasets": {
-    "DataSetNClassRandom": {
-      "type": "NClassRandomClassificationWithNoise",
-      "parameters": {
-        "n_samples": [
-          100,
-          200
-        ],
-        "shuffle": true,
-        "noise": 0.2,
-        "random_state": 0
-      }
-    },
-    "DataSetCircle": {
-      "type": "make_circles",
-      "parameters": {
-        "n_samples": 100,
-        "shuffle": true,
-        "noise": 0.1,
-        "random_state": 0,
-        "factor": 0.5
-      }
-    },
-    "DataSetMoon": {
-      "type": "make_moons",
-      "parameters": {
-        "noise": 0.2,
-        "random_state": 0
-      }
-    },
-    "DataSetIris": {
-      "type": "load_iris",
-      "parameters": {}
-    },
-    "DataSetBlobs": {
-      "type": "make_blobs",
-      "parameters": {
-        "n_samples": 100,
-        "shuffle": true,
-        "random_state": 0
-      }
-    },
-    "DataSetGermanCredit": {
-      "type": "FileDataSet",
-      "parameters": {
-        "directory": "dataset/german_credit_data",
-        "filename": "credit-g.arff"
+  "refs": {
+    "datasets": {
+      "DataSetNClassRandom": {
+        "type": "NClassRandomClassificationWithNoise",
+        "parameters": {
+          "n_samples": [
+            100,
+            200
+          ],
+          "shuffle": true,
+          "noise": 0.2,
+          "random_state": 0
+        }
       },
-      "fairness": {
-        "protected_attribute": 12,
-        "privileged_classes": [
-          "x >= 25",
-          "x >= 35"
-        ],
-        "target_is_one": "good",
-        "target_is_zero": "bad"
-      }
-    },
-    "DataSetDE": {
-      "type": "FileDataSet",
-      "storage": "Pandas",
-      "parameters": {
-        "directory": "dataset",
-        "filename": "unittest_de.csv"
+      "DataSetCircle": {
+        "type": "make_circles",
+        "parameters": {
+          "n_samples": 100,
+          "shuffle": true,
+          "noise": 0.1,
+          "random_state": 0,
+          "factor": 0.5
+        }
       },
-      "metadata": {
-        "y_col_name": "rating"
-      }
-    }
-  },
-  "algorithms": {
-    "knn-base": {
-      "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
-      "hyperparameters": {
-        "n_neighbors": [
-          2,
-          3,
-          4,
-          5,
-          6
-        ],
-        "algorithm": "auto",
-        "weights": "uniform",
-        "leaf_size": 30,
-        "metric": [
-          "minkowski",
-          "manhattan",
-          "euclidean",
-          "chebyshev"
-        ]
+      "DataSetMoon": {
+        "type": "make_moons",
+        "parameters": {
+          "noise": 0.2,
+          "random_state": 0
+        }
+      },
+      "DataSetIris": {
+        "type": "load_iris",
+        "parameters": {}
+      },
+      "DataSetBlobs": {
+        "type": "make_blobs",
+        "parameters": {
+          "n_samples": 100,
+          "shuffle": true,
+          "random_state": 0
+        }
+      },
+      "DataSetGermanCredit": {
+        "type": "FileDataSet",
+        "parameters": {
+          "directory": "dataset/german_credit_data",
+          "filename": "credit-g.arff"
+        },
+        "fairness": {
+          "protected_attribute": 12,
+          "privileged_classes": [
+            "x >= 25",
+            "x >= 35"
+          ],
+          "target_is_one": "good",
+          "target_is_zero": "bad"
+        }
+      },
+      "DataSetDE": {
+        "type": "FileDataSet",
+        "storage": "Pandas",
+        "parameters": {
+          "directory": "dataset",
+          "filename": "unittest_de.csv"
+        },
+        "metadata": {
+          "y_col_name": "rating"
+        }
       }
     },
-    "svm-base": {
-      "algorithm-family": "sklearn.svm.SVC",
-      "hyperparameters": {
-        "C": [
-          0.9,
-          0.1,
-          1
-        ],
-        "kernel": "rbf",
-        "gamma": "auto"
+    "algorithms": {
+      "knn-base": {
+        "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+        "hyperparameters": {
+          "n_neighbors": [
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "algorithm": "auto",
+          "weights": "uniform",
+          "leaf_size": 30,
+          "metric": [
+            "minkowski",
+            "manhattan",
+            "euclidean",
+            "chebyshev"
+          ]
+        }
+      },
+      "svm-base": {
+        "algorithm-family": "sklearn.svm.SVC",
+        "hyperparameters": {
+          "C": [
+            0.9,
+            0.1,
+            1
+          ],
+          "kernel": "rbf",
+          "gamma": "auto"
+        }
+      },
+      "nn-base": {
+        "algorithm-family": "sklearn.neural_network.MLPClassifier",
+        "hyperparameters": {
+          "activation": [
+            "relu",
+            "tanh"
+          ],
+          "max_iter": 2000,
+          "hidden_layer_sizes": [
+            {
+              "__type__": "__tuple__",
+              "__value__": "(30, 15, 7)"
+            },
+            {
+              "__type__": "__tuple__",
+              "__value__": "(20, 10, 5)"
+            }
+          ]
+        }
       }
     },
-    "nn-base": {
-      "algorithm-family": "sklearn.neural_network.MLPClassifier",
-      "hyperparameters": {
-        "activation": [
-          "relu",
-          "tanh"
-        ],
-        "max_iter": 2000,
-        "hidden_layer_sizes": [
-          {
-            "__type__": "__tuple__",
-            "__value__": "(30, 15, 7)"
-          },
-          {
-            "__type__": "__tuple__",
-            "__value__": "(20, 10, 5)"
-          }
-        ]
-      }
-    }
-  },
-  "splits": {
-    "traintest20": {
-      "type": "traintest",
-      "parameters": {
-        "test_size": 20,
-        "random_state": 0,
-        "shuffle": true
+    "splits": {
+      "traintest20": {
+        "type": "traintest",
+        "parameters": {
+          "test_size": 20,
+          "random_state": 0,
+          "shuffle": true
+        }
       }
     }
   },
   "learning_process": {
     "parameters": {
       "input": [
-        "DataSetNClassRandom",
-        "DataSetCircle",
-        "DataSetMoon",
-        "DataSetIris",
-        "DataSetGermanCredit"
+        "@datasets.DataSetNClassRandom",
+        "@datasets.DataSetCircle",
+        "@datasets.DataSetMoon",
+        "@datasets.DataSetIris",
+        "@datasets.DataSetGermanCredit"
       ],
-      "split": "traintest20",
+      "split": "@splits.traintest20",
       "algorithm": [
-        "knn-base",
-        "svm-base",
-        "nn-base"
+        "@algorithms.knn-base",
+        "@algorithms.svm-base",
+        "@algorithms.nn-base"
       ]
     }
   }

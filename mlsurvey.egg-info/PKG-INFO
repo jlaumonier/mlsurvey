@@ -1,0 +1,14 @@
+Metadata-Version: 1.2
+Name: mlsurvey
+Version: 0.0.1
+Summary: Package used to test the implementation/use of machine learning tools
+Home-page: UNKNOWN
+Author: Julien Laumônier
+Author-email: julien.laumonier@iid.ulaval.ca
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6

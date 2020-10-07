@@ -23,8 +23,7 @@ class LoadDataTask(BaseTask):
         """
 
         # init dataset
-        dataset_name = self.config.data['learning_process']['parameters']['input']
-        dataset_params_contents = self.config.data['datasets'][dataset_name]
+        dataset_params_contents = self.config.data['learning_process']['parameters']['input']
         dataset = self.init_dataset(dataset_params_contents)
 
         # this line is only for FileDataSet testing...

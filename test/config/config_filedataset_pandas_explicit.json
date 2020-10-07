@@ -1,45 +1,47 @@
 {
-  "datasets": {
-    "DataSetGermanCredit": {
-      "type": "FileDataSet",
-      "storage": "Pandas",
-      "parameters": {
-        "directory": "files/dataset",
-        "filename": "test-fairness.arff"
-      },
-      "fairness": {
-        "protected_attribute": 1,
-        "privileged_classes": "x >= 25",
-        "target_is_one": "good",
-        "target_is_zero": "bad"
+  "#refs": {
+    "datasets": {
+      "DataSetGermanCredit": {
+        "type": "FileDataSet",
+        "storage": "Pandas",
+        "parameters": {
+          "directory": "files/dataset",
+          "filename": "test-fairness.arff"
+        },
+        "fairness": {
+          "protected_attribute": 1,
+          "privileged_classes": "x >= 25",
+          "target_is_one": "good",
+          "target_is_zero": "bad"
+        }
       }
-    }
-  },
-  "algorithms": {
-    "knn-base": {
-      "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
-      "hyperparameters": {
-        "n_neighbors": 2,
-        "algorithm": "auto",
-        "weights": "uniform"
+    },
+    "algorithms": {
+      "knn-base": {
+        "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+        "hyperparameters": {
+          "n_neighbors": 2,
+          "algorithm": "auto",
+          "weights": "uniform"
+        }
       }
-    }
-  },
-  "splits": {
-    "traintest20": {
-      "type": "traintest",
-      "parameters": {
-        "test_size": 5,
-        "random_state": 0,
-        "shuffle": true
+    },
+    "splits": {
+      "traintest20": {
+        "type": "traintest",
+        "parameters": {
+          "test_size": 5,
+          "random_state": 0,
+          "shuffle": true
+        }
       }
     }
   },
   "learning_process": {
     "parameters": {
-      "input": "DataSetGermanCredit",
-      "split": "traintest20",
-      "algorithm": "knn-base"
+      "input": "@datasets.DataSetGermanCredit",
+      "split": "@splits.traintest20",
+      "algorithm": "@algorithms.knn-base"
     }
   }
 }

@@ -33,15 +33,14 @@ class SplitDataTask(BaseTask):
         loaded_raw_data = self.log.load_input(self.input()[0]['raw_data'].filename)
         raw_data = loaded_raw_data['raw_data']
 
-        split_name = self.config.data['learning_process']['parameters']['split']
-        split_param = self.config.data['splits'][split_name]['parameters']
-        if self.config.data['splits'][split_name]['type'] == 'traintest':
+        split_params = self.config.data['learning_process']['parameters']['split']
+        if split_params['type'] == 'traintest':
             # TODO test shuffle False
-            if split_param['shuffle']:
-                df_test = data.df.sample(frac=split_param['test_size']/len(data.df),
-                                         random_state=split_param['random_state'])
+            if split_params['parameters']['shuffle']:
+                df_test = data.df.sample(frac=split_params['parameters']['test_size']/len(data.df),
+                                         random_state=split_params['parameters']['random_state'])
             else:
-                df_test = data.df.head(len(data.df) * split_name['test_size'])
+                df_test = data.df.head(len(data.df) * split_params['parameters']['test_size'])
             df_train = data.df.drop(df_test.index)
 
             data_train = data.copy_with_new_data_dataframe(df_train)

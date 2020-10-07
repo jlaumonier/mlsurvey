@@ -17,8 +17,8 @@ class TestConfig(unittest.TestCase):
 
     def test_get_dataset_dataset_config_obtained(self):
         config = mls.Config('complete_config_loaded.json')
-        self.assertEqual('NClassRandomClassificationWithNoise', config.data['datasets']['DataSet1']['type'])
-        self.assertEqual(100, config.data['datasets']['DataSet1']['parameters']['n_samples'])
+        self.assertEqual('NClassRandomClassificationWithNoise', config.data['#refs']['datasets']['DataSet1']['type'])
+        self.assertEqual(100, config.data['#refs']['datasets']['DataSet1']['parameters']['n_samples'])
         self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_load_config_from_other_directory(self):
@@ -33,8 +33,8 @@ class TestConfig(unittest.TestCase):
 
     def test_load_multiple_config_config_loaded(self):
         config = mls.Config('multiple_config.json')
-        self.assertEqual('NClassRandomClassificationWithNoise', config.data['datasets']['DataSet1']['type'])
-        self.assertListEqual(['DataSet1', 'DataSet2', 'DataSet3'],
+        self.assertEqual('NClassRandomClassificationWithNoise', config.data['#refs']['datasets']['DataSet1']['type'])
+        self.assertListEqual(['@datasets.DataSet1', '@datasets.DataSet2', '@datasets.DataSet3'],
                              config.data['learning_process']['parameters']['input'])
         self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
@@ -84,39 +84,54 @@ class TestConfig(unittest.TestCase):
         :condition : config file format to compacted config format
         :main_result : transformation ok
         """
-        base_config = {'algorithms': {'knn-base': {'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
-                                                   'hyperparameters': {'algorithm': 'auto',
-                                                                       'n_neighbors': 2,
-                                                                       'weights': 'uniform'}}},
-                       'datasets': {'DataSetNClassRandom': {'parameters': {'n_samples': 100,
-                                                                           'noise': 0,
-                                                                           'random_state': 0,
-                                                                           'shuffle': True},
-                                                            'type': 'NClassRandomClassificationWithNoise'}},
-                       'learning_process': {'parameters': {'algorithm': 'knn-base',
-                                                           'input': 'DataSetNClassRandom',
-                                                           'split': 'traintest20'},
-                                            },
-                       'splits': {'traintest20': {'parameters': {'random_state': 0,
-                                                                 'shuffle': True,
-                                                                 'test_size': 20},
-                                                  'type': 'traintest'}}}
+        base_config = {
+            '#refs': {'algorithms': {'knn-base': {'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
+                                                  'hyperparameters': {'algorithm': 'auto',
+                                                                      'n_neighbors': 2,
+                                                                      'weights': 'uniform'}}
+                                     },
+                      'datasets': {'DataSetNClassRandom': {'parameters': {'n_samples': [100, 200],
+                                                                          'noise': 0,
+                                                                          'random_state': 0,
+                                                                          'shuffle': True},
+                                                           'type': 'NClassRandomClassificationWithNoise'}},
+                      'splits': {'traintest20': {'parameters': {'random_state': 0,
+                                                                'shuffle': True,
+                                                                'test_size': 20},
+                                                 'type': 'traintest'},
+                                 'traintest40': {'parameters': {'random_state': 0,
+                                                                'shuffle': True,
+                                                                'test_size': 40},
+                                                 'type': 'traintest'}
+                                 }},
+            'learning_process': {'parameters': {'algorithm': '@algorithms.knn-base',
+                                                'input': '@datasets.DataSetNClassRandom',
+                                                'split': ['@splits.traintest20', '@splits.traintest40']},
+                                 },
+            }
         expected_config = {
             'learning_process': {
                 'parameters': {'algorithm': {'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
                                              'hyperparameters': {'algorithm': 'auto',
                                                                  'n_neighbors': 2,
                                                                  'weights': 'uniform'}},
-                               'input': {'parameters': {'n_samples': 100,
+                               'input': {'parameters': {'n_samples': [100, 200],
                                                         'noise': 0,
                                                         'random_state': 0,
                                                         'shuffle': True},
                                          'type': 'NClassRandomClassificationWithNoise'},
-                               'split': {'parameters': {'random_state': 0,
-                                                        'shuffle': True,
-                                                        'test_size': 20},
-                                         'type': 'traintest'}}
-                }
+                               'split': [{'parameters': {'random_state': 0,
+                                                         'shuffle': True,
+                                                         'test_size': 20},
+                                          'type': 'traintest'},
+                                         {'parameters': {'random_state': 0,
+                                                         'shuffle': True,
+                                                         'test_size': 40},
+                                          'type': 'traintest'}
+                                         ]}
+            }
         }
-        actual_config_result = mls.Config.compact(base_config)
-        self.assertDictEqual(expected_config, actual_config_result)
+        config = mls.Config(config=base_config)
+        config.compact()
+        self.assertDictEqual(expected_config, config.data)
+        self.assertTrue(config.is_compacted())

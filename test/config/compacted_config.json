@@ -1,0 +1,31 @@
+{
+  "learning_process": {
+    "parameters": {
+      "input": {
+        "type": "NClassRandomClassificationWithNoise",
+        "parameters": {
+          "n_samples": 100,
+          "shuffle": true,
+          "random_state": 0,
+          "noise": 0
+        }
+      },
+      "split": {
+        "type": "traintest",
+        "parameters": {
+          "test_size": 20,
+          "random_state": 0,
+          "shuffle": true
+        }
+      },
+      "algorithm": {
+        "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+        "hyperparameters": {
+          "n_neighbors": 15,
+          "algorithm": "auto",
+          "weights": "uniform"
+        }
+      }
+    }
+  }
+}

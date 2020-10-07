@@ -1,106 +1,108 @@
 {
-  "datasets": {
-    "DataSet1": {
-      "type": "make_classification",
-      "parameters": {
-        "n_samples": [
-          100,
-          200
-        ],
-        "shuffle": [
-          true,
-          false
-        ],
-        "noise": 0,
-        "random_state": 0
-      }
-    },
-    "DataSet2": {
-      "type": "make_circles",
-      "parameters": {
-        "n_samples": 100,
-        "shuffle": true,
-        "noise": 0,
-        "random_state": 0,
-        "factor": 0.3
-      }
-    },
-    "DataSet3": {
-      "type": "load_iris",
-      "parameters": {
-      }
-    }
-  },
-  "algorithms": {
-    "knn-base": {
-      "algorithm-family": "knn",
-      "hyperparameters": {
-        "n_neighbors": 15,
-        "algorithm": "auto",
-        "weights": "uniform"
-      }
-    },
-    "svm": {
-      "algorithm-family": "svm",
-      "hyperparameters": {
-        "kernel": "rbf",
-        "C": [
-          0.5,
-          1.0
-        ]
-      }
-    },
-    "nn-base": {
-      "algorithm-family": "sklearn.neural_network.MLPClassifier",
-      "hyperparameters": {
-        "hidden_layer_sizes": {
-          "__type__": "__tuple__",
-          "__value__": "(1, 2, 3)"
+  "#refs": {
+    "datasets": {
+      "DataSet1": {
+        "type": "make_classification",
+        "parameters": {
+          "n_samples": [
+            100,
+            200
+          ],
+          "shuffle": [
+            true,
+            false
+          ],
+          "noise": 0,
+          "random_state": 0
+        }
+      },
+      "DataSet2": {
+        "type": "make_circles",
+        "parameters": {
+          "n_samples": 100,
+          "shuffle": true,
+          "noise": 0,
+          "random_state": 0,
+          "factor": 0.3
+        }
+      },
+      "DataSet3": {
+        "type": "load_iris",
+        "parameters": {
         }
       }
     },
-    "nn-multiple-layer-choice": {
-      "algorithm-family": "sklearn.neural_network.MLPClassifier",
-      "hyperparameters": {
-        "hidden_layer_sizes": [
-          {
+    "algorithms": {
+      "knn-base": {
+        "algorithm-family": "knn",
+        "hyperparameters": {
+          "n_neighbors": 15,
+          "algorithm": "auto",
+          "weights": "uniform"
+        }
+      },
+      "svm": {
+        "algorithm-family": "svm",
+        "hyperparameters": {
+          "kernel": "rbf",
+          "C": [
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "nn-base": {
+        "algorithm-family": "sklearn.neural_network.MLPClassifier",
+        "hyperparameters": {
+          "hidden_layer_sizes": {
             "__type__": "__tuple__",
             "__value__": "(1, 2, 3)"
-          },
-          {
-            "__type__": "__tuple__",
-            "__value__": "(4, 5, 6)"
           }
-        ]
+        }
+      },
+      "nn-multiple-layer-choice": {
+        "algorithm-family": "sklearn.neural_network.MLPClassifier",
+        "hyperparameters": {
+          "hidden_layer_sizes": [
+            {
+              "__type__": "__tuple__",
+              "__value__": "(1, 2, 3)"
+            },
+            {
+              "__type__": "__tuple__",
+              "__value__": "(4, 5, 6)"
+            }
+          ]
+        }
       }
-    }
-  },
-  "splits": {
-    "traintest20": {
-      "type": "traintest",
-      "parameters": {
-        "test_size": [
-          20,
-          50
-        ],
-        "random_state": 0,
-        "shuffle": true
+    },
+    "splits": {
+      "traintest20": {
+        "type": "traintest",
+        "parameters": {
+          "test_size": [
+            20,
+            50
+          ],
+          "random_state": 0,
+          "shuffle": true
+        }
       }
     }
   },
   "learning_process": {
     "parameters": {
       "input": [
-        "DataSet1",
-        "DataSet2",
-        "DataSet3"
+        "@datasets.DataSet1",
+        "@datasets.DataSet2",
+        "@datasets.DataSet3"
       ],
-      "split": "traintest20",
+      "split": "@splits.traintest20",
       "algorithm": [
-        "knn-base",
-        "svm",
-        "nn-base",
-        "nn-multiple-layer-choice"
+        "@algorithms.knn-base",
+        "@algorithms.svm",
+        "@algorithms.nn-base",
+        "@algorithms.nn-multiple-layer-choice"
       ]
     }
   }

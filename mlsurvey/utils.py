@@ -1,7 +1,6 @@
 import ast
 import hashlib
 import importlib
-import itertools
 
 import numpy as np
 import pandas as pd
@@ -27,22 +26,6 @@ class Utils:
                 hasher.update(buf)
                 buf = afile.read(blocksize)
         return hasher.hexdigest()
-
-    @classmethod
-    def dict_generator_cartesian_product(cls, source):
-        """ get a dictionary containing lists and calculate the cartesian product of these lists.
-            return a generator of dictionaries
-        """
-        keys = []
-        vals = []
-        for k, v in source.items():
-            keys.append(k)
-            if isinstance(v, list):
-                vals.append(v)
-            else:
-                vals.append([v])
-        for instance in itertools.product(*vals):
-            yield dict(zip(keys, instance))
 
     @classmethod
     def import_from_dotted_path(cls, dotted_names):

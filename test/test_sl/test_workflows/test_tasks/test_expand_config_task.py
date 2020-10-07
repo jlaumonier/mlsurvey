@@ -37,26 +37,64 @@ class TestExpandConfigTask(unittest.TestCase):
                                                              base_directory=self.base_directory)], local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
         self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'config.json')))
-        self.assertEqual('3a3b8e5990237ac3fc7bc12113655dec',
+        self.assertEqual('820991a8778873f29da84af3a281488e',
                          mls.Utils.md5_file(os.path.join(log.directory, 'config.json')))
         list_files = [name for name in os.listdir(log.directory) if os.path.isfile(os.path.join(log.directory, name))]
         list_files = list(filter(lambda x: x.startswith('expand_config'), list_files))  # keeps only the expanded config
         list_files.sort()
         nb_files = len(list_files)
         self.assertEqual(3, nb_files)
-        d = [{"input": "DataSet1", "split": "traintest20", "algorithm": "knn-base"},
-             {"input": "DataSet2", "split": "traintest20", "algorithm": "knn-base"},
-             {"input": "DataSet3", "split": "traintest20", "algorithm": "knn-base"}]
+        d = [{"input": {"type": "NClassRandomClassificationWithNoise",
+                        "parameters": {"n_samples": 100, "shuffle": True, "random_state": 0, "noise": 0}
+                        },
+              "split": {"type": "traintest",
+                        "parameters": {"test_size": 20, "random_state": 0, "shuffle": True}
+                        },
+              "algorithm": {"algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+                            "hyperparameters": {
+                                "n_neighbors": 15,
+                                "algorithm": "auto",
+                                "weights": "uniform"
+                            }
+                            }
+              },
+             {"input": {"type": "make_circles",
+                        "parameters": {
+                            "n_samples": 100,
+                            "shuffle": True,
+                            "noise": 0,
+                            "random_state": 0,
+                            "factor": 0.3
+                        }},
+              "split": {"type": "traintest",
+                        "parameters": {"test_size": 20, "random_state": 0, "shuffle": True}
+                        },
+              "algorithm": {"algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+                            "hyperparameters": {
+                                "n_neighbors": 15,
+                                "algorithm": "auto",
+                                "weights": "uniform"
+                            }
+                            }
+              },
+             {"input": {"type": "load_iris",
+                        "parameters": {}
+                        },
+              "split": {"type": "traintest",
+                        "parameters": {"test_size": 20, "random_state": 0, "shuffle": True}
+                        },
+              "algorithm": {"algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+                            "hyperparameters": {
+                                "n_neighbors": 15,
+                                "algorithm": "auto",
+                                "weights": "uniform"
+                            }
+                            }
+              }]
         configs = []
         for id_file, file in enumerate(list_files):
             configs.append(mls.Config(file, directory=log.directory))
             self.assertDictEqual(d[id_file], configs[id_file].data['learning_process']['parameters'])
-        self.assertEqual('NClassRandomClassificationWithNoise', configs[0].data['datasets']['DataSet1']['type'])
-        self.assertEqual(100, configs[0].data['datasets']['DataSet1']['parameters']['n_samples'])
-        self.assertEqual('make_circles', configs[1].data['datasets']['DataSet2']['type'])
-        self.assertEqual(100, configs[1].data['datasets']['DataSet2']['parameters']['n_samples'])
-        self.assertEqual('load_iris', configs[2].data['datasets']['DataSet3']['type'])
-        self.assertEqual(0, len(configs[2].data['datasets']['DataSet3']['parameters']))
 
     def test_run_input_all_should_have_expanded(self):
         """
@@ -77,26 +115,20 @@ class TestExpandConfigTask(unittest.TestCase):
         list_files.sort()
         nb_files = len(list_files)
         self.assertEqual(72, nb_files)
-        lp0 = {"input": "DataSet1", "split": "traintest20", "algorithm": "knn-base"}
         ds0 = {"type": "make_classification",
-               "parameters": {
-                   "n_samples": 100,
-                   "shuffle": True,
-                   "noise": 0,
-                   "random_state": 0
+               "parameters": {"n_samples": 100,
+                              "shuffle": True,
+                              "noise": 0,
+                              "random_state": 0
+                              }
                }
-               }
-        al32 = {"algorithm-family": "sklearn.neural_network.MLPClassifier",
-                "hyperparameters": {
-                    "hidden_layer_sizes": (1, 2, 3)}
-                }
+        al32 = {"algorithm-family": "svm", "hyperparameters": {"kernel": "rbf", "C": 1.0}}
         configs = []
         for id_file, file in enumerate(list_files):
             configs.append(mls.Config(file, directory=log.directory))
-        self.assertDictEqual(lp0, configs[0].data['learning_process']['parameters'])
-        self.assertDictEqual(ds0, configs[0].data['datasets']['DataSet1'])
-        self.assertDictEqual(al32, configs[32].data['algorithms']['nn-multiple-layer-choice'])
-        self.assertEqual(1, len(configs[0].data['datasets']))
+        self.assertDictEqual(ds0, configs[0].data['learning_process']['parameters']['input'])
+        self.assertDictEqual(al32, configs[32].data['learning_process']['parameters']['algorithm'])
+        self.assertIsInstance(configs[0].data['learning_process']['parameters']['input'], dict)
 
     def test_task_expand_config_fairness_should_have_expanded(self):
         """
@@ -130,5 +162,5 @@ class TestExpandConfigTask(unittest.TestCase):
         configs = []
         for id_file, file in enumerate(list_files):
             configs.append(mls.Config(file, directory=log.directory))
-        self.assertDictEqual(f1, configs[1].data['datasets']['DataSetGermanCredit'])
-        self.assertEqual(1, len(configs[0].data['datasets']))
+        self.assertDictEqual(f1, configs[1].data['learning_process']['parameters']['input'])
+        self.assertIsInstance(configs[0].data['learning_process']['parameters']['input'], dict)

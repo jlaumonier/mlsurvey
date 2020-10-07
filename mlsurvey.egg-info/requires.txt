@@ -1,0 +1,17 @@
+boto3
+colorlover
+dash
+dash_core_components
+dash_dangerously_set_inner_html
+joblib
+json2table
+liac-arff
+luigi
+matplotlib
+numpy
+pandas
+plotly
+scikit-learn
+tables
+tinydb
+tqdm

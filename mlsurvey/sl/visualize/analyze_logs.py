@@ -31,10 +31,11 @@ class AnalyzeLogs:
         Read all config.json files and store them into a db
         """
         for d in self.list_full_dir:
-            config = mls.FileOperation.load_json_as_dict('config.json', d, tuple_to_string=True)
-            compact_config = mls.Config.compact(config)
-            compact_config['location'] = d
-            self.db.insert(compact_config)
+            config_json = mls.FileOperation.load_json_as_dict('config.json', d, tuple_to_string=True)
+            config = mls.Config(config=config_json)
+            config.compact()
+            config.data['location'] = d
+            self.db.insert(config.data)
         self.fill_lists()
 
     def fill_lists(self):

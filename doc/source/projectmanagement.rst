@@ -18,6 +18,7 @@ Notes for TODO
 
 TODO
 ^^^^
+* A : Refactoring : generalize for unsupervised algorithms
 * A : Refactoring : remove context ?
 * A : Refactoring visualisation ?
 * F : Load CSV : choose the separator.
@@ -55,10 +56,11 @@ TODO
 
 Current
 ^^^^^^^
-* F : Remove get_raw_data_workflow, save input data content into json
+* Generalize expand config + handling references in config files.
 
 Done
 ^^^^
+* F : Remove get_raw_data_workflow, save input data content into json
 * F : Loading .xlsx file and pretreatments
 * T : Put attributes in parent workflow instead of duplicating them into child workflows
 * F : Introducing parameters for process in config files

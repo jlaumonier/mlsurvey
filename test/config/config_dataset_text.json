@@ -1,37 +1,39 @@
 {
-  "datasets": {
-    "DataSet1": {
-      "type": "fetch_20newsgroups",
-      "parameters": {
-        "return_X_y": true
+  "#refs": {
+    "datasets": {
+      "DataSet1": {
+        "type": "fetch_20newsgroups",
+        "parameters": {
+          "return_X_y": true
+        }
       }
-    }
-  },
-  "algorithms": {
-    "knn-base": {
-      "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
-      "hyperparameters": {
-        "n_neighbors": 15,
-        "algorithm": "auto",
-        "weights": "uniform"
+    },
+    "algorithms": {
+      "knn-base": {
+        "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+        "hyperparameters": {
+          "n_neighbors": 15,
+          "algorithm": "auto",
+          "weights": "uniform"
+        }
       }
-    }
-  },
-  "splits": {
-    "traintest20": {
-      "type": "traintest",
-      "parameters": {
-        "test_size": 20,
-        "random_state": 0,
-        "shuffle": true
+    },
+    "splits": {
+      "traintest20": {
+        "type": "traintest",
+        "parameters": {
+          "test_size": 20,
+          "random_state": 0,
+          "shuffle": true
+        }
       }
     }
   },
   "learning_process": {
-    "parameters" : {
-      "input": "DataSet1",
-      "split": "traintest20",
-      "algorithm": "knn-base"
-      }
+    "parameters": {
+      "input": "@datasets.DataSet1",
+      "split": "@splits.traintest20",
+      "algorithm": "@algorithms.knn-base"
+    }
   }
 }

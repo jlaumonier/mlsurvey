@@ -1,16 +1,18 @@
 {
-  "datasets": {
-    "DataSetGermanCredit": {
-      "type": "FileDataSet",
-      "parameters": {
-        "directory": "files/dataset",
-        "filename": "credit-g.arff"
+  "#refs": {
+    "datasets": {
+      "DataSetGermanCredit": {
+        "type": "FileDataSet",
+        "parameters": {
+          "directory": "files/dataset",
+          "filename": "credit-g.arff"
+        }
       }
     }
   },
   "learning_process": {
     "parameters": {
-      "input": "DataSetGermanCredit"
+      "input": "@datasets.DataSetGermanCredit"
     }
   }
 }

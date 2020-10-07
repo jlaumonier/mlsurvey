@@ -1,62 +1,64 @@
 {
-  "datasets": {
-    "DataSet1": {
-      "type": "NClassRandomClassificationWithNoise",
-      "parameters": {
-        "n_samples": 100,
-        "shuffle": true,
-        "random_state": 0,
-        "noise": 0
+  "#refs": {
+    "datasets": {
+      "DataSet1": {
+        "type": "NClassRandomClassificationWithNoise",
+        "parameters": {
+          "n_samples": 100,
+          "shuffle": true,
+          "random_state": 0,
+          "noise": 0
+        }
+      },
+      "DataSet2": {
+        "type": "make_circles",
+        "parameters": {
+          "n_samples": 100,
+          "shuffle": true,
+          "noise": 0,
+          "random_state": 0,
+          "factor": 0.3
+        }
+      },
+      "DataSet3": {
+        "type": "load_iris",
+        "parameters": {
+        }
       }
     },
-    "DataSet2": {
-      "type": "make_circles",
-      "parameters": {
-        "n_samples": 100,
-        "shuffle": true,
-        "noise": 0,
-        "random_state": 0,
-        "factor": 0.3
+    "algorithms": {
+      "knn-base": {
+        "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+        "hyperparameters": {
+          "n_neighbors": 15,
+          "algorithm": "auto",
+          "weights": "uniform"
+        }
       }
     },
-    "DataSet3": {
-      "type": "load_iris",
-      "parameters": {
-      }
-    }
-  },
-  "algorithms": {
-    "knn-base": {
-      "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
-      "hyperparameters": {
-        "n_neighbors": 15,
-        "algorithm": "auto",
-        "weights": "uniform"
-      }
-    }
-  },
-  "splits": {
-    "traintest20": {
-      "type": "traintest",
-      "parameters": {
-        "test_size": 20,
-        "random_state": 0,
-        "shuffle": true
+    "splits": {
+      "traintest20": {
+        "type": "traintest",
+        "parameters": {
+          "test_size": 20,
+          "random_state": 0,
+          "shuffle": true
+        }
       }
     }
   },
   "learning_process": {
     "parameters": {
       "input": [
-        "DataSet1",
-        "DataSet2",
-        "DataSet3"
+        "@datasets.DataSet1",
+        "@datasets.DataSet2",
+        "@datasets.DataSet3"
       ],
       "split": [
-        "traintest20"
+        "@splits.traintest20"
       ],
       "algorithm": [
-        "knn-base"
+        "@algorithms.knn-base"
       ]
     }
   }
