@@ -23,8 +23,6 @@ TODO
 * A : Refactoring visualisation ?
 * F : Load CSV : choose the separator.
 * F : Use the column names in all the processes (sl, fairness, visualization)
-* F : Move categorical transformation from FileDataSet to a preprocessing task
-* F : Change config format to introduce definition section for non compact format
 * F : Parameters in config. Allow multiple parameters to be dependant (e.g. fairness.protected_attribute and fairness.privileged_classes)
 * F : Generate a "full" config file for sci-kit-learn
 * F : Log management
@@ -49,17 +47,18 @@ TODO
         https://github.com/scikit-learn/scikit-learn/issues/11041
         https://www.andrey-melentyev.com/model-interoperability.html
         Use ONNX ??
-* F : adding a base_directory for LearningWorkflows and child
 * B : Demographic parity is not defined if, in a dataset, no instance belong to privileged or unpriviliged class.
 * F : Adding Theil index as fairness criteria
 * F : Defining and validating a json schema for config files
 
 Current
 ^^^^^^^
-* Generalize expand config + handling references in config files.
+
 
 Done
 ^^^^
+* F : Generalization for MultipleWorkflow
+* F : Generalize expand config + handling references in config files.
 * F : Remove get_raw_data_workflow, save input data content into json
 * F : Loading .xlsx file and pretreatments
 * T : Put attributes in parent workflow instead of duplicating them into child workflows

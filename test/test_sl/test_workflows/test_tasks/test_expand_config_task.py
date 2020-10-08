@@ -37,7 +37,7 @@ class TestExpandConfigTask(unittest.TestCase):
                                                              base_directory=self.base_directory)], local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
         self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'config.json')))
-        self.assertEqual('820991a8778873f29da84af3a281488e',
+        self.assertEqual('8f45d78c330ef14c246078941c1b20d6',
                          mls.Utils.md5_file(os.path.join(log.directory, 'config.json')))
         list_files = [name for name in os.listdir(log.directory) if os.path.isfile(os.path.join(log.directory, name))]
         list_files = list(filter(lambda x: x.startswith('expand_config'), list_files))  # keeps only the expanded config

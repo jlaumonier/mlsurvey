@@ -1,5 +1,5 @@
 {
-  "refs": {
+  "#refs": {
     "datasets": {
       "DataSetNClassRandom": {
         "type": "NClassRandomClassificationWithNoise",
@@ -137,6 +137,7 @@
     }
   },
   "learning_process": {
+    "type": "mlsurvey.sl.workflows.SupervisedLearningWorkflow",
     "parameters": {
       "input": [
         "@datasets.DataSetNClassRandom",

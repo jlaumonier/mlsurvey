@@ -24,20 +24,24 @@ class MultipleLearningTask(BaseTask):
                c: configuration filename for the supervised learning workflow
                cd: directory of the config file
                bd: base directory for all file loaded with config
-        :return: the supervised learning workflow after a run
+               wf_t: type of the workflow to launch
+        :return: the workflow after a run
         """
         c = p[0]
         cd = p[1]
         bd = p[2]
+        wf_t = p[3]
 
-        sl = mls.sl.workflows.SupervisedLearningWorkflow(config_file=c, config_directory=cd, base_directory=bd)
-        sl.run()
-        return sl
+        wf = wf_t(config_file=c, config_directory=cd, base_directory=bd)
+        wf.run()
+        return wf
 
     def run(self):
-
+        wf_type_string = self.config.data['learning_process']['type']
+        wf_type = mls.Utils.import_from_dotted_path(wf_type_string)
         slw = []
-        configs_pandas = [(c.filename, c.directory, self.base_directory) for c in self.input()['expanded_config']]
+        configs_pandas = [(c.filename, c.directory, self.base_directory, wf_type) for c in
+                          self.input()['expanded_config']]
         pool = Pool()
         with tqdm(total=len(configs_pandas)) as pbar:
             enumr = enumerate(pool.imap_unordered(MultipleLearningTask.task_run_one_config,
@@ -50,12 +54,6 @@ class MultipleLearningTask(BaseTask):
 
         result = {'NbLearning': len(slw)}
         self.log.save_dict_as_json(self.output()['result'].filename, result)
-
-        # for config in self.input():
-        #     sl = mls.sl.workflows.SupervisedLearningWorkflow(config_file=config.filename,
-        #                                                      config_directory=config.directory,
-        #                                                      base_directory=self.base_directory)
-        #     sl.run()
 
     def output(self):
         result_filename = 'results.json'
