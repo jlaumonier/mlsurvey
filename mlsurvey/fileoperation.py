@@ -66,18 +66,19 @@ class FileOperation:
         return data
 
     @classmethod
-    def save_json(cls, filename, directory, data):
+    def save_json(cls, filename, directory, data, params={}):
         """
         Save a dataframe into a json file.
         Create the directory of not exists
         :param filename: name of the file
         :param directory: directory to save the file
         :param data: data to save into the file
+        :param params: parameters passed to the to_json() method
         """
         os.makedirs(directory, exist_ok=True)
         full_path = os.path.join(directory, filename)
         with open(full_path, 'w', encoding='utf-8') as file:
-            data.to_json(file, force_ascii=False)
+            data.to_json(file, force_ascii=False, **params)
 
     @classmethod
     def read_json(cls, filename, directory, df_format):

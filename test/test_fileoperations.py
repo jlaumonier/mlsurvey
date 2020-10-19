@@ -75,6 +75,23 @@ class TestFileOperation(unittest.TestCase):
         mls.FileOperation.save_json('data.json', directory, data)
         self.assertTrue(os.path.isfile(os.path.join(directory, 'data.json')))
 
+    def test_save_json_pandas_all_parameters(self):
+        """
+        :test : mlsurvey.FileOperation.save_json()
+        :condition : data is pandas dataframe
+        :main_result : file exists
+        """
+        directory = 'logs/testing/'
+        data = pd.DataFrame([[1, 2], [3, 4]])
+        params = {'orient': 'index'}
+        mls.FileOperation.save_json('data.json', directory, data, params)
+        # File exists
+        self.assertTrue(os.path.isfile(os.path.join(directory, 'data.json')))
+        # Content is as expected
+        contents = open(os.path.join(directory, 'data.json')).read()
+        self.assertEqual('{"0":{"0":1,"1":2},"1":{"0":3,"1":4}}', contents)
+
+
     def test_load_json_pandas(self):
         """
         :test : mlsurvey.FileOperation.load_json()
