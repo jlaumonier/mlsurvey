@@ -89,15 +89,18 @@ class TestLoadDataTask(unittest.TestCase):
         df_raw_data = mls.FileOperation.read_hdf('raw_data-content.h5',
                                                  os.path.join(log.base_dir, log.dir_name),
                                                  'Pandas')
-        raw_data = mls.sl.models.DataFactory.create_data('Pandas', df_raw_data)
+
         dataset_dict = log.load_json_as_dict(os.path.join('dataset.json'))
         dataset = mls.sl.datasets.DataSetFactory.create_dataset_from_dict(dataset_dict)
+        raw_data = mls.sl.models.DataFactory.create_data('Pandas', df_raw_data,
+                                                         y_col_name=dataset.metadata['y_col_name'])
         self.assertDictEqual({'protected_attribute': 1,
                               'privileged_classes': 'x >= 25',
                               'target_is_one': 'good',
                               'target_is_zero': 'bad'}, dataset.fairness)
         self.assertEqual(13, len(raw_data.x))
         self.assertEqual(13, len(raw_data.y))
+        self.assertListEqual(['credit_amount', 'age', 'class'], raw_data.df.keys().to_list())
 
     def test_run_filedataset_data_is_obtained_pandas_explicit(self):
         """
@@ -113,12 +116,13 @@ class TestLoadDataTask(unittest.TestCase):
                                                          config_directory=self.config_directory,
                                                          base_directory=self.base_directory)], local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
+        dataset_dict = log.load_json_as_dict(os.path.join('dataset.json'))
+        dataset = mls.sl.datasets.DataSetFactory.create_dataset_from_dict(dataset_dict)
         df_raw_data = mls.FileOperation.read_hdf('raw_data-content.h5',
                                                  os.path.join(log.base_dir, log.dir_name),
                                                  'Pandas')
-        raw_data = mls.sl.models.DataFactory.create_data('Pandas', df_raw_data)
-        dataset_dict = log.load_json_as_dict(os.path.join('dataset.json'))
-        dataset = mls.sl.datasets.DataSetFactory.create_dataset_from_dict(dataset_dict)
+        raw_data = mls.sl.models.DataFactory.create_data('Pandas', df_raw_data,
+                                                         y_col_name=dataset.metadata['y_col_name'])
         self.assertDictEqual({'protected_attribute': 1,
                               'privileged_classes': 'x >= 25',
                               'target_is_one': 'good',
@@ -145,3 +149,24 @@ class TestLoadDataTask(unittest.TestCase):
         self.assertIsInstance(dataset, mls.sl.datasets.FileDataSet)
         self.assertEqual(1, dataset.fairness['protected_attribute'])
         self.assertEqual("x >= 25", dataset.fairness['privileged_classes'])
+
+    def test_run_keep_certains_columns(self):
+        """
+        :test : mls.sl.workflows.tasks.LoadDataTask.run()
+        :condition : config file contains keeping columns
+        :main_result : the result loaded data contains only kept columns
+        """
+        temp_log = mls.Logging()
+        luigi.build([mls.sl.workflows.tasks.LoadDataTask(logging_directory=temp_log.dir_name,
+                                                         logging_base_directory=os.path.join(self.base_directory,
+                                                                                             temp_log.base_dir),
+                                                         config_filename='config_filedataset_keep_columns.json',
+                                                         config_directory=self.config_directory,
+                                                         base_directory=self.base_directory)],
+                    local_scheduler=True)
+        log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
+        df_raw_data = mls.FileOperation.read_hdf('raw_data-content.h5',
+                                                 os.path.join(log.base_dir, log.dir_name),
+                                                 'Pandas')
+        raw_data = mls.sl.models.DataFactory.create_data('Pandas', df_raw_data)
+        self.assertListEqual(['Column1', 'Column2 '], raw_data.df.keys().tolist())

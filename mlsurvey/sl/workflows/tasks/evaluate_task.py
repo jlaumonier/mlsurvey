@@ -50,7 +50,6 @@ class EvaluateTask(BaseTask):
 
         # Fairness
         if dataset.fairness:
-
             value_target_is_one = dataset.fairness['target_is_one']
             value_target_is_zero = dataset.fairness['target_is_zero']
             loaded_raw_data = self.log.load_input(self.input()[0]['raw_data'].filename)
@@ -71,9 +70,11 @@ class EvaluateTask(BaseTask):
 
             # Demographic parity
             # P(Y=1 | Priv_class = False) - P(Y=1 | Priv_class = True)
-            false_proba = mls.FairnessUtils.calculate_cond_probability(raw_data, [('target', value_target_is_one)],
+            false_proba = mls.FairnessUtils.calculate_cond_probability(raw_data,
+                                                                       [(raw_data.y_col_name, value_target_is_one)],
                                                                        [('priv_class', False)])
-            true_proba = mls.FairnessUtils.calculate_cond_probability(raw_data, [('target', value_target_is_one)],
+            true_proba = mls.FairnessUtils.calculate_cond_probability(raw_data,
+                                                                      [(raw_data.y_col_name, value_target_is_one)],
                                                                       [('priv_class', True)])
 
             sub_evaluation = mls.sl.models.EvaluationFairness()
@@ -88,11 +89,11 @@ class EvaluateTask(BaseTask):
                 # P(Y_hat=0 | Y=1, Priv_class = False) - P(Y_hat=0 | Y=1, Priv_class = True)
                 false_proba = mls.FairnessUtils.calculate_cond_probability(raw_data,
                                                                            [('target_pred', value_target_is_zero)],
-                                                                           [('target', value_target_is_one),
+                                                                           [(raw_data.y_col_name, value_target_is_one),
                                                                             ('priv_class', False)])
                 true_proba = mls.FairnessUtils.calculate_cond_probability(raw_data,
                                                                           [('target_pred', value_target_is_zero)],
-                                                                          [('target', value_target_is_one),
+                                                                          [(raw_data.y_col_name, value_target_is_one),
                                                                            ('priv_class', True)])
                 sub_evaluation.equal_opportunity = false_proba - true_proba
 
@@ -112,10 +113,12 @@ class EvaluateTask(BaseTask):
                 for i in [value_target_is_zero, value_target_is_one]:
                     false_proba = mls.FairnessUtils.calculate_cond_probability(raw_data,
                                                                                [('target_pred', value_target_is_one)],
-                                                                               [('target', i), ('priv_class', False)])
+                                                                               [(raw_data.y_col_name, i),
+                                                                                ('priv_class', False)])
                     true_proba = mls.FairnessUtils.calculate_cond_probability(raw_data,
                                                                               [('target_pred', value_target_is_one)],
-                                                                              [('target', i), ('priv_class', True)])
+                                                                              [(raw_data.y_col_name, i),
+                                                                               ('priv_class', True)])
                     diff = diff + (false_proba - true_proba)
                 sub_evaluation.average_equalized_odds = diff / 2.0
             evaluation.sub_evaluation = sub_evaluation

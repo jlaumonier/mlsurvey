@@ -29,6 +29,11 @@ class TestFileDataSet(unittest.TestCase):
         filename = 'credit-g.arff'
         dataset = mls.sl.datasets.DataSetFactory.create_dataset('FileDataSet')
         params = {'directory': self.d, 'filename': filename}
+        expected_columns = ['checking_status', 'duration', 'credit_history', 'purpose', 'credit_amount',
+                            'savings_status', 'employment', 'installment_commitment', 'personal_status',
+                            'other_parties', 'residence_since', 'property_magnitude', 'age', 'other_payment_plans',
+                            'housing', 'existing_credits', 'job', 'num_dependents', 'own_telephone', 'foreign_worker',
+                            'class']
         dataset.set_generation_parameters(params)
         df = dataset.generate()
         self.assertIsInstance(df, pd.DataFrame)
@@ -36,6 +41,7 @@ class TestFileDataSet(unittest.TestCase):
         self.assertEqual(20, df.iloc[:, 0:-1].shape[1])
         self.assertEqual(1000, df.iloc[:, -1].shape[0])
         self.assertEqual(1, df.iloc[:, -1].ndim)
+        self.assertListEqual(expected_columns, df.keys().to_list())
 
     def test_generate_file_dataset_german_credit_generated_with_relative_path(self):
         filename = 'credit-g.arff'
@@ -87,6 +93,7 @@ class TestFileDataSet(unittest.TestCase):
         filename = 'unittest_de.csv'
         dataset = mls.sl.datasets.DataSetFactory.create_dataset('FileDataSet')
         params = {'directory': self.d, 'filename': filename}
+        expected_columns = ['userid', 'offerid', 'countrycode', 'category', 'merchant', 'utcdate', 'rating']
         dataset.set_generation_parameters(params)
         df = dataset.generate()
         self.assertIsInstance(df, pd.DataFrame)
@@ -94,6 +101,7 @@ class TestFileDataSet(unittest.TestCase):
         self.assertEqual(6, df.iloc[:, 0:-1].shape[1])
         self.assertEqual(39, df.iloc[:, -1].shape[0])
         self.assertEqual(1, df.iloc[:, -1].ndim)
+        self.assertListEqual(expected_columns, df.keys().to_list())
 
     def test_generate_file_dataset_xlsx_no_parameter(self):
         """
@@ -104,12 +112,11 @@ class TestFileDataSet(unittest.TestCase):
         filename = 'test.xlsx'
         dataset = mls.sl.datasets.DataSetFactory.create_dataset('FileDataSet')
         params = {'directory': self.d, 'filename': filename}
+        expected_columns = ['Column1', 'Column2 ', 'Column3', 'Column 4']
         dataset.set_generation_parameters(params)
         df = dataset.generate()
         self.assertIsInstance(df, pd.DataFrame)
-        self.assertEqual(df.columns[0], 'Column1')
-        self.assertEqual(df.columns[1], 'Column2 ')
-        self.assertEqual(df.columns[2], 'Column3')
+        self.assertListEqual(expected_columns, df.keys().to_list())
         self.assertEqual(df['Column1'][0], 'A')
         self.assertEqual(df['Column2 '][1], 'Longer sentence.')
 
@@ -122,13 +129,11 @@ class TestFileDataSet(unittest.TestCase):
         filename = 'test.xlsx'
         dataset = mls.sl.datasets.DataSetFactory.create_dataset('FileDataSet')
         params = {'directory': self.d, 'filename': filename, 'merge_sheet': True}
+        expected_columns = ['Column1', 'Column2 ', 'Column3', 'Column 4']
         dataset.set_generation_parameters(params)
         df = dataset.generate()
         self.assertIsInstance(df, pd.DataFrame)
-        self.assertEqual('Column1', df.columns[0])
-        self.assertEqual('Column2 ', df.columns[1])
-        self.assertEqual('Column3', df.columns[2])
-        self.assertEqual('Column 4', df.columns[3])
+        self.assertListEqual(expected_columns, df.keys().to_list())
         self.assertEqual('A', df['Column1'][0])
         self.assertEqual('2ndSheet2', df['Column2 '][2])
         self.assertEqual('RRRR', df['Column 4'][2])
@@ -142,12 +147,10 @@ class TestFileDataSet(unittest.TestCase):
         filename = '../../files/dataset/test-data.json'
         dataset = mls.sl.datasets.DataSetFactory.create_dataset('FileDataSet')
         params = {'directory': self.d, 'filename': filename, 'func_params': {'encoding': 'utf8', 'orient': 'index'}}
+        expected_columns = ['Column1', 'Column2 ', 'Column3', 'Column 4']
         dataset.set_generation_parameters(params)
         df = dataset.generate()
         self.assertIsInstance(df, pd.DataFrame)
-        self.assertEqual(df.columns[0], 'Column1')
-        self.assertEqual(df.columns[1], 'Column2 ')
-        self.assertEqual(df.columns[2], 'Column3')
+        self.assertListEqual(expected_columns, df.keys().to_list())
         self.assertEqual(df['Column1'][0], 'A')
         self.assertEqual(df['Column2 '][1], 'Longer sentence.')
-

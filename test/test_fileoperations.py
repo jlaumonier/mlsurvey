@@ -53,6 +53,24 @@ class TestFileOperation(unittest.TestCase):
         self.assertTrue(os.path.isfile(directory + 'data.h5'))
         # do not check the md5 for hdf5 files since it changes each time...
 
+    def test_save_hdf_pandas_all_parameters(self):
+        """
+        :test : mlsurvey.FileOperation.save_hdf()
+        :condition : data is pandas dataframe, type is 'table'
+        :main_result : file exists
+        """
+        directory = 'logs/testing/'
+        expected_columns = ['Col1', 'Col2']
+        data = pd.DataFrame([[1, 2], [3, 4]], columns=expected_columns)
+        params = {'format': 'table'}
+        mls.FileOperation.save_hdf('data.h5', directory, data, params)
+        # File exists
+        self.assertTrue(os.path.isfile(os.path.join(directory, 'data.h5')))
+        # testing content
+        df = mls.FileOperation.read_hdf('data.h5', directory, 'Pandas')
+        np.testing.assert_array_equal(np.array([[1, 2], [3, 4]]), df.values)
+        self.assertListEqual(expected_columns, df.keys().tolist())
+
     def test_load_hdf_pandas(self):
         """
         :test : mlsurvey.FileOperation.load_hdf()
@@ -60,9 +78,11 @@ class TestFileOperation(unittest.TestCase):
         :main_result : dataframe is read
         """
         directory = '../test/files/'
+        expected_columns = ['Col1', 'Col2']
         df = mls.FileOperation.read_hdf('data-pandas.h5', directory, 'Pandas')
         self.assertIsInstance(df, pd.DataFrame)
         np.testing.assert_array_equal(np.array([[1, 2], [3, 4]]), df.values)
+        self.assertListEqual(expected_columns, df.keys().tolist())
 
     def test_save_json_pandas(self):
         """
@@ -78,8 +98,8 @@ class TestFileOperation(unittest.TestCase):
     def test_save_json_pandas_all_parameters(self):
         """
         :test : mlsurvey.FileOperation.save_json()
-        :condition : data is pandas dataframe
-        :main_result : file exists
+        :condition : data is pandas dataframe, orientation is 'index'
+        :main_result : file exists and contains the correct content
         """
         directory = 'logs/testing/'
         data = pd.DataFrame([[1, 2], [3, 4]])
@@ -88,9 +108,10 @@ class TestFileOperation(unittest.TestCase):
         # File exists
         self.assertTrue(os.path.isfile(os.path.join(directory, 'data.json')))
         # Content is as expected
-        contents = open(os.path.join(directory, 'data.json')).read()
+        fs = open(os.path.join(directory, 'data.json'))
+        contents = fs.read()
+        fs.close()
         self.assertEqual('{"0":{"0":1,"1":2},"1":{"0":3,"1":4}}', contents)
-
 
     def test_load_json_pandas(self):
         """

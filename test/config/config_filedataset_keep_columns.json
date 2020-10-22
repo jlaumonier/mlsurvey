@@ -3,19 +3,16 @@
     "datasets": {
       "DataSetGermanCredit": {
         "type": "FileDataSet",
-        "storage": "Pandas",
         "parameters": {
           "directory": "files/dataset",
-          "filename": "test-fairness.arff"
+          "filename": "test-data.json",
+          "func_params": {"orient": "index"}
         },
-        "fairness": {
-          "protected_attribute": 1,
-          "privileged_classes": "x >= 25",
-          "target_is_one": "good",
-          "target_is_zero": "bad"
-        },
-        "metadata": {
-          "y_col_name": "class"
+        "loading": {
+          "columns_kept":  {
+              "__type__": "__tuple__",
+              "__value__": "('Column1', 'Column2 ')"
+            }
         }
       }
     },

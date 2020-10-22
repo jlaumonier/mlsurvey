@@ -57,6 +57,7 @@ Current
 
 Done
 ^^^^
+* F : Filter some columns at loading time. + Base of simple task logging
 * F : Generalization for MultipleWorkflow
 * F : Generalize expand config + handling references in config files.
 * F : Remove get_raw_data_workflow, save input data content into json

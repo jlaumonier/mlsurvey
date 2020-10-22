@@ -36,6 +36,13 @@ class LoadDataTask(BaseTask):
                                                          dataset.generate(),
                                                          y_col_name=dataset.metadata['y_col_name'])
 
+        # keep only some columns
+        if 'loading' in self.config.data['learning_process']['parameters']['input']:
+            loading_params = self.config.data['learning_process']['parameters']['input']['loading']
+            if 'columns_kept' in loading_params:
+                columns_kept = list(loading_params['columns_kept'])
+                raw_data = raw_data.copy_with_new_data_dataframe(raw_data.df[columns_kept])
+
         # log config
         self.log.save_dict_as_json(self.output()['config'].filename, self.config.data)
         # log dataset

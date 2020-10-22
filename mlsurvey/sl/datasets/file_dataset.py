@@ -34,7 +34,9 @@ class FileDataSet(DataSet):
         except FileNotFoundError as e:
             raise mls.exceptions.ConfigError(e)
 
-        result = mls.Utils.func_create_dataframe(self.storage)(data['data'])
+        # Columns handling
+        columns = list(map(list, zip(*data['attributes'])))
+        result = mls.Utils.func_create_dataframe(self.storage)(data['data'], columns=columns[0])
         return result
 
     def __load_csv(self, fullname):
@@ -51,6 +53,7 @@ class FileDataSet(DataSet):
         """ load csv file and return a pandas dataframe"""
         try:
             result = None
+
             if self.storage == 'Pandas':
                 result = pd.read_json(fullname, **func_params)
         except FileNotFoundError as e:

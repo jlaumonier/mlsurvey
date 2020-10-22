@@ -8,6 +8,12 @@ import mlsurvey as mls
 
 
 class TestLogging(unittest.TestCase):
+    base_directory = ''
+
+    @classmethod
+    def setUpClass(cls):
+        directory = os.path.dirname(__file__)
+        cls.base_directory = os.path.join(directory, '')
 
     @classmethod
     def tearDownClass(cls):
@@ -15,9 +21,18 @@ class TestLogging(unittest.TestCase):
         shutil.rmtree(log.base_dir, ignore_errors=True)
 
     def test_init_log_directory_created_with_date(self):
+        """
+        :test : mlsurvey.Logging()
+        :condition : -
+        :main_result : no error. everything is created as wanted
+        """
         log = mls.Logging()
+        # dir_name is initialized
         self.assertIsNotNone(log.dir_name)
+        # directory is set as wanted
         self.assertEqual(os.path.join(log.base_dir, log.dir_name), log.directory)
+        # log directory not created
+        self.assertFalse(os.path.isdir(log.directory))
 
     def test_init_log_directory_create_with_fixed_name(self):
         dir_name = 'testing/'
@@ -150,3 +165,4 @@ class TestLogging(unittest.TestCase):
         log = mls.Logging(dir_name, base_dir='../test/')
         classifier = log.load_classifier(filename='test_model.joblib')
         self.assertIsInstance(classifier, neighbors.KNeighborsClassifier)
+

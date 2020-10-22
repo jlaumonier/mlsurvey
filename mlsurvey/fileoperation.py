@@ -39,17 +39,20 @@ class FileOperation:
         return data
 
     @classmethod
-    def save_hdf(cls, filename, directory, data):
+    def save_hdf(cls, filename, directory, data, params=None):
         """
         Save a dataframe into a hdf file.
         Create the directory of not exists
         :param filename: name of the file
         :param directory: directory to save the file
         :param data: data to save into the file
+        :param params: parameters passed to the to_json() method
         """
+        if params is None:
+            params = {}
         os.makedirs(directory, exist_ok=True)
         full_path = os.path.join(directory, filename)
-        data.to_hdf(full_path, 'key', mode='w')
+        data.to_hdf(full_path, 'key', mode='w', **params)
 
     @classmethod
     def read_hdf(cls, filename, directory, df_format):
@@ -66,7 +69,7 @@ class FileOperation:
         return data
 
     @classmethod
-    def save_json(cls, filename, directory, data, params={}):
+    def save_json(cls, filename, directory, data, params=None):
         """
         Save a dataframe into a json file.
         Create the directory of not exists
@@ -75,6 +78,8 @@ class FileOperation:
         :param data: data to save into the file
         :param params: parameters passed to the to_json() method
         """
+        if params is None:
+            params = {}
         os.makedirs(directory, exist_ok=True)
         full_path = os.path.join(directory, filename)
         with open(full_path, 'w', encoding='utf-8') as file:

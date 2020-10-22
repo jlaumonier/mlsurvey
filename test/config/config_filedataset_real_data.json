@@ -12,6 +12,9 @@
           "privileged_classes": "x >= 25",
           "target_is_one": "good",
           "target_is_zero": "bad"
+        },
+        "metadata": {
+          "y_col_name": "class"
         }
       }
     },
