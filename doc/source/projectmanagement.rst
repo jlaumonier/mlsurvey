@@ -18,9 +18,9 @@ Notes for TODO
 
 TODO
 ^^^^
+* A : Adding mlflow for tracking
 * A : Refactoring : generalize for unsupervised algorithms
 * A : Refactoring : remove context ?
-* A : Refactoring visualisation ?
 * F : Load CSV : choose the separator.
 * F : Use the column names in all the processes (sl, fairness, visualization)
 * F : Parameters in config. Allow multiple parameters to be dependant (e.g. fairness.protected_attribute and fairness.privileged_classes)
@@ -53,7 +53,7 @@ TODO
 
 Current
 ^^^^^^^
-
+* A : Refactoring visualisation
 
 Done
 ^^^^

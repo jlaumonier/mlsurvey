@@ -8,6 +8,10 @@ from mlsurvey.workflows.learning_workflow import LearningWorkflow
 
 class SupervisedLearningWorkflow(LearningWorkflow):
 
+    @staticmethod
+    def visualize_class():
+        return mls.sl.visualize.VisualizeLogSL
+
     def run(self):
         """
         Run all tasks

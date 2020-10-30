@@ -37,7 +37,7 @@ class TestExpandConfigTask(unittest.TestCase):
                                                              base_directory=self.base_directory)], local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
         self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'config.json')))
-        self.assertEqual('8f45d78c330ef14c246078941c1b20d6',
+        self.assertEqual('f12c72eb6037c48a634dbb2a0ae6e193',
                          mls.Utils.md5_file(os.path.join(log.directory, 'config.json')))
         list_files = [name for name in os.listdir(log.directory) if os.path.isfile(os.path.join(log.directory, name))]
         list_files = list(filter(lambda x: x.startswith('expand_config'), list_files))  # keeps only the expanded config
@@ -50,7 +50,7 @@ class TestExpandConfigTask(unittest.TestCase):
               "split": {"type": "traintest",
                         "parameters": {"test_size": 20, "random_state": 0, "shuffle": True}
                         },
-              "algorithm": {"algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+              "algorithm": {"type": "sklearn.neighbors.KNeighborsClassifier",
                             "hyperparameters": {
                                 "n_neighbors": 15,
                                 "algorithm": "auto",
@@ -69,7 +69,7 @@ class TestExpandConfigTask(unittest.TestCase):
               "split": {"type": "traintest",
                         "parameters": {"test_size": 20, "random_state": 0, "shuffle": True}
                         },
-              "algorithm": {"algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+              "algorithm": {"type": "sklearn.neighbors.KNeighborsClassifier",
                             "hyperparameters": {
                                 "n_neighbors": 15,
                                 "algorithm": "auto",
@@ -83,7 +83,7 @@ class TestExpandConfigTask(unittest.TestCase):
               "split": {"type": "traintest",
                         "parameters": {"test_size": 20, "random_state": 0, "shuffle": True}
                         },
-              "algorithm": {"algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+              "algorithm": {"type": "sklearn.neighbors.KNeighborsClassifier",
                             "hyperparameters": {
                                 "n_neighbors": 15,
                                 "algorithm": "auto",
@@ -122,7 +122,7 @@ class TestExpandConfigTask(unittest.TestCase):
                               "random_state": 0
                               }
                }
-        al32 = {"algorithm-family": "svm", "hyperparameters": {"kernel": "rbf", "C": 1.0}}
+        al32 = {"type": "svm", "hyperparameters": {"kernel": "rbf", "C": 1.0}}
         configs = []
         for id_file, file in enumerate(list_files):
             configs.append(mls.Config(file, directory=log.directory))

@@ -85,7 +85,7 @@ class TestConfig(unittest.TestCase):
         :main_result : transformation ok
         """
         base_config = {
-            '#refs': {'algorithms': {'knn-base': {'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
+            '#refs': {'algorithms': {'knn-base': {'type': 'sklearn.neighbors.KNeighborsClassifier',
                                                   'hyperparameters': {'algorithm': 'auto',
                                                                       'n_neighbors': 2,
                                                                       'weights': 'uniform'}}
@@ -111,7 +111,7 @@ class TestConfig(unittest.TestCase):
             }
         expected_config = {
             'learning_process': {
-                'parameters': {'algorithm': {'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
+                'parameters': {'algorithm': {'type': 'sklearn.neighbors.KNeighborsClassifier',
                                              'hyperparameters': {'algorithm': 'auto',
                                                                  'n_neighbors': 2,
                                                                  'weights': 'uniform'}},

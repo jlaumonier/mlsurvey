@@ -1,8 +1,8 @@
-from mlsurvey.sl import models, visualize
 from . import exceptions
 from . import sl
 from . import rl
 from . import workflows
+from . import visualize
 from .config import Config
 from .fairness_utils import FairnessUtils
 from .fileoperation import FileOperation

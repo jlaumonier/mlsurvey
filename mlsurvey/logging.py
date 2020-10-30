@@ -83,7 +83,8 @@ class Logging:
         os.makedirs(self.directory, exist_ok=True)
         return joblib.load(os.path.join(self.directory, filename))
 
-    def msg(self, msg: str, level):
+    @staticmethod
+    def msg(msg: str, level):
         """ Log a msg in the python classical log"""
         print(level, " ", msg)
 

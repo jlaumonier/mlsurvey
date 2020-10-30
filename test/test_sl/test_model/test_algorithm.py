@@ -7,7 +7,7 @@ class TestAlgorithm(unittest.TestCase):
 
     def test_init_parameters_should_be_initialized_for_knn(self):
         config = {
-            'algorithm-family': 'module.Test',
+            'type': 'module.Test',
             'hyperparameters': {
                 'n_neighbors': 3,
                 'algorithm': 'auto',
@@ -15,7 +15,7 @@ class TestAlgorithm(unittest.TestCase):
             }
         }
         algo = mls.sl.models.Algorithm(config)
-        self.assertEqual(config['algorithm-family'], algo.algorithm_family)
+        self.assertEqual(config['type'], algo.algorithm_family)
         self.assertEqual(config['hyperparameters']['n_neighbors'], algo.hyperparameters['n_neighbors'])
         self.assertEqual(config['hyperparameters']['algorithm'], algo.hyperparameters['algorithm'])
         self.assertEqual(config['hyperparameters']['weights'], algo.hyperparameters['weights'])
@@ -38,7 +38,7 @@ class TestAlgorithm(unittest.TestCase):
 
     def test_init_no_hyperparameters_parameter_should_not_init(self):
         config = {
-            'algorithm-family': 'module.Test',
+            'type': 'module.Test',
             'toto': {
                 'n_neighbors': 3,
                 'algorithm': 'auto',
@@ -54,7 +54,7 @@ class TestAlgorithm(unittest.TestCase):
 
     def test_learn_generic_algorithm_knn_should_learn(self):
         config = {
-            'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
+            'type': 'sklearn.neighbors.KNeighborsClassifier',
             'hyperparameters': {
                 'n_neighbors': 3,
                 'algorithm': 'auto',
@@ -76,7 +76,7 @@ class TestAlgorithm(unittest.TestCase):
         :main_result : raise ConfigError
         """
         config = {
-            'algorithm-family': 'sklearn.neighbors.UnknownClass',
+            'type': 'sklearn.neighbors.UnknownClass',
             'hyperparameters': {
                 'n_neighbors': 3,
                 'algorithm': 'auto',
@@ -96,7 +96,7 @@ class TestAlgorithm(unittest.TestCase):
 
     def test_to_dict_algo_saved(self):
         config = {
-            'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
+            'type': 'sklearn.neighbors.KNeighborsClassifier',
             'hyperparameters': {
                 'n_neighbors': 3,
                 'algorithm': 'auto',
@@ -109,7 +109,7 @@ class TestAlgorithm(unittest.TestCase):
 
     def test_from_dict_algo_loaded(self):
         config = {
-            'algorithm-family': 'module.Test',
+            'type': 'module.Test',
             'hyperparameters': {
                 'n_neighbors': 3,
                 'algorithm': 'auto',
@@ -117,7 +117,7 @@ class TestAlgorithm(unittest.TestCase):
             }
         }
         algo = mls.sl.models.Algorithm.from_dict(config)
-        self.assertEqual(config['algorithm-family'], algo.algorithm_family)
+        self.assertEqual(config['type'], algo.algorithm_family)
         self.assertEqual(config['hyperparameters']['n_neighbors'], algo.hyperparameters['n_neighbors'])
         self.assertEqual(config['hyperparameters']['algorithm'], algo.hyperparameters['algorithm'])
         self.assertEqual(config['hyperparameters']['weights'], algo.hyperparameters['weights'])

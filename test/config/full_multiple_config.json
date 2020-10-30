@@ -34,7 +34,7 @@
     },
     "algorithms": {
       "knn-base": {
-        "algorithm-family": "knn",
+        "type": "knn",
         "hyperparameters": {
           "n_neighbors": 15,
           "algorithm": "auto",
@@ -42,7 +42,7 @@
         }
       },
       "svm": {
-        "algorithm-family": "svm",
+        "type": "svm",
         "hyperparameters": {
           "kernel": "rbf",
           "C": [
@@ -52,7 +52,7 @@
         }
       },
       "nn-base": {
-        "algorithm-family": "sklearn.neural_network.MLPClassifier",
+        "type": "sklearn.neural_network.MLPClassifier",
         "hyperparameters": {
           "hidden_layer_sizes": {
             "__type__": "__tuple__",
@@ -61,7 +61,7 @@
         }
       },
       "nn-multiple-layer-choice": {
-        "algorithm-family": "sklearn.neural_network.MLPClassifier",
+        "type": "sklearn.neural_network.MLPClassifier",
         "hyperparameters": {
           "hidden_layer_sizes": [
             {
@@ -91,6 +91,7 @@
     }
   },
   "learning_process": {
+    "type": "mlsurvey.sl.workflows.SupervisedLearningWorkflow",
     "parameters": {
       "input": [
         "@datasets.DataSet1",

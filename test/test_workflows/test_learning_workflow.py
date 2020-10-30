@@ -6,6 +6,9 @@ import mlsurvey as mls
 
 class TestLearningWorkflow(unittest.TestCase):
 
+    def test_visualize_class(self):
+        self.assertEqual(mls.workflows.LearningWorkflow.visualize_class(), mls.visualize.VisualizeLogDetail)
+
     def test_init_should_init(self):
         lw = mls.workflows.LearningWorkflow()
         self.assertFalse(lw.terminated)

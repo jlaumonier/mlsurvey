@@ -9,10 +9,10 @@ import mlsurvey as mls
 class UserInterface:
 
     def __init__(self, directory):
-        self.analyse_logs = mls.sl.visualize.AnalyzeLogs(directory)
+        self.analyse_logs = mls.visualize.AnalyzeLogs(directory)
         self.analyse_logs.store_config()
-        self.search_interface = mls.sl.visualize.SearchInterface(self.analyse_logs)
-        self.detail_interface = mls.sl.visualize.DetailInterface()
+        self.search_interface = mls.visualize.SearchInterface(self.analyse_logs)
+        self.detail_interface = mls.visualize.DetailInterface()
 
     def run(self):
         app = dash.Dash(__name__)

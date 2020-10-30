@@ -20,7 +20,7 @@
     },
     "algorithms": {
       "knn-base": {
-        "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+        "type": "sklearn.neighbors.KNeighborsClassifier",
         "hyperparameters": {
           "n_neighbors": 2,
           "algorithm": "auto",
@@ -40,6 +40,7 @@
     }
   },
   "learning_process": {
+    "type": "mlsurvey.sl.workflows.SupervisedLearningWorkflow",
     "parameters": {
       "input": "@datasets.DataSetGermanCredit",
       "split": "@splits.traintest20",

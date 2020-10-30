@@ -12,18 +12,17 @@ class TestAnalyzeLogs(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         d = os.path.dirname(__file__)
-        cls.directory = os.path.join(d, '../../files/visualize-log/')
+        cls.directory = os.path.join(d, '../files/visualize-log/')
 
     def test_init_should_init(self):
-        analyse_logs = mls.sl.visualize.AnalyzeLogs(self.directory)
+        analyse_logs = mls.visualize.AnalyzeLogs(self.directory)
         expected_list_full_dir = [os.path.join(self.directory, 'directory1'),
                                   os.path.join(self.directory, 'directory2'),
                                   os.path.join(self.directory, 'directory3'),
                                   os.path.join(self.directory, 'directory4')]
         self.assertEqual(self.directory, analyse_logs.directory)
         self.assertListEqual(expected_list_full_dir, analyse_logs.list_full_dir)
-        self.assertListEqual([], analyse_logs.algorithms_list)
-        self.assertListEqual([], analyse_logs.datasets_list)
+        self.assertIsInstance(analyse_logs.lists, dict)
         self.assertIsNone(analyse_logs.parameters_df)
         self.assertIsInstance(analyse_logs.db, tdb.database.TinyDB)
         self.assertEqual(0, len(analyse_logs.db.all()))
@@ -34,14 +33,15 @@ class TestAnalyzeLogs(unittest.TestCase):
         :condition : config files present in self.directory
         :main_result : all config files are inserted into the database
         """
-        analyse_logs = mls.sl.visualize.AnalyzeLogs(self.directory)
+        analyse_logs = mls.visualize.AnalyzeLogs(self.directory)
         analyse_logs.store_config()
         q = tdb.Query()
         r = analyse_logs.db.search(
-            q.learning_process.parameters.algorithm['algorithm-family'] == 'sklearn.neighbors.KNeighborsClassifier')
+            q.learning_process.parameters.algorithm['type'] == 'sklearn.neighbors.KNeighborsClassifier')
         expected_result = {
             'learning_process': {
-                'parameters': {'algorithm': {'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
+                'type': 'mlsurvey.sl.workflows.SupervisedLearningWorkflow',
+                'parameters': {'algorithm': {'type': 'sklearn.neighbors.KNeighborsClassifier',
                                              'hyperparameters': {'algorithm': 'auto',
                                                                  'n_neighbors': 2,
                                                                  'weights': 'uniform'}},
@@ -65,7 +65,7 @@ class TestAnalyzeLogs(unittest.TestCase):
         :condition : config files present in self.directory
         :main_result : answer learning_process.input.type == 'NClassRandomClassificationWithNoise'
         """
-        analyse_logs = mls.sl.visualize.AnalyzeLogs(self.directory)
+        analyse_logs = mls.visualize.AnalyzeLogs(self.directory)
         analyse_logs.store_config()
         q = tdb.Query()
         r = analyse_logs.db.search(
@@ -79,7 +79,7 @@ class TestAnalyzeLogs(unittest.TestCase):
         :main_result : answer (learning_process.input.parameters.n_samples == 100)
                               | (learning_process.input.parameters.n_samples == 10000)
         """
-        analyse_logs = mls.sl.visualize.AnalyzeLogs(self.directory)
+        analyse_logs = mls.visualize.AnalyzeLogs(self.directory)
         analyse_logs.store_config()
         q = tdb.Query()
         r = analyse_logs.db.search(
@@ -93,10 +93,10 @@ class TestAnalyzeLogs(unittest.TestCase):
         :condition : config files present in self.directory
         :main_result : fill_lists has been called
         """
-        analyse_logs = mls.sl.visualize.AnalyzeLogs(self.directory)
+        analyse_logs = mls.visualize.AnalyzeLogs(self.directory)
         analyse_logs.store_config()
-        self.assertEqual(4, len(analyse_logs.algorithms_list))
-        self.assertEqual(2, len(analyse_logs.datasets_list))
+        self.assertEqual(4, len(analyse_logs.lists['algorithm']))
+        self.assertEqual(2, len(analyse_logs.lists['input']))
         self.assertEqual(4, len(analyse_logs.parameters_df))
 
     def test_fill_lists_should_fill(self):
@@ -105,13 +105,13 @@ class TestAnalyzeLogs(unittest.TestCase):
         :condition : config files present in self.directory
         :main_result : algorithms_list and datasets_list filled with possibles choices
         """
-        doc1 = {'learning_process': {'parameters': {'algorithm': {'algorithm-family': 'Algorithm 1'},
+        doc1 = {'learning_process': {'parameters': {'algorithm': {'type': 'Algorithm 1'},
                                                     'input': {'type': 'Dataset 1'},
                                                     'split': {'type': 'traintest'}}}}
-        doc2 = {'learning_process': {'parameters': {'algorithm': {'algorithm-family': 'Algorithm 2'},
+        doc2 = {'learning_process': {'parameters': {'algorithm': {'type': 'Algorithm 2'},
                                                     'input': {'type': 'Dataset 1'},
                                                     'split': {'type': 'traintest'}}}}
-        doc3 = {'learning_process': {'parameters': {'algorithm': {'algorithm-family': 'Algorithm 2'},
+        doc3 = {'learning_process': {'parameters': {'algorithm': {'type': 'Algorithm 2'},
                                                     'input': {'type': 'Dataset 1'},
                                                     'split': {'type': 'traintest'}}}}
         expected_algorithms_list = ['.', 'Algorithm 1', 'Algorithm 2']
@@ -119,11 +119,11 @@ class TestAnalyzeLogs(unittest.TestCase):
         expected_paramaters_df = [['Algorithm 1', 'Dataset 1', 'traintest'],
                                   ['Algorithm 2', 'Dataset 1', 'traintest'],
                                   ['Algorithm 2', 'Dataset 1', 'traintest']]
-        analyse_logs = mls.sl.visualize.AnalyzeLogs(self.directory)
+        analyse_logs = mls.visualize.AnalyzeLogs(self.directory)
         analyse_logs.db.insert(doc1)
         analyse_logs.db.insert(doc2)
         analyse_logs.db.insert(doc3)
         analyse_logs.fill_lists()
-        self.assertListEqual(expected_algorithms_list, analyse_logs.algorithms_list)
-        self.assertListEqual(expected_datasets_list, analyse_logs.datasets_list)
+        self.assertListEqual(expected_algorithms_list, analyse_logs.lists['algorithm'])
+        self.assertListEqual(expected_datasets_list, analyse_logs.lists['input'])
         self.assertListEqual(expected_paramaters_df, analyse_logs.parameters_df.values.tolist())

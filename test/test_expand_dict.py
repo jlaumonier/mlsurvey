@@ -123,7 +123,7 @@ class TestExpandDict(unittest.TestCase):
     def test_expand_likely_config(self):
         input_dict = {
             'learning_process': {
-                'parameters': {'algorithm': {'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
+                'parameters': {'algorithm': {'type': 'sklearn.neighbors.KNeighborsClassifier',
                                              'hyperparameters': {'algorithm': 'auto',
                                                                  'n_neighbors': [2, 3],
                                                                  'weights': ['uniform', 'auto']}},
@@ -145,7 +145,7 @@ class TestExpandDict(unittest.TestCase):
         }
         expected_result_1 = {
             'learning_process': {
-                'parameters': {'algorithm': {'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
+                'parameters': {'algorithm': {'type': 'sklearn.neighbors.KNeighborsClassifier',
                                              'hyperparameters': {'algorithm': 'auto',
                                                                  'n_neighbors': 2,
                                                                  'weights': 'uniform'}},

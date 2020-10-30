@@ -1,50 +1,37 @@
 import colorlover as cl
 import dash_core_components as dcc
-import dash_dangerously_set_inner_html as ddsih
 import dash_html_components as html
 import dash_table
-import json2table
 import numpy as np
 import plotly.figure_factory as ff
 import plotly.graph_objs as go
 
 import mlsurvey as mls
-from mlsurvey.workflows.learning_workflow import LearningWorkflow
+from mlsurvey.visualize import VisualizeLogDetail
 
 
-class VisualizationWorkflow(LearningWorkflow):
-    """ Workflow for visualizing learning results """
+class VisualizeLogSL(VisualizeLogDetail):
+    """ Generation of the visualization for a supervised learning log experiment """
 
     def __init__(self, directory):
         """
         initialize the workflow reading the files from directory
         :param directory: the directory where the results are stored
         """
-        super().__init__()
-        self.source_directory = directory
-        self.config = None
+        super().__init__(directory)
         self.context = mls.sl.models.Context(eval_type=mls.sl.models.EvaluationSupervised)
-        self.log = mls.Logging(self.source_directory, base_dir='')
-        self.task_terminated_load_data = False
-        self.task_terminated_display_data = False
         self.figure = None
         self.scoreText = None
-        self.configText = None
         self.confusionMatrixFigure = None
         self.data_test_table = None
         self.fairness_results = None
-
-    def set_terminated(self):
-        self.terminated = (self.task_terminated_load_data
-                           & self.task_terminated_display_data)
 
     def task_load_data(self):
         """
         Load data, config, classifier and statistic from directory
         """
-        self.config = mls.Config('config.json', self.source_directory)
+        super().task_load_data()
         self.context.load(self.log)
-        self.task_terminated_load_data = True
 
     def __display_2d_figure__(self):
         x = self.context.data.x
@@ -197,20 +184,37 @@ class VisualizationWorkflow(LearningWorkflow):
         """
         Display with dash.
         """
+        super().task_display_data()
         if self.context.data.x.shape[1] == 2:
             self.__display_2d_figure__()
 
         self.__display_confusion_matrix__()
         self.__display_data_test_table__()
         self.__display_fairness__()
-
         self.scoreText = html.P('Score : ' + str(self.context.evaluation.score))
-        self.config.compact()
-        # This line makes a cannot find reference warning and i do not know why and how i can fix it
-        self.configText = html.Div([ddsih.DangerouslySetInnerHTML(json2table.convert(self.config.data))])
-        self.task_terminated_display_data = True
 
-    def run(self):
-        self.task_load_data()
-        self.task_display_data()
-        self.set_terminated()
+    def get_result(self, parameters):
+        data_test_section = html.Details(children=[html.Summary('Test Data'),
+                                                   self.data_test_table])
+        evaluation_result = html.Div(children=[html.Div(self.scoreText),
+                                               html.Div(self.confusionMatrixFigure),
+                                               self.fairness_results])
+        if self.figure is None:
+            result = [html.Div(children=[html.Div(self.configText,
+                                                  className='six columns',
+                                                  style={'display': parameters['display_config']}),
+                                         html.Div(evaluation_result, className='six columns')],
+                               className='one_result')]
+        else:
+            result = [html.Div(children=[html.Div(self.configText,
+                                                  className='five columns',
+                                                  style={'display': parameters['display_config']}),
+                                         html.Div(self.figure,
+                                                  className='three columns',
+                                                  style={'display': parameters['display_figure']}),
+                                         html.Div(evaluation_result, className='four columns')],
+                               className='one_result')]
+
+        if parameters['display_data_test_table']:
+            result.append(data_test_section)
+        return result

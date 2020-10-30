@@ -21,6 +21,10 @@ class LearningWorkflow:
         self.log = mls.Logging(dir_name=logging_dir)
         self.task_terminated_init = True
 
+    @staticmethod
+    def visualize_class():
+        return mls.visualize.VisualizeLogDetail
+
     @abstractmethod
     def run(self):
         pass

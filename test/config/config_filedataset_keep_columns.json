@@ -6,19 +6,21 @@
         "parameters": {
           "directory": "files/dataset",
           "filename": "test-data.json",
-          "func_params": {"orient": "index"}
+          "func_params": {
+            "orient": "index"
+          }
         },
         "loading": {
-          "columns_kept":  {
-              "__type__": "__tuple__",
-              "__value__": "('Column1', 'Column2 ')"
-            }
+          "columns_kept": {
+            "__type__": "__tuple__",
+            "__value__": "('Column1', 'Column2 ')"
+          }
         }
       }
     },
     "algorithms": {
       "knn-base": {
-        "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+        "type": "sklearn.neighbors.KNeighborsClassifier",
         "hyperparameters": {
           "n_neighbors": 2,
           "algorithm": "auto",
@@ -38,6 +40,7 @@
     }
   },
   "learning_process": {
+    "type": "mlsurvey.sl.workflows.SupervisedLearningWorkflow",
     "parameters": {
       "input": "@datasets.DataSetGermanCredit",
       "split": "@splits.traintest20",

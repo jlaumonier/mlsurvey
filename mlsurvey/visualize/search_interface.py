@@ -17,6 +17,13 @@ class SearchInterface:
 
     def __init__(self, analyse_logs):
         self.analyse_logs = analyse_logs
+        self.col_names = []
+        for e in self.analyse_logs.lists:
+            self.col_names.append(e)
+            self.col_names.append(e + 'Params')
+        self.col_names.append('FairnessParams')
+        self.col_names.append('Directory')
+        self.col_names.append('Type')
 
     @staticmethod
     def get_result_figure_summary(search_result):
@@ -46,11 +53,10 @@ class SearchInterface:
             y = []
             # get the index of result
             idx_result = result_df.index[result_df[list_of_not_unique_key[0]] == x].tolist()
-            # find the corresponding directory
-            directories = [search_result[i]['location'] for i in idx_result]
-            for d in directories:
+            for i in idx_result:
                 # for each directory, launch a visualization workflow to get the evaluation
-                vw = mls.sl.workflows.VisualizationWorkflow(d)
+                vw_class = mls.Utils.import_from_dotted_path(search_result[i]['learning_process']['type'])
+                vw = vw_class.visualize_class()(search_result[i]['location'])
                 vw.run()
                 # append the score to the y axis
                 y.append(vw.context.evaluation.score)
@@ -85,25 +91,25 @@ class SearchInterface:
                 queries.append(one_query)
         if queries:
             search_result = db.search(reduce(lambda a, b: a & b, queries)
-                                      & query.learning_process.parameters.algorithm['algorithm-family'].matches(
-                value_algo)
                                       & query.learning_process.parameters.input.type.matches(value_ds)
                                       )
         else:
-            search_result = db.search(
-                query.learning_process.parameters.algorithm['algorithm-family'].matches(value_algo)
-                & query.learning_process.parameters.input.type.matches(value_ds))
+            search_result = db.search(query.learning_process.parameters.input.type.matches(value_ds))
         for res in search_result:
             if 'fairness' in res['learning_process']['parameters']['input']:
                 str_fairness_params = str(res['learning_process']['parameters']['input']['fairness'])
             else:
                 str_fairness_params = str({})
-            one_row = {'Algorithm': res['learning_process']['parameters']['algorithm']['algorithm-family'],
-                       'AlgoParams': str(res['learning_process']['parameters']['algorithm']['hyperparameters']),
-                       'Dataset': res['learning_process']['parameters']['input']['type'],
-                       'DSParams': str(res['learning_process']['parameters']['input']['parameters']),
-                       'FairnessParams': str_fairness_params,
-                       'Directory': res['location']}
+            one_row = {}
+            for e in self.analyse_logs.lists:
+                one_row[e] = res['learning_process']['parameters'][e]['type']
+                eparam = 'parameters'
+                if 'hyperparameters' in res['learning_process']['parameters'][e]:
+                    eparam = 'hyperparameters'
+                one_row[e + 'Params'] = str(res['learning_process']['parameters'][e][eparam])
+            one_row['FairnessParams'] = str_fairness_params
+            one_row['Directory'] = res['location']
+            one_row['Type'] = res['learning_process']['type']
             result.append(one_row)
         return result, search_result
 
@@ -115,15 +121,15 @@ class SearchInterface:
         html_list_not_unique = html.Ul([])
         for k in list_of_not_unique_key:
             html_list_not_unique.children.append(html.Li(k, style={'margin-bottom': '0em'}))
-        if len(result_df) != 0:
-            data = {'x': result_df[result_df.columns[0]], 'y': result_df['score']}
-            f = go.Figure(data=data,
-                          layout=go.Layout(
-                              xaxis={'title': str(result_df.columns[0])},
-                              yaxis={'title': 'score'}
-                          )
-                          )
-            figure = dcc.Graph(id='graph-summary-id', figure=f)
+            if len(result_df) != 0 and 'score' in result_df.columns:
+                data = {'x': result_df[result_df.columns[0]], 'y': result_df['score']}
+                f = go.Figure(data=data,
+                              layout=go.Layout(
+                                  xaxis={'title': str(result_df.columns[0])},
+                                  yaxis={'title': 'score'}
+                              )
+                              )
+                figure = dcc.Graph(id='graph-summary-id', figure=f)
         div_summary = [html.Div(children=html_list_not_unique,
                                 className='three columns'),
                        html.Div(children=figure,
@@ -164,49 +170,26 @@ class SearchInterface:
     def select_result(derived_virtual_data, derived_virtual_selected_rows, options):
         """Callback when the user select one row in the result table"""
         result = []
-        display_config = 'block' if 'CFG' in options else 'none'
-        display_figure = 'block' if 'FIG' in options else 'none'
-        display_data_test_table = True if 'DTA_TEST_TBL' in options else False
+        parameters = {'display_config': 'block' if 'CFG' in options else 'none',
+                      'display_figure': 'block' if 'FIG' in options else 'none',
+                      'display_data_test_table': True if 'DTA_TEST_TBL' in options else False}
         if derived_virtual_selected_rows is not None and len(derived_virtual_selected_rows) != 0:
             for idx in derived_virtual_selected_rows:
-                directory = derived_virtual_data[idx]['Directory']
-                vw = mls.sl.workflows.VisualizationWorkflow(directory)
+                vw_class = mls.Utils.import_from_dotted_path(derived_virtual_data[idx]['Type'])
+                vw = vw_class.visualize_class()(derived_virtual_data[idx]['Directory'])
                 vw.run()
-
-                data_test_section = html.Details(children=[html.Summary('Test Data'),
-                                                           vw.data_test_table])
-                evaluation_result = html.Div(children=[html.Div(vw.scoreText),
-                                                       html.Div(vw.confusionMatrixFigure),
-                                                       vw.fairness_results])
-                if vw.figure is None:
-                    one_result = html.Div(children=[html.Div(vw.configText,
-                                                             className='six columns',
-                                                             style={'display': display_config}),
-                                                    html.Div(evaluation_result, className='six columns')],
-                                          className='one_result')
-                else:
-                    one_result = html.Div(children=[html.Div(vw.configText,
-                                                             className='five columns',
-                                                             style={'display': display_config}),
-                                                    html.Div(vw.figure,
-                                                             className='three columns',
-                                                             style={'display': display_figure}),
-                                                    html.Div(evaluation_result, className='four columns')],
-                                          className='one_result')
-                result.append(one_result)
-
-                if display_data_test_table:
-                    result.append(data_test_section)
-
+                one_result = vw.get_result(parameters)
+                result.extend(one_result)
                 result.append(html.Hr())
         return result
 
     def get_layout(self):
         """Layout of the search page"""
-        d = [{'Algorithm': 0, 'AlgoParams': 0, 'Dataset': 0, 'DSParams': 0, 'FairnessParams': 0, 'Directory': 0}]
-        col_names = ['Algorithm', 'AlgoParams', 'Dataset', 'DSParams', 'FairnessParams', 'Directory']
-        options_algorithms = [{'label': a, 'value': a} for a in self.analyse_logs.algorithms_list]
-        options_datasets = [{'label': d, 'value': d} for d in self.analyse_logs.datasets_list]
+        empty_list = [dict.fromkeys(self.col_names, 0)]
+        options_algorithms = [{'label': '.', 'value': '.'}]
+        if 'algorithm' in self.analyse_logs.lists:
+            options_algorithms = [{'label': a, 'value': a} for a in self.analyse_logs.lists['algorithm']]
+        options_datasets = [{'label': d, 'value': d} for d in self.analyse_logs.lists['input']]
 
         list_criteria = [{'label': a, 'value': a} for a in sorted(self.analyse_logs.parameters_df.columns)]
 
@@ -255,8 +238,8 @@ class SearchInterface:
                                                      ),
                                         html.Button('Search', id='search-button-id'),
                                         dash_table.DataTable(id='search-results-id',
-                                                             columns=[{"name": i, "id": i} for i in col_names],
-                                                             data=d,
+                                                             columns=[{"name": i, "id": i} for i in self.col_names],
+                                                             data=empty_list,
                                                              row_selectable='multi',
                                                              page_action='native',
                                                              page_size=10,

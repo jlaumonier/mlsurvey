@@ -56,6 +56,9 @@
           ],
           "target_is_one": "good",
           "target_is_zero": "bad"
+        },
+        "metadata": {
+          "y_col_name": "class"
         }
       },
       "DataSetDE": {
@@ -72,7 +75,7 @@
     },
     "algorithms": {
       "knn-base": {
-        "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+        "type": "sklearn.neighbors.KNeighborsClassifier",
         "hyperparameters": {
           "n_neighbors": [
             2,
@@ -93,7 +96,7 @@
         }
       },
       "svm-base": {
-        "algorithm-family": "sklearn.svm.SVC",
+        "type": "sklearn.svm.SVC",
         "hyperparameters": {
           "C": [
             0.9,
@@ -105,7 +108,7 @@
         }
       },
       "nn-base": {
-        "algorithm-family": "sklearn.neural_network.MLPClassifier",
+        "type": "sklearn.neural_network.MLPClassifier",
         "hyperparameters": {
           "activation": [
             "relu",

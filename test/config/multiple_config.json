@@ -28,7 +28,7 @@
     },
     "algorithms": {
       "knn-base": {
-        "algorithm-family": "sklearn.neighbors.KNeighborsClassifier",
+        "type": "sklearn.neighbors.KNeighborsClassifier",
         "hyperparameters": {
           "n_neighbors": 15,
           "algorithm": "auto",

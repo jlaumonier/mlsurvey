@@ -48,7 +48,7 @@ class TestContext(unittest.TestCase):
     def test_save_context(self):
         context = mls.sl.models.Context(eval_type=mls.sl.models.EvaluationSupervised)
         config_algo = {
-            'algorithm-family': 'sklearn.neighbors.KNeighborsClassifier',
+            'type': 'sklearn.neighbors.KNeighborsClassifier',
             'hyperparameters': {
                 'n_neighbors': 3,
                 'algorithm': 'auto',
@@ -66,7 +66,7 @@ class TestContext(unittest.TestCase):
         self.assertEqual('e024075ecfdd447815a1226dc9eff25d',
                          mls.Utils.md5_file(os.path.join(log.directory, 'input.json')))
         self.assertTrue(os.path.isfile(os.path.join(log.directory, 'algorithm.json')))
-        self.assertEqual('77ead84d71a01a8e83c8706b2b96cf57',
+        self.assertEqual('81bf56aa9c122a3f3a259cde42facd49',
                          mls.Utils.md5_file(os.path.join(log.directory, 'algorithm.json')))
         self.assertTrue(os.path.isfile(os.path.join(log.directory, 'model.joblib')))
         self.assertEqual('4dc6000a33a1ca18a3aaedb7f9802955',

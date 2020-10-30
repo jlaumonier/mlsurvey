@@ -20,6 +20,9 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
         log = mls.Logging()
         shutil.rmtree(os.path.join(cls.base_directory, log.base_dir), ignore_errors=True)
 
+    def test_visualize_class(self):
+        self.assertEqual(mls.sl.workflows.SupervisedLearningWorkflow.visualize_class(), mls.sl.visualize.VisualizeLogSL)
+
     def test_run_all_step_should_be_executed(self):
         slw = mls.sl.workflows.SupervisedLearningWorkflow('complete_config_loaded.json',
                                                           config_directory=self.cd,

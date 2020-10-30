@@ -6,15 +6,15 @@ class Algorithm:
     def __init__(self, config):
         """
         Initialize the algorithm class using the config
-        :param config dictionary containing keys 'algorithm-family' and 'hyperparamters'.
-        The config 'algorithm-family' is the name of the class defining the algorithm (e.g. sklearn.svm.SVC)
+        :param config dictionary containing keys 'type' and 'hyperparamters'.
+        The config 'type' is the name of the class defining the algorithm (e.g. sklearn.svm.SVC)
         the config 'hyperparamters' is a dictionary used to initialize the class
         Raise a mlsurvey.exceptions.ConfigError if keys are not found in config
         """
         self.algorithm_family = None
         self.hyperparameters = None
         try:
-            self.algorithm_family = config['algorithm-family']
+            self.algorithm_family = config['type']
             self.hyperparameters = config['hyperparameters']
         except KeyError as e:
             raise mls.exceptions.ConfigError(e)
@@ -31,10 +31,10 @@ class Algorithm:
 
     def to_dict(self):
         """
-        transform an algorithm to a dictionary  {'algorithm-family': ..., 'hyperparameters': ...}
+        transform an algorithm to a dictionary  {'type': ..., 'hyperparameters': ...}
         :return: a dictionary
         """
-        result = {'algorithm-family': self.algorithm_family, 'hyperparameters': self.hyperparameters}
+        result = {'type': self.algorithm_family, 'hyperparameters': self.hyperparameters}
         return result
 
     @staticmethod

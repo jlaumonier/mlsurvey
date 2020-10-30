@@ -11,6 +11,7 @@
     }
   },
   "learning_process": {
+    "type": "mlsurvey.sl.workflows.SupervisedLearningWorkflow",
     "parameters": {
       "input": "@datasets.DataSetGermanCredit"
     }
