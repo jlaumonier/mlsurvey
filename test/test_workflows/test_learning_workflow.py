@@ -18,6 +18,7 @@ class TestLearningWorkflow(unittest.TestCase):
         self.assertEqual(lw.config_file, 'config.json')
         self.assertIsInstance(lw.log, mls.Logging)
         self.assertEqual(lw.log.base_dir, 'logs/')
+        self.assertIsNotNone(lw.log.mlflow_run_id)
 
     def test_init_with_confdir_should_init(self):
         lw = mls.workflows.LearningWorkflow(config_directory='test/')

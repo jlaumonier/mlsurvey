@@ -3,6 +3,7 @@ import shutil
 import unittest
 
 import luigi
+import mlflow
 
 import mlsurvey as mls
 
@@ -16,6 +17,8 @@ class TestLoadDataTask(unittest.TestCase):
         directory = os.path.dirname(__file__)
         cls.base_directory = os.path.join(directory, '../../../')
         cls.config_directory = os.path.join(cls.base_directory, 'config/')
+        cls.mlflow_client = mlflow.tracking.MlflowClient()
+        cls.mlflow_experiments = cls.mlflow_client.list_experiments()
 
     @classmethod
     def tearDownClass(cls):
@@ -46,16 +49,20 @@ class TestLoadDataTask(unittest.TestCase):
         """
         :test : mlsurvey.sl.workflows.tasks.LoadDataTask.run()
         :condition : -
-        :main_result : data file are loaded, saved in hdf database and logged
+        :main_result : data file are loaded, saved in hdf database and logged, config is logged into mlflow
         """
         temp_log = mls.Logging()
+        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
         luigi.build([mls.sl.workflows.tasks.LoadDataTask(logging_directory=temp_log.dir_name,
                                                          logging_base_directory=os.path.join(self.base_directory,
                                                                                              temp_log.base_dir),
                                                          config_filename='complete_config_loaded.json',
                                                          config_directory=self.config_directory,
-                                                         base_directory=self.base_directory)], local_scheduler=True)
-        log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
+                                                         base_directory=self.base_directory,
+                                                         mlflow_run_id=run.info.run_id)], local_scheduler=True)
+        log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir),
+                          dir_name=temp_log.dir_name,
+                          mlflow_run_id=run.info.run_id)
         self.assertTrue(os.path.isfile(os.path.join(log.directory, 'config.json')))
         self.assertEqual('231279b44f04b545748cf614a34ad3d4',
                          mls.Utils.md5_file(os.path.join(log.directory, 'config.json')))
@@ -71,6 +78,8 @@ class TestLoadDataTask(unittest.TestCase):
         raw_data = mls.sl.models.DataFactory.create_data('Pandas', df_raw_data)
         self.assertEqual(100, len(raw_data.x))
         self.assertEqual(100, len(raw_data.y))
+        # parameters in mlflow
+        self.assertIn('input.type', log.mlflow_client.get_run(log.mlflow_run_id).data.params)
 
     def test_run_filedataset_data_is_obtained_pandas_implicit(self):
         """
@@ -79,12 +88,14 @@ class TestLoadDataTask(unittest.TestCase):
         :main_result : dataset, raw_data properties are ok
         """
         temp_log = mls.Logging()
+        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
         luigi.build([mls.sl.workflows.tasks.LoadDataTask(logging_directory=temp_log.dir_name,
                                                          logging_base_directory=os.path.join(self.base_directory,
                                                                                              temp_log.base_dir),
                                                          config_filename='config_filedataset.json',
                                                          config_directory=self.config_directory,
-                                                         base_directory=self.base_directory)], local_scheduler=True)
+                                                         base_directory=self.base_directory,
+                                                         mlflow_run_id=run.info.run_id)], local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
         df_raw_data = mls.FileOperation.read_hdf('raw_data-content.h5',
                                                  os.path.join(log.base_dir, log.dir_name),
@@ -109,12 +120,14 @@ class TestLoadDataTask(unittest.TestCase):
         :main_result : data file are loaded, saved in hdf database and logged
         """
         temp_log = mls.Logging()
+        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
         luigi.build([mls.sl.workflows.tasks.LoadDataTask(logging_directory=temp_log.dir_name,
                                                          logging_base_directory=os.path.join(self.base_directory,
                                                                                              temp_log.base_dir),
                                                          config_filename='config_filedataset_pandas_explicit.json',
                                                          config_directory=self.config_directory,
-                                                         base_directory=self.base_directory)], local_scheduler=True)
+                                                         base_directory=self.base_directory,
+                                                         mlflow_run_id=run.info.run_id)], local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
         dataset_dict = log.load_json_as_dict(os.path.join('dataset.json'))
         dataset = mls.sl.datasets.DataSetFactory.create_dataset_from_dict(dataset_dict)
@@ -137,12 +150,14 @@ class TestLoadDataTask(unittest.TestCase):
         :main_result : Generate and dataset contains the fairness parameters
         """
         temp_log = mls.Logging()
+        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
         luigi.build([mls.sl.workflows.tasks.LoadDataTask(logging_directory=temp_log.dir_name,
                                                          logging_base_directory=os.path.join(self.base_directory,
                                                                                              temp_log.base_dir),
                                                          config_filename='config_filedataset.json',
                                                          config_directory=self.config_directory,
-                                                         base_directory=self.base_directory)], local_scheduler=True)
+                                                         base_directory=self.base_directory,
+                                                         mlflow_run_id=run.info.run_id)], local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
         dataset_dict = log.load_json_as_dict(os.path.join('dataset.json'))
         dataset = mls.sl.datasets.DataSetFactory.create_dataset_from_dict(dataset_dict)
@@ -157,12 +172,14 @@ class TestLoadDataTask(unittest.TestCase):
         :main_result : the result loaded data contains only kept columns
         """
         temp_log = mls.Logging()
+        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
         luigi.build([mls.sl.workflows.tasks.LoadDataTask(logging_directory=temp_log.dir_name,
                                                          logging_base_directory=os.path.join(self.base_directory,
                                                                                              temp_log.base_dir),
                                                          config_filename='config_filedataset_keep_columns.json',
                                                          config_directory=self.config_directory,
-                                                         base_directory=self.base_directory)],
+                                                         base_directory=self.base_directory,
+                                                         mlflow_run_id=run.info.run_id)],
                     local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
         df_raw_data = mls.FileOperation.read_hdf('raw_data-content.h5',

@@ -18,7 +18,6 @@ Notes for TODO
 
 TODO
 ^^^^
-* A : Adding mlflow for tracking
 * A : Refactoring : generalize for unsupervised algorithms
 * A : Refactoring : remove context ?
 * F : Load CSV : choose the separator.
@@ -53,10 +52,11 @@ TODO
 
 Current
 ^^^^^^^
-* A : Refactoring visualisation
+* A : Adding mlflow for tracking
 
 Done
 ^^^^
+* A : Refactoring visualisation
 * F : Filter some columns at loading time. + Base of simple task logging
 * F : Generalization for MultipleWorkflow
 * F : Generalize expand config + handling references in config files.

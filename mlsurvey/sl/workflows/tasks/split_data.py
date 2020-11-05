@@ -14,12 +14,14 @@ class SplitDataTask(BaseTask):
                                                     logging_base_directory=self.logging_base_directory,
                                                     config_filename=self.config_filename,
                                                     config_directory=self.config_directory,
-                                                    base_directory=self.base_directory),
+                                                    base_directory=self.base_directory,
+                                                    mlflow_run_id=self.mlflow_run_id),
                 mls.sl.workflows.tasks.PrepareDataTask(logging_directory=self.logging_directory,
                                                        logging_base_directory=self.logging_base_directory,
                                                        config_filename=self.config_filename,
                                                        config_directory=self.config_directory,
-                                                       base_directory=self.base_directory
+                                                       base_directory=self.base_directory,
+                                                       mlflow_run_id=self.mlflow_run_id
                                                        )
                 ]
 
@@ -37,7 +39,7 @@ class SplitDataTask(BaseTask):
         if split_params['type'] == 'traintest':
             # TODO test shuffle False
             if split_params['parameters']['shuffle']:
-                df_test = data.df.sample(frac=split_params['parameters']['test_size']/len(data.df),
+                df_test = data.df.sample(frac=split_params['parameters']['test_size'] / len(data.df),
                                          random_state=split_params['parameters']['random_state'])
             else:
                 df_test = data.df.head(len(data.df) * split_params['parameters']['test_size'])

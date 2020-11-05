@@ -17,5 +17,6 @@ class MultipleLearningWorkflow(LearningWorkflow):
                                                                      self.log.base_dir),
                                                                  config_filename=self.config_file,
                                                                  config_directory=self.config_directory,
-                                                                 base_directory=self.base_directory)],
+                                                                 base_directory=self.base_directory,
+                                                                 mlflow_run_id=self.log.mlflow_run_id)],
                     local_scheduler=True)

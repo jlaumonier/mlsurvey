@@ -14,7 +14,8 @@ class MultipleLearningTask(BaseTask):
                                                        logging_base_directory=self.logging_base_directory,
                                                        config_filename=self.config_filename,
                                                        config_directory=self.config_directory,
-                                                       base_directory=self.base_directory)
+                                                       base_directory=self.base_directory,
+                                                       mlflow_run_id=self.mlflow_run_id)
 
     @staticmethod
     def task_run_one_config(p):

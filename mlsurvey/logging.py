@@ -4,17 +4,19 @@ import random
 
 import joblib
 import pandas as pd
+import mlflow
 
 import mlsurvey as mls
 
 
 class Logging:
 
-    def __init__(self, dir_name=None, base_dir='logs/'):
+    def __init__(self, dir_name=None, base_dir='logs/', mlflow_run_id=None):
         """
         initialize machine learning logging by creating dir_name/ in base_dir/
         :param dir_name: name of the log directory for this instance
         :param base_dir: name of the base directory for all logging
+        :param mlflow_run_id: mlflow run id of the corresponding run
         """
         self.base_dir = base_dir
         # adding a random number to avoid the creating at the same microsecond !!
@@ -23,6 +25,8 @@ class Logging:
             dir_name = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f") + '-' + str(salt_random_number)
         self.dir_name = dir_name
         self.directory = os.path.join(self.base_dir, dir_name)
+        self.mlflow_client = mlflow.tracking.MlflowClient()
+        self.mlflow_run_id = mlflow_run_id
 
     def save_input(self, inpts, metadata_filename='input.json'):
         """
@@ -38,6 +42,8 @@ class Logging:
                 json_filename = filename + '.json'
                 mls.FileOperation.save_hdf(h5_filename, self.directory, v.df)
                 mls.FileOperation.save_json(json_filename, self.directory, v.df)
+                if self.mlflow_run_id is not None:
+                    self.mlflow_client.log_artifact(self.mlflow_run_id, os.path.join(self.directory, json_filename))
                 df_format = ''
                 if isinstance(v.df, pd.DataFrame):
                     df_format = 'Pandas'
@@ -67,6 +73,8 @@ class Logging:
     def save_dict_as_json(self, filename, d):
         """ save a dictionary into a json file"""
         mls.FileOperation.save_dict_as_json(filename, self.directory, d)
+        if self.mlflow_run_id is not None:
+            self.mlflow_client.log_artifact(self.mlflow_run_id, os.path.join(self.directory, filename))
 
     def load_json_as_dict(self, filename):
         """ load a dictionary from a json file"""
@@ -77,11 +85,34 @@ class Logging:
         """ save a scikitlearn classifier"""
         os.makedirs(self.directory, exist_ok=True)
         joblib.dump(classifier, os.path.join(self.directory, filename))
+        if self.mlflow_run_id is not None:
+            self.mlflow_client.log_artifact(self.mlflow_run_id, os.path.join(self.directory, filename))
 
     def load_classifier(self, filename='model.joblib'):
         """ load a scikitlearn classifier"""
         os.makedirs(self.directory, exist_ok=True)
         return joblib.load(os.path.join(self.directory, filename))
+
+    def log_config(self, filename, config_dict):
+        """ log config into file and mlflow"""
+        self.save_dict_as_json(filename, config_dict)
+        # log config into mlflow
+        if self.mlflow_run_id is not None:
+            params = mls.Utils.flatten_dict(config_dict, separator='.')
+            for key, value in params.items():
+                if len(key) >= 28:
+                    key = key[28:]
+                self.mlflow_client.log_param(self.mlflow_run_id, key, value)
+
+    def log_metrics(self, filename, metric_dict):
+        """ log metric into file and mlflow"""
+        self.save_dict_as_json(filename, metric_dict)
+        # log metrics into mlflow
+        if self.mlflow_run_id is not None:
+            metrics = mls.Utils.flatten_dict(metric_dict, separator='.')
+            for key, value in metrics.items():
+                if isinstance(value, int) or isinstance(value, float):
+                    self.mlflow_client.log_metric(self.mlflow_run_id, key, value)
 
     @staticmethod
     def msg(msg: str, level):

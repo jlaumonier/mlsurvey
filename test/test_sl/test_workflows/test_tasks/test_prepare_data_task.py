@@ -3,12 +3,12 @@ import unittest
 import shutil
 
 import luigi
+import mlflow
 
 import mlsurvey as mls
 
 
 class TestPrepareDataTask(unittest.TestCase):
-
     config_directory = ''
     base_directory = ''
 
@@ -17,6 +17,8 @@ class TestPrepareDataTask(unittest.TestCase):
         directory = os.path.dirname(__file__)
         cls.base_directory = os.path.join(directory, '../../../')
         cls.config_directory = os.path.join(cls.base_directory, 'config/')
+        cls.mlflow_client = mlflow.tracking.MlflowClient()
+        cls.mlflow_experiments = cls.mlflow_client.list_experiments()
 
     @classmethod
     def tearDownClass(cls):
@@ -30,11 +32,13 @@ class TestPrepareDataTask(unittest.TestCase):
         :main_result : data are prepared.
         """
         temp_log = mls.Logging()
+        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
         luigi.build([mls.sl.workflows.tasks.PrepareDataTask(logging_directory=temp_log.dir_name,
                                                             logging_base_directory=os.path.join(self.base_directory,
                                                                                                 temp_log.base_dir),
                                                             config_filename='complete_config_loaded.json',
-                                                            config_directory=self.config_directory)],
+                                                            config_directory=self.config_directory,
+                                                            mlflow_run_id=run.info.run_id)],
                     local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
         df_raw_data = mls.FileOperation.read_hdf('raw_data-content.h5',
@@ -58,11 +62,13 @@ class TestPrepareDataTask(unittest.TestCase):
         :main_result : data are prepared.
         """
         temp_log = mls.Logging()
+        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
         luigi.build([mls.sl.workflows.tasks.PrepareDataTask(logging_directory=temp_log.dir_name,
                                                             logging_base_directory=os.path.join(self.base_directory,
                                                                                                 temp_log.base_dir),
                                                             config_filename='config_dataset_text.json',
-                                                            config_directory=self.config_directory)],
+                                                            config_directory=self.config_directory,
+                                                            mlflow_run_id=run.info.run_id)],
                     local_scheduler=True)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
         df_raw_data = mls.FileOperation.read_hdf('raw_data-content.h5',

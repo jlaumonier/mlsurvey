@@ -14,22 +14,26 @@ class EvaluateTask(BaseTask):
                                                     logging_base_directory=self.logging_base_directory,
                                                     config_filename=self.config_filename,
                                                     config_directory=self.config_directory,
-                                                    base_directory=self.base_directory),
+                                                    base_directory=self.base_directory,
+                                                    mlflow_run_id=self.mlflow_run_id),
                 mls.sl.workflows.tasks.PrepareDataTask(logging_directory=self.logging_directory,
                                                        logging_base_directory=self.logging_base_directory,
                                                        config_filename=self.config_filename,
                                                        config_directory=self.config_directory,
-                                                       base_directory=self.base_directory),
+                                                       base_directory=self.base_directory,
+                                                       mlflow_run_id=self.mlflow_run_id),
                 mls.sl.workflows.tasks.SplitDataTask(logging_directory=self.logging_directory,
                                                      logging_base_directory=self.logging_base_directory,
                                                      config_filename=self.config_filename,
                                                      config_directory=self.config_directory,
-                                                     base_directory=self.base_directory),
+                                                     base_directory=self.base_directory,
+                                                     mlflow_run_id=self.mlflow_run_id),
                 mls.sl.workflows.tasks.LearnTask(logging_directory=self.logging_directory,
                                                  logging_base_directory=self.logging_base_directory,
                                                  config_filename=self.config_filename,
                                                  config_directory=self.config_directory,
-                                                 base_directory=self.base_directory)
+                                                 base_directory=self.base_directory,
+                                                 mlflow_run_id=self.mlflow_run_id)
                 ]
 
     def run(self):
@@ -47,6 +51,9 @@ class EvaluateTask(BaseTask):
         evaluation = mls.sl.models.EvaluationSupervised()
         evaluation.score = classifier.score(data_test.x, data_test.y)
         evaluation.confusion_matrix = confusion_matrix(data_test.y, data_test.y_pred)
+
+        # log evaluation into mlflow
+        self.log.mlflow_client.log_metric(self.log.mlflow_run_id, 'score', evaluation.score)
 
         # Fairness
         if dataset.fairness:
@@ -83,7 +90,7 @@ class EvaluateTask(BaseTask):
             # P(Y=1 | Priv_class = False) / P(Y=1 | Priv_class = True)
             sub_evaluation.disparate_impact_rate = false_proba / true_proba
 
-            # criteria that use the classier
+            # criteria that use the classifier
             if data_test.df_contains == 'xyypred':
                 # equal opportunity
                 # P(Y_hat=0 | Y=1, Priv_class = False) - P(Y_hat=0 | Y=1, Priv_class = True)
@@ -123,7 +130,7 @@ class EvaluateTask(BaseTask):
                 sub_evaluation.average_equalized_odds = diff / 2.0
             evaluation.sub_evaluation = sub_evaluation
 
-        self.log.save_dict_as_json(self.output()['evaluation'].filename, evaluation.to_dict())
+        self.log.log_metrics(self.output()['evaluation'].filename, evaluation.to_dict())
 
     def output(self):
         evaluation_filename = 'evaluation.json'

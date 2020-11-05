@@ -44,7 +44,7 @@ class LoadDataTask(BaseTask):
                 raw_data = raw_data.copy_with_new_data_dataframe(raw_data.df[columns_kept])
 
         # log config
-        self.log.save_dict_as_json(self.output()['config'].filename, self.config.data)
+        self.log.log_config(self.output()['config'].filename, self.config.data)
         # log dataset
         self.log.save_dict_as_json(self.output()['dataset'].filename, dataset.to_dict())
         # log raw_data
