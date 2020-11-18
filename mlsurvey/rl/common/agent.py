@@ -1,11 +1,11 @@
-class Agent:
+from mlsurvey.rl.common.environment import Environment
+from mlsurvey.rl.common.object import Object
 
-    def __init__(self, name):
-        """
-        Constructor of the agent
-        :param name name of the agent. Must be unique
-        """
-        self.name = name
+
+class Agent(Object):
+
+    def __init__(self, environment: Environment, name: str, parent=None):
+        super().__init__(environment=environment, name=name, parent=parent)
         self.action = None
         self.observation = None
 

@@ -16,3 +16,4 @@ tables
 luigi
 xlrd
 mlflow
+xlsxwriter

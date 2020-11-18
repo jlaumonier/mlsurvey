@@ -10,7 +10,8 @@ class Environment:
         self.end_episode = False
         self.current_step = 0
         self.current_state = None
-        self.agents = dict()
+        self.agents = set()
+        self.objects = dict()
         self.game = None
 
     def get_observation_for_agent(self):
@@ -35,12 +36,28 @@ class Environment:
         self.current_step = self.current_step + 1
         self.current_state = self.game.next_state(current_state=self.current_state)
 
-    def create_agent(self, name):
+    def _create_base_object(self, name: str, bo_type: str, parent=None):
         """
-        Create an agent. Add it into the agent set
-        :param name the identification name of the agent
-        :return: the agent instance
+        create a base object from a string represent the type
+        :param name the identification name of the BaseObject
+        :param bo_type the string of the class to create the object
+        :param parent the parent of the current object. May be None
+        :return: the BaseObject instance
         """
-        result = mls.rl.common.Agent(name=name)
-        self.agents[name] = result
+        class_ = mls.Utils.import_from_dotted_path(bo_type)
+        result = class_(environment=self, name=name, parent=parent)
+        return result
+
+    def create_object(self, name: str, bo_type: str, parent=None):
+        """
+        Create an object. Add it into the object dictionary and agent set if the object is Agent
+        :param name the identification name of the object
+        :param bo_type the string of the class to create the object
+        :param parent the parent of the current object. May be None
+        :return: the object instance
+        """
+        result = self._create_base_object(name=name, bo_type=bo_type, parent=parent)
+        self.objects[result.get_fullname()] = result
+        if isinstance(result, mls.rl.common.Agent):
+            self.agents.add(result)
         return result

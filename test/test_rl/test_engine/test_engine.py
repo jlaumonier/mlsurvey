@@ -24,13 +24,13 @@ class TestEngine(unittest.TestCase):
         :main_result : 1 loop of the engine
         """
         engine = mls.rl.engine.Engine(max_step=1)
-        ag = engine.environment.create_agent(name='agent1')
-        old_state = engine.environment.current_state
         engine.execute()
+        current_state = engine.environment.current_state
+        ag = current_state.objects['agent1']
         self.assertEqual(engine.environment.current_step, 1)
         self.assertEqual(ag.action, 'action3')
-        self.assertNotEqual(ag.observation, old_state)
-        self.assertEqual(ag.observation, engine.environment.current_state)
+        self.assertEqual(ag.observation, current_state)
+        self.assertEqual(1, current_state.objects['object1'].object_state.characteristics['Step0'].value)
 
     def test_execute(self):
         """
@@ -39,8 +39,10 @@ class TestEngine(unittest.TestCase):
         :main_result : 10 loop of the engine
         """
         engine = mls.rl.engine.Engine(max_step=10)
-        ag = engine.environment.create_agent(name='agent1')
         engine.execute()
+        current_state = engine.environment.current_state
+        ag = engine.environment.current_state.objects['agent1']
         self.assertEqual(engine.environment.current_step, 10)
         self.assertEqual(ag.action, 'action3')
-        self.assertEqual(ag.observation, engine.environment.current_state)
+        self.assertEqual(ag.observation, current_state)
+        self.assertEqual(10, current_state.objects['object1'].object_state.characteristics['Step0'].value)

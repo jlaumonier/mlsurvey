@@ -31,6 +31,8 @@ setuptools.setup(
                       'liac-arff',
                       'tables',
                       'luigi',
-                      'xlrd'],
+                      'xlrd',
+                      'mlflow',
+                      'xlsxwriter'],
     python_requires='>=3.6'
 )

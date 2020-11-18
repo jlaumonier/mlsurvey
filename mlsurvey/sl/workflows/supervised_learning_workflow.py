@@ -24,3 +24,4 @@ class SupervisedLearningWorkflow(LearningWorkflow):
                                                          base_directory=self.base_directory,
                                                          mlflow_run_id=self.log.mlflow_run_id)],
                     local_scheduler=True)
+        self.terminate()

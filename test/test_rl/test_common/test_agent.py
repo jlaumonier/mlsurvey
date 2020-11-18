@@ -12,7 +12,10 @@ class TestAgent(unittest.TestCase):
         :main_result : Agent is initialized
         """
         expected_name = 'AgentName1'
-        ag = mls.rl.common.Agent(name=expected_name)
+        env = mls.rl.common.Environment()
+        ag = mls.rl.common.Agent(environment=env, name=expected_name)
+        self.assertIsInstance(ag, mls.rl.common.BaseObject)
+        self.assertIsInstance(ag, mls.rl.common.Object)
         self.assertIsInstance(ag, mls.rl.common.Agent)
         self.assertEqual(ag.name, expected_name)
         self.assertIsNone(ag.action)
@@ -24,9 +27,11 @@ class TestAgent(unittest.TestCase):
         :condition: observation is set
         :main_return : the action of the action is set
         """
-        observation = mls.rl.common.State(id_state=0)
+        env = mls.rl.common.Environment()
+        observation = mls.rl.common.State(environment=env, name='state')
         expected_action = 'action3'
-        ag = mls.rl.common.Agent('AgentName1')
+        env = mls.rl.common.Environment()
+        ag = mls.rl.common.Agent(environment=env, name='AgentName1')
         ag.observation = observation
         ag.choose_action()
         self.assertEqual(ag.action, expected_action)

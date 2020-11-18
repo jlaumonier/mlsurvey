@@ -1,4 +1,5 @@
 from abc import abstractmethod
+import logging
 import mlflow
 import mlsurvey as mls
 
@@ -26,7 +27,8 @@ class LearningWorkflow:
         self.log = mls.Logging(dir_name=logging_dir, mlflow_run_id=run.info.run_id)
         self.task_terminated_init = True
 
-    def __del__(self):
+    def terminate(self):
+        self.log.msg('Workflow ' + self.__class__.__name__ + ' is terminated', logging.INFO)
         self.log.mlflow_client.set_terminated(self.log.mlflow_run_id)
 
     @staticmethod

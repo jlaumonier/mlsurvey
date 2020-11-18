@@ -1,4 +1,4 @@
-import mlsurvey as mls
+from mlsurvey.rl.common import Environment, State
 
 
 class Game:
@@ -12,15 +12,22 @@ class Game:
         :param max_step: maximum step of the game. None or default for no max step
         """
         self.max_step = max_step
-        self._init_id_state = 0
-        self._evolving_id_state = 1
-        
-    def init_state(self):
+
+    def init_state(self, env: Environment) -> State:
         """
         Create the initial state of the game
         :return: the initial state
         """
-        return mls.rl.common.State(id_state=self._init_id_state)
+        result = env.create_object(name='State', bo_type='mlsurvey.rl.common.State', parent=None)
+        ag = env.create_object(name='agent1',
+                               bo_type='mlsurvey.rl.common.Agent',
+                               parent=result)
+        result.add_object(ag)
+        obj = env.create_object(name='object1',
+                                bo_type='mlsurvey.rl.common.Object',
+                                parent=result)
+        result.add_object(obj)
+        return result
 
     def next_state(self, current_state):
         """
@@ -28,7 +35,9 @@ class Game:
         :param current_state the current state
         :return: the new state
         """
-        return mls.rl.common.State(id_state=current_state.id + self._evolving_id_state)
+        result = current_state
+        result.objects['object1'].object_state.characteristics['Step0'].value += 1
+        return result
 
     def is_final(self, state):
         """
@@ -36,7 +45,7 @@ class Game:
         :param state: the state
         :return: True if final, False if not
         """
-        return state.id == self.max_step
+        return state.objects['object1'].object_state.characteristics['Step0'].value == self.max_step
 
     @staticmethod
     def observe_state(state):

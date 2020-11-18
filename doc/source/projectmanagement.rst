@@ -52,10 +52,12 @@ TODO
 
 Current
 ^^^^^^^
-* A : Adding mlflow for tracking
+
 
 Done
 ^^^^
+* A : RL object model improvements
+* A : Adding mlflow for tracking
 * A : Refactoring visualisation
 * F : Filter some columns at loading time. + Base of simple task logging
 * F : Generalization for MultipleWorkflow
