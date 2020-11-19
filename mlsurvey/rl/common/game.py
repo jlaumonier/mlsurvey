@@ -13,7 +13,8 @@ class Game:
         """
         self.max_step = max_step
 
-    def init_state(self, env: Environment) -> State:
+    @staticmethod
+    def init_state(env: Environment) -> State:
         """
         Create the initial state of the game
         :return: the initial state
@@ -29,14 +30,18 @@ class Game:
         result.add_object(obj)
         return result
 
-    def next_state(self, current_state):
+    @staticmethod
+    def next_state(current_state, actions):
         """
-        Calculates the new state according to the current state and the action of the agent
+        Calculates the new state according to the current state and the action of the agent.
         :param current_state the current state
+        :param actions action of the agents
         :return: the new state
         """
         result = current_state
-        result.objects['object1'].object_state.characteristics['Step0'].value += 1
+        for ag in current_state.agents:
+            action = actions[ag.name]
+            result.objects['object1'].object_state.characteristics['Step0'].value += action.type
         return result
 
     def is_final(self, state):

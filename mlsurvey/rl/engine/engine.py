@@ -23,8 +23,7 @@ class Engine:
         # main loop
         while not self.environment.end_episode:
             # each agent choose its action
-            for ag in self.environment.agents:
-                ag.choose_action()
+            self.environment.choose_action()
             # next state
             self.environment.calculate_next_state()
             # is the end of the episode

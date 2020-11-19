@@ -61,9 +61,10 @@ class TestGame(unittest.TestCase):
         env = mls.rl.common.Environment()
         game = mls.rl.common.Game()
         current_state = game.init_state(env)
-        new_state = game.next_state(current_state)
+        action = {'agent1': mls.rl.common.Action(env, mls.rl.common.Action.ACTION_TYPE_2)}
+        new_state = game.next_state(current_state, action)
         self.assertIsInstance(new_state, mls.rl.common.State)
-        self.assertEqual(1, new_state.objects['object1'].object_state.characteristics['Step0'].value)
+        self.assertEqual(2, new_state.objects['object1'].object_state.characteristics['Step0'].value)
 
     def test_is_final_state_final(self):
         """

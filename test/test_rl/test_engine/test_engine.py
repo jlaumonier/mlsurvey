@@ -28,7 +28,7 @@ class TestEngine(unittest.TestCase):
         current_state = engine.environment.current_state
         ag = current_state.objects['agent1']
         self.assertEqual(engine.environment.current_step, 1)
-        self.assertEqual(ag.action, 'action3')
+        self.assertEqual(ag.action.type, mls.rl.common.Action.ACTION_TYPE_1)
         self.assertEqual(ag.observation, current_state)
         self.assertEqual(1, current_state.objects['object1'].object_state.characteristics['Step0'].value)
 
@@ -43,6 +43,6 @@ class TestEngine(unittest.TestCase):
         current_state = engine.environment.current_state
         ag = engine.environment.current_state.objects['agent1']
         self.assertEqual(engine.environment.current_step, 10)
-        self.assertEqual(ag.action, 'action3')
+        self.assertEqual(ag.action.type, mls.rl.common.Action.ACTION_TYPE_1)
         self.assertEqual(ag.observation, current_state)
         self.assertEqual(10, current_state.objects['object1'].object_state.characteristics['Step0'].value)

@@ -21,6 +21,7 @@ class TestEnvironment(unittest.TestCase):
         self.assertEqual(env.current_step, 0)
         self.assertIsNone(env.game)
         self.assertIsNone(env.current_state)
+        self.assertDictEqual({}, env.next_action)
 
     def test_getObservationForAgent(self):
         """
@@ -57,6 +58,8 @@ class TestEnvironment(unittest.TestCase):
         env = mls.rl.common.Environment()
         env.game = mls.rl.common.Game(max_step=10)
         env.current_state = env.game.init_state(env)
+        env.create_object('agent1', 'mlsurvey.rl.common.Agent')
+        env.choose_action()
         env.calculate_next_state()
         self.assertEqual(env.current_step, 1)
         self.assertIsInstance(env.current_state, mls.rl.common.State)
@@ -120,3 +123,30 @@ class TestEnvironment(unittest.TestCase):
         self.assertEqual(env.objects[expected_name], obj)
         self.assertIsInstance(obj, mls.rl.common.Object)
         self.assertEqual(obj.name, expected_name)
+
+    def test_create_action(self):
+        """
+        :test : mls.rl.common.Environment.create_action()
+        :condition : Environment is initialized
+        :main_result: an action is created
+        """
+        env = mls.rl.common.Environment()
+        ac = env.create_action(mls.rl.common.Action.ACTION_TYPE_2)
+        self.assertEqual(env, ac.environment)
+        self.assertEqual(mls.rl.common.Action.ACTION_TYPE_2, ac.type)
+
+    def test_choose_action(self):
+        """
+        :test : mls.rl.common.Environment.choose_action()
+        :condition : Environment, 2 Agent are initialized
+        :main_result: the agents have chosen their action.
+        """
+        env = mls.rl.common.Environment()
+        ag1 = env.create_object('agent1', 'mlsurvey.rl.common.Agent')
+        ag2 = env.create_object('agent2', 'mlsurvey.rl.common.Agent')
+        env.choose_action()
+        # the agent has chosen its action
+        self.assertEqual(mls.rl.common.Action.ACTION_TYPE_1, ag1.action.type)
+        # the join action is inside the next environment action
+        self.assertEqual(ag1.action, env.next_action['agent1'])
+        self.assertEqual(ag2.action, env.next_action['agent2'])

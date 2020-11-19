@@ -13,6 +13,7 @@ class Environment:
         self.agents = set()
         self.objects = dict()
         self.game = None
+        self.next_action = dict()
 
     def get_observation_for_agent(self):
         """
@@ -34,7 +35,7 @@ class Environment:
         Increase the step
         """
         self.current_step = self.current_step + 1
-        self.current_state = self.game.next_state(current_state=self.current_state)
+        self.current_state = self.game.next_state(current_state=self.current_state, actions=self.next_action)
 
     def _create_base_object(self, name: str, bo_type: str, parent=None):
         """
@@ -61,3 +62,19 @@ class Environment:
         if isinstance(result, mls.rl.common.Agent):
             self.agents.add(result)
         return result
+
+    def create_action(self, action_type):
+        """
+        create an action
+        :param action_type the type of the action (Constants in Action class)
+        """
+        result = mls.rl.common.Action(environment=self, action_type=action_type)
+        return result
+
+    def choose_action(self):
+        """
+        tell all agent to choose their action
+        """
+        for ag in self.agents:
+            ag.choose_action()
+            self.next_action[ag.name] = ag.action

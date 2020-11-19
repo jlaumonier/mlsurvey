@@ -1,5 +1,6 @@
 from mlsurvey.rl.common.environment import Environment
 from mlsurvey.rl.common.object import Object
+from mlsurvey.rl.common.action import Action
 
 
 class Agent(Object):
@@ -13,4 +14,4 @@ class Agent(Object):
         """
         choose the next action of the agent
         """
-        self.action = 'action3'
+        self.action = self.environment.create_action(Action.ACTION_TYPE_1)

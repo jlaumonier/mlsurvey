@@ -45,3 +45,14 @@ It is important to understand the initialization process as seen in the followin
 All BaseObject are created calling :code:`Environment.create_object()` method.
 
 .. image:: images/explain-seq-5.png
+
+Agents can act with Action
+--------------------------
+
+Agents can now choose Action to act.
+
+.. image:: images/explain6.png
+
+Here is the call sequence of the main loop.
+
+.. image:: images/explain6-mainloop.png

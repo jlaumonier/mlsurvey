@@ -29,9 +29,9 @@ class TestAgent(unittest.TestCase):
         """
         env = mls.rl.common.Environment()
         observation = mls.rl.common.State(environment=env, name='state')
-        expected_action = 'action3'
+        expected_action_type = mls.rl.common.Action.ACTION_TYPE_1
         env = mls.rl.common.Environment()
         ag = mls.rl.common.Agent(environment=env, name='AgentName1')
         ag.observation = observation
         ag.choose_action()
-        self.assertEqual(ag.action, expected_action)
+        self.assertEqual(ag.action.type, expected_action_type)
