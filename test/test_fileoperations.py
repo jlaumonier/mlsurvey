@@ -3,6 +3,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 
 import mlsurvey as mls
 
@@ -123,3 +124,15 @@ class TestFileOperation(unittest.TestCase):
         df = mls.FileOperation.read_json('data-pandas.json', directory, 'Pandas')
         self.assertIsInstance(df, pd.DataFrame)
         np.testing.assert_array_equal(np.array([[1, 2], [3, 4]]), df.values)
+
+    def test_save_plotly_figure(self):
+        """
+        :test : mlsurvey.FileOperation.save_plotly_figure()
+        :condition : plotly figure is generated
+        :main_result : plotly figure is saved
+        """
+        directory = 'logs/testing/'
+        figure = go.Figure(data=go.Bar(y=[10, 20, 30, 30]))
+        mls.FileOperation.save_plotly_figure('figure-test.png', directory, figure)
+        # File exists
+        self.assertTrue(os.path.isfile(os.path.join(directory, 'figure-test.png')))

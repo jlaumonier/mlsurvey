@@ -17,3 +17,4 @@ luigi
 xlrd
 mlflow
 xlsxwriter
+kaleido

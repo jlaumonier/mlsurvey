@@ -3,6 +3,8 @@ import shutil
 import unittest
 import mlflow.tracking
 
+import plotly.graph_objects as go
+
 from sklearn import neighbors
 
 import mlsurvey as mls
@@ -288,3 +290,28 @@ class TestLogging(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(log.directory, filename)))
         # logged into mlflow
         self.assertIn('sub_evaluation.demographic_parity', log.mlflow_client.get_run(log.mlflow_run_id).data.metrics)
+
+    def test_save_plotly_figure(self):
+        """
+        :test : mlsurvey.Logging.log_plotly_figure()
+        :condition : filename is set
+        :main_result : figure is saved as image
+        """
+        dir_name = 'testing/'
+        sub_dir = 'plot/'
+        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
+        log = mls.Logging(dir_name, mlflow_run_id=run.info.run_id)
+        figure1 = go.Figure(data=go.Bar(y=[10, 20, 30, 30]))
+        figure2 = go.Figure(data=go.Bar(y=[10, 20, 30, 30]))
+        dict_fig = {'figure1.png': figure1, 'figure2.png': figure2}
+        log.save_plotly_figures(dict_fig, sub_dir)
+        # dirs exists
+        self.assertTrue(os.path.isdir(os.path.join(log.base_dir, log.dir_name, sub_dir)))
+        # file exists
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, sub_dir, 'figure1.png')))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, sub_dir, 'figure2.png')))
+        list_artifact = [i.path for i in log.mlflow_client.list_artifacts(log.mlflow_run_id)]
+        # file is in the mlflow artifacts
+        self.assertIn('figure1.png', list_artifact)
+        # there can be only one
+        self.assertEqual(2, len(list_artifact))

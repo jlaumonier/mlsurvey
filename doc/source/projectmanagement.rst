@@ -52,7 +52,7 @@ TODO
 
 Current
 ^^^^^^^
-
+* F : save plotly figure with log
 
 Done
 ^^^^

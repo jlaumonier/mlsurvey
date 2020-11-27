@@ -99,5 +99,15 @@ class FileOperation:
             data = pd.read_json(full_path)
         return data
 
-
-
+    @classmethod
+    def save_plotly_figure(cls, filename, directory, figure):
+        """
+        Save a plotly figure into an image file.
+        Create the directory of not exists
+        :param filename: name of the file
+        :param directory: directory to save the file
+        :param figure: data to save into the file
+        """
+        os.makedirs(directory, exist_ok=True)
+        full_path = os.path.join(directory, filename)
+        figure.write_image(full_path)

@@ -93,6 +93,14 @@ class Logging:
         os.makedirs(self.directory, exist_ok=True)
         return joblib.load(os.path.join(self.directory, filename))
 
+    def save_plotly_figures(self, dict_figures, sub_directory):
+        """ save a list of plotly figure into image files into sub_directory"""
+        target_dir = os.path.join(self.directory, sub_directory)
+        for (filename, figure) in dict_figures.items():
+            mls.FileOperation.save_plotly_figure(filename, target_dir, figure)
+            if self.mlflow_run_id is not None:
+                self.mlflow_client.log_artifact(self.mlflow_run_id, os.path.join(target_dir, filename))
+
     def log_config(self, filename, config_dict):
         """ log config into file and mlflow"""
         self.save_dict_as_json(filename, config_dict)
