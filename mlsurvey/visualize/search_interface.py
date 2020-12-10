@@ -59,7 +59,11 @@ class SearchInterface:
                 vw = vw_class.visualize_class()(search_result[i]['location'])
                 vw.run()
                 # append the score to the y axis
-                y.append(vw.context.evaluation.score)
+                # TODO TEMPORARY (hum !) PATCH
+                if hasattr(vw, 'context'):
+                    y.append(vw.context.evaluation.score)
+                if hasattr(vw, 'evaluation'):
+                    y.append(vw.evaluation.score)
             # in order to sort the result by 'x', we create a dataframe
             df = pd.DataFrame({list_of_not_unique_key[0]: x, 'score': y})
             # and we sort it.
@@ -87,6 +91,8 @@ class SearchInterface:
                     criteria_value = np.float64(criteria_value)
                 if dt == np.int64:
                     criteria_value = np.int64(criteria_value)
+                if dt == bool:
+                    criteria_value = mls.Utils.str2bool(criteria_value)
                 one_query = operator(q, criteria_value)
                 queries.append(one_query)
         if queries:
@@ -102,11 +108,13 @@ class SearchInterface:
                 str_fairness_params = str({})
             one_row = {}
             for e in self.analyse_logs.lists:
-                one_row[e] = res['learning_process']['parameters'][e]['type']
-                eparam = 'parameters'
-                if 'hyperparameters' in res['learning_process']['parameters'][e]:
-                    eparam = 'hyperparameters'
-                one_row[e + 'Params'] = str(res['learning_process']['parameters'][e][eparam])
+                # exclude some lists
+                if e != 'image_files':
+                    one_row[e] = res['learning_process']['parameters'][e]['type']
+                    eparam = 'parameters'
+                    if 'hyperparameters' in res['learning_process']['parameters'][e]:
+                        eparam = 'hyperparameters'
+                    one_row[e + 'Params'] = str(res['learning_process']['parameters'][e][eparam])
             one_row['FairnessParams'] = str_fairness_params
             one_row['Directory'] = res['location']
             one_row['Type'] = res['learning_process']['type']
@@ -191,6 +199,8 @@ class SearchInterface:
             options_algorithms = [{'label': a, 'value': a} for a in self.analyse_logs.lists['algorithm']]
         options_datasets = [{'label': d, 'value': d} for d in self.analyse_logs.lists['input']]
 
+        options_images = [{'label': d, 'value': d} for d in set(self.analyse_logs.lists['image_files'])]
+
         list_criteria = [{'label': a, 'value': a} for a in sorted(self.analyse_logs.parameters_df.columns)]
 
         crit_drop = [dcc.Dropdown(id='id-criteria',
@@ -265,7 +275,15 @@ class SearchInterface:
                                                {'label': 'Data Separation figure', 'value': 'FIG'},
                                                {'label': 'Data test table', 'value': 'DTA_TEST_TBL'}],
                                            value=['CFG', 'FIG'],
-                                           labelStyle={'display': 'inline-block'})
+                                           labelStyle={'display': 'inline-block'}),
+                                       dcc.Dropdown(id='options-images-id',
+                                                    options=options_images,
+                                                    className='three columns',
+                                                    value=options_images[0]['value'],
+                                                    searchable=False,
+                                                    clearable=False,
+                                                    placeholder="Dataset"
+                                                    ),
                                    ],
                                    className='twelve columns')
 

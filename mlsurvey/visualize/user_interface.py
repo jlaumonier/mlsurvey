@@ -1,5 +1,3 @@
-import webbrowser
-
 import dash
 import dash_html_components as html
 
@@ -24,5 +22,4 @@ class UserInterface:
                                         self.detail_interface.get_layout()])
         self.search_interface.define_callback(app)
 
-        webbrowser.open_new('localhost:8050')
-        app.run_server(debug=False)
+        app.run_server(debug=False, host='0.0.0.0')

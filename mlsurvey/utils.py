@@ -162,3 +162,7 @@ class Utils:
         if isinstance(df, pd.DataFrame):
             result = df.empty
         return result
+
+    @classmethod
+    def str2bool(cls, v: str):
+        return v.lower() in ("yes", "true", "t", "1")

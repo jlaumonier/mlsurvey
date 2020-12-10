@@ -13,6 +13,7 @@ class TestAnalyzeLogs(unittest.TestCase):
     def setUpClass(cls):
         d = os.path.dirname(__file__)
         cls.directory = os.path.join(d, '../files/visualize-log/')
+        cls.directory_images = os.path.join(d, '../files/analyse-log-images/')
 
     def test_init_should_init(self):
         analyse_logs = mls.visualize.AnalyzeLogs(self.directory)
@@ -99,6 +100,19 @@ class TestAnalyzeLogs(unittest.TestCase):
         self.assertEqual(2, len(analyse_logs.lists['input']))
         self.assertEqual(4, len(analyse_logs.parameters_df))
 
+    def test_fill_list_should_fill_images(self):
+        """
+        :test : mlsurvey.visualize.Analyse_logs.fill_list_images()
+        :condition : config files present in self.directory
+        :main_result : images files (recursively) list is returned
+        """
+        expected_image_files_lists = ['dir1/image1.png', 'dir1/image2.png',
+                                      'dir2/image3.jpg', 'dir2/image4.png',
+                                      'image5.png']
+        analyse_logs = mls.visualize.AnalyzeLogs(self.directory_images)
+        analyse_logs.store_config()
+        self.assertListEqual(expected_image_files_lists, analyse_logs.lists['image_files'])
+
     def test_fill_lists_should_fill(self):
         """
         :test : mlsurvey.visualize.Analyse_logs.fill_lists()
@@ -119,6 +133,7 @@ class TestAnalyzeLogs(unittest.TestCase):
         expected_paramaters_df = [['Algorithm 1', 'Dataset 1', 'traintest'],
                                   ['Algorithm 2', 'Dataset 1', 'traintest'],
                                   ['Algorithm 2', 'Dataset 1', 'traintest']]
+        expected_image_files_lists = []
         analyse_logs = mls.visualize.AnalyzeLogs(self.directory)
         analyse_logs.db.insert(doc1)
         analyse_logs.db.insert(doc2)
@@ -127,3 +142,4 @@ class TestAnalyzeLogs(unittest.TestCase):
         self.assertListEqual(expected_algorithms_list, analyse_logs.lists['algorithm'])
         self.assertListEqual(expected_datasets_list, analyse_logs.lists['input'])
         self.assertListEqual(expected_paramaters_df, analyse_logs.parameters_df.values.tolist())
+        self.assertListEqual(expected_image_files_lists, analyse_logs.lists['image_files'])

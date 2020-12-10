@@ -1,4 +1,5 @@
 import os
+from glob import glob
 from operator import concat
 
 import pandas as pd
@@ -13,7 +14,12 @@ class AnalyzeLogs:
         self.directory = directory
         list_dir = sorted(os.listdir(self.directory))
         self.list_full_dir = list(map(concat, [self.directory] * len(list_dir), list_dir))
+        print('Number of directories', len(self.list_full_dir))
         self.list_full_dir = list(filter(AnalyzeLogs._log_dir_is_not_multiple_learning_result, self.list_full_dir))
+        print('Number of directories (excluded multiple learning)', len(self.list_full_dir))
+        # remove all non terminated runs
+        self.list_full_dir = list(filter(AnalyzeLogs._log_dir_is_terminated, self.list_full_dir))
+        print('Number of directories terminated', len(self.list_full_dir))
         self.lists = {}
         self.parameters_df = None
         self.db = tdb.TinyDB(storage=tdb.storages.MemoryStorage)
@@ -25,6 +31,10 @@ class AnalyzeLogs:
     def _log_dir_is_not_multiple_learning_result(directory):
         return not os.path.isfile(os.path.join(directory, 'results.json'))
 
+    @staticmethod
+    def _log_dir_is_terminated(directory):
+        return os.path.isfile(os.path.join(directory, 'terminated.json'))
+
     def store_config(self):
         """
         Read all config.json files and store them into a db
@@ -35,7 +45,7 @@ class AnalyzeLogs:
             config.compact()
             config.data['location'] = d
             self.db.insert(config.data)
-            print('\rAnalyze logs..'+str(int((i+1)*100/len(self.list_full_dir)))+'%', end='')
+            print('\rAnalyze logs..' + str(int((i + 1) * 100 / len(self.list_full_dir))) + '%', end='')
         self.fill_lists()
 
     def fill_lists(self):
@@ -52,3 +62,12 @@ class AnalyzeLogs:
         parameters_list = [mls.Utils.flatten_dict(doc['learning_process']['parameters'], separator='.') for doc in
                            all_doc]
         self.parameters_df = pd.DataFrame(parameters_list)
+        # fill image list
+        dirs_in_root_directory = [str(i).replace(self.directory, '') for i in self.list_full_dir]
+        self.lists['image_files'] = [y for x in os.walk(self.directory) for y in glob(os.path.join(x[0], '*.png'))]
+        self.lists['image_files'].extend(
+            [y for x in os.walk(self.directory) for y in glob(os.path.join(x[0], '*.jpg'))])
+        self.lists['image_files'] = [str(i).replace(self.directory, '') for i in self.lists['image_files']]
+        self.lists['image_files'] = [str(i).replace(d + '/', '') for i in self.lists['image_files']
+                                     for d in dirs_in_root_directory]
+        self.lists['image_files'].sort()

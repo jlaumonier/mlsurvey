@@ -159,6 +159,21 @@ class TestSearchResults(unittest.TestCase):
         self.assertEqual(2, len(result))
         self.assertEqual(2, len(search_result))
 
+    def test_search_with_bool_criteria(self):
+        """
+        :test : mlsurvey.visualize.SearchInterface.search()
+        :condition : criteria_values is algorithm.type==sklearn.neighbors.KNeighborsClassifier
+        :main_result : one result in list defined as list of dictionary
+        """
+        search_interface = mls.visualize.SearchInterface(self.analyse_logs)
+        value_algo = '.'
+        value_ds = '.'
+        criteria_values = ["{'criteria': 'split.parameters.shuffle', "
+                           "'criteria_operator': '==', "
+                           "'criteria_value': 'False'}"]
+        result, search_result = search_interface.search(value_algo, value_ds, criteria_values)
+        self.assertEqual(0, len(search_result))
+
     def test_get_result_figure_summary_two_results(self):
         """
         :test : mlsurvey.visualize.SearchInterface.list_result_figure()
