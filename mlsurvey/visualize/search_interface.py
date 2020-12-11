@@ -109,7 +109,7 @@ class SearchInterface:
             one_row = {}
             for e in self.analyse_logs.lists:
                 # exclude some lists
-                if e != 'image_files':
+                if e != 'image_files' and e != 'json_files':
                     one_row[e] = res['learning_process']['parameters'][e]['type']
                     eparam = 'parameters'
                     if 'hyperparameters' in res['learning_process']['parameters'][e]:
@@ -175,12 +175,14 @@ class SearchInterface:
         return result_value, result_operator
 
     @staticmethod
-    def select_result(derived_virtual_data, derived_virtual_selected_rows, options):
+    def select_result(derived_virtual_data, derived_virtual_selected_rows, options, images, json):
         """Callback when the user select one row in the result table"""
         result = []
         parameters = {'display_config': 'block' if 'CFG' in options else 'none',
                       'display_figure': 'block' if 'FIG' in options else 'none',
-                      'display_data_test_table': True if 'DTA_TEST_TBL' in options else False}
+                      'display_data_test_table': True if 'DTA_TEST_TBL' in options else False,
+                      'images': images if images else [],
+                      'json': json if json else []}
         if derived_virtual_selected_rows is not None and len(derived_virtual_selected_rows) != 0:
             for idx in derived_virtual_selected_rows:
                 vw_class = mls.Utils.import_from_dotted_path(derived_virtual_data[idx]['Type'])
@@ -199,7 +201,9 @@ class SearchInterface:
             options_algorithms = [{'label': a, 'value': a} for a in self.analyse_logs.lists['algorithm']]
         options_datasets = [{'label': d, 'value': d} for d in self.analyse_logs.lists['input']]
 
-        options_images = [{'label': d, 'value': d} for d in set(self.analyse_logs.lists['image_files'])]
+        options_images = [{'label': d, 'value': d} for d in self.analyse_logs.lists['image_files']]
+
+        options_json = [{'label': d, 'value': d} for d in self.analyse_logs.lists['json_files']]
 
         list_criteria = [{'label': a, 'value': a} for a in sorted(self.analyse_logs.parameters_df.columns)]
 
@@ -276,13 +280,21 @@ class SearchInterface:
                                                {'label': 'Data test table', 'value': 'DTA_TEST_TBL'}],
                                            value=['CFG', 'FIG'],
                                            labelStyle={'display': 'inline-block'}),
-                                       dcc.Dropdown(id='options-images-id',
+                                       dcc.Dropdown(id='options-images',
                                                     options=options_images,
-                                                    className='three columns',
-                                                    value=options_images[0]['value'],
+                                                    className='five columns',
                                                     searchable=False,
                                                     clearable=False,
-                                                    placeholder="Dataset"
+                                                    placeholder="Images",
+                                                    multi=True
+                                                    ),
+                                       dcc.Dropdown(id='options-json',
+                                                    options=options_json,
+                                                    className='five columns',
+                                                    searchable=False,
+                                                    clearable=False,
+                                                    placeholder="JSON",
+                                                    multi=True
                                                     ),
                                    ],
                                    className='twelve columns')
@@ -318,6 +330,10 @@ class SearchInterface:
              Input(component_id='search-results-id',
                    component_property='derived_virtual_selected_rows'),
              Input(component_id='options-checklist',
+                   component_property='value'),
+             Input(component_id='options-images',
+                   component_property='value'),
+             Input(component_id='options-json',
                    component_property='value')])(self.select_result)
 
         dash_app.callback(

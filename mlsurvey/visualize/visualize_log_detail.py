@@ -38,8 +38,9 @@ class VisualizeLogDetail:
         self.task_display_data()
 
     def get_result(self, parameters):
-        result = html.Div(children=[html.Div(self.configText,
-                                             className='six columns',
-                                             style={'display': parameters['display_config']})],
+        div_children = [html.Div(self.configText,
+                                 className='six columns',
+                                 style={'display': parameters['display_config']})]
+        result = html.Div(children=div_children,
                           className='one_result')
         return [result]

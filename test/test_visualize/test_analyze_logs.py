@@ -100,18 +100,33 @@ class TestAnalyzeLogs(unittest.TestCase):
         self.assertEqual(2, len(analyse_logs.lists['input']))
         self.assertEqual(4, len(analyse_logs.parameters_df))
 
-    def test_fill_list_should_fill_images(self):
+    def test_fill_list_should_fill_images_and_html(self):
         """
         :test : mlsurvey.visualize.Analyse_logs.fill_list_images()
         :condition : config files present in self.directory
-        :main_result : images files (recursively) list is returned
+        :main_result : images and html files (recursively) lists are returned
         """
         expected_image_files_lists = ['dir1/image1.png', 'dir1/image2.png',
                                       'dir2/image3.jpg', 'dir2/image4.png',
                                       'image5.png']
+        expected_json_files_lists = ['algorithm.json',
+                                     'config.json',
+                                     'data-content.json',
+                                     'data.json',
+                                     'dataset.json',
+                                     'evaluation.json',
+                                     'raw_data-content.json',
+                                     'raw_data.json',
+                                     'raw_test-content.json',
+                                     'raw_train-content.json',
+                                     'split_data.json',
+                                     'terminated.json',
+                                     'test-content.json',
+                                     'train-content.json']
         analyse_logs = mls.visualize.AnalyzeLogs(self.directory_images)
         analyse_logs.store_config()
         self.assertListEqual(expected_image_files_lists, analyse_logs.lists['image_files'])
+        self.assertListEqual(expected_json_files_lists, analyse_logs.lists['json_files'])
 
     def test_fill_lists_should_fill(self):
         """

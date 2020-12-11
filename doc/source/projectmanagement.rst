@@ -18,6 +18,8 @@ Notes for TODO
 
 TODO
 ^^^^
+* F : Handle interactive graphs with plotly instead of html generation
+* F : Refactoring visualize result to handle json/image for all type of results
 * A : Refactoring : generalize for unsupervised algorithms
 * A : Refactoring : remove context ?
 * F : Load CSV : choose the separator.
@@ -52,10 +54,11 @@ TODO
 
 Current
 ^^^^^^^
-* F : save plotly figure with log
+
 
 Done
 ^^^^
+* F : save plotly figure with log
 * A : RL object model improvements : Action
 * A : RL object model improvements
 * A : Adding mlflow for tracking

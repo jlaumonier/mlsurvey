@@ -35,6 +35,27 @@ class AnalyzeLogs:
     def _log_dir_is_terminated(directory):
         return os.path.isfile(os.path.join(directory, 'terminated.json'))
 
+    @staticmethod
+    def get_all_files_path_in_dir(directory, patterns):
+        result = []
+        for patt in patterns:
+            result.extend([y for x in os.walk(directory) for y in glob(os.path.join(x[0], patt))])
+        return result
+
+    def _get_file_list(self, patterns):
+        # fill image list
+        dirs_in_root_directory = [str(i).replace(self.directory, '') for i in self.list_full_dir]
+        result = self.get_all_files_path_in_dir(self.directory, patterns)
+        result = [str(i).replace(self.directory, '') for i in result]
+        temp_list = []
+        for i in result:
+            for d in dirs_in_root_directory:
+                if d in i:
+                    temp_list.append(str(i).replace(d + '/', ''))
+        result = temp_list
+        result = sorted(list(set(result)))
+        return result
+
     def store_config(self):
         """
         Read all config.json files and store them into a db
@@ -62,12 +83,5 @@ class AnalyzeLogs:
         parameters_list = [mls.Utils.flatten_dict(doc['learning_process']['parameters'], separator='.') for doc in
                            all_doc]
         self.parameters_df = pd.DataFrame(parameters_list)
-        # fill image list
-        dirs_in_root_directory = [str(i).replace(self.directory, '') for i in self.list_full_dir]
-        self.lists['image_files'] = [y for x in os.walk(self.directory) for y in glob(os.path.join(x[0], '*.png'))]
-        self.lists['image_files'].extend(
-            [y for x in os.walk(self.directory) for y in glob(os.path.join(x[0], '*.jpg'))])
-        self.lists['image_files'] = [str(i).replace(self.directory, '') for i in self.lists['image_files']]
-        self.lists['image_files'] = [str(i).replace(d + '/', '') for i in self.lists['image_files']
-                                     for d in dirs_in_root_directory]
-        self.lists['image_files'].sort()
+        self.lists['image_files'] = self._get_file_list(['*.png', '*.jpg'])
+        self.lists['json_files'] = self._get_file_list(['*.json'])
