@@ -18,6 +18,7 @@ Notes for TODO
 
 TODO
 ^^^^
+* A : Refactoring Logging with application config. Using application config
 * F : Handle interactive graphs with plotly instead of html generation
 * F : Refactoring visualize result to handle json/image for all type of results
 * A : Refactoring : generalize for unsupervised algorithms
@@ -31,7 +32,6 @@ TODO
 * F : Regularization
 * F : Model evaluation (complete)
 * F : Random seed global
-* F : Configuration : add config about the program behavior (log dir, ...)
 * T : Version management : https://github.com/aebrahim/python-git-version ?
 * T : Document tests inside code
 * B : Remove warning during importlib in Utils
@@ -58,6 +58,7 @@ Current
 
 Done
 ^^^^
+* F : Configuration : add config about the program behavior
 * F : save plotly figure with log
 * A : RL object model improvements : Action
 * A : RL object model improvements

@@ -1,4 +1,5 @@
 import json
+import os
 
 import mlsurvey as mls
 
@@ -14,13 +15,27 @@ class Config:
         Raise FileNotFoundError if the config file does not exists
         Raise ConfigError is the config file is not a valid Json file
         """
+        app_config = {}
+        if os.path.exists(os.path.join(directory, 'app_config.json')):
+            app_config = mls.FileOperation.load_json_as_dict('app_config.json', directory)
+        self.app_config = app_config
         if config is None:
             try:
-                self.data = mls.FileOperation.load_json_as_dict(name, directory)
+                config = mls.FileOperation.load_json_as_dict(name, directory)
             except json.JSONDecodeError as e:
                 raise mls.exceptions.ConfigError(e)
-        else:
-            self.data = config
+        self.data = config
+
+    @property
+    def app_config(self):
+        return self.__app_config__
+
+    @app_config.setter
+    def app_config(self, d):
+        """
+        setter to insure self.app_config is always python-ready
+        """
+        self.__app_config__ = mls.Utils.transform_to_dict(d)
 
     @property
     def data(self):

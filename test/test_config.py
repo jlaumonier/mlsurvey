@@ -78,6 +78,15 @@ class TestConfig(unittest.TestCase):
         except mls.exceptions.ConfigError:
             self.assertTrue(True)
 
+    def test_init_config_application_config_loaded(self):
+        """
+        :test : mlsurvey.Config()
+        :condition : app_config.json exists
+        :main_result : application config loaded
+        """
+        config = mls.Config('config.json')
+        self.assertFalse(config.app_config['app_section']['value'])
+
     def test_compact_should_compact(self):
         """
         :test : mlsurvey.Config.compact()
