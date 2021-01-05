@@ -58,6 +58,7 @@ Current
 
 Done
 ^^^^
+* F : Adding a column with sheet name when merging Excel sheet at dataset loading
 * F : Configuration : add config about the program behavior
 * F : save plotly figure with log
 * A : RL object model improvements : Action

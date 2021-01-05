@@ -112,7 +112,7 @@ class TestFileDataSet(unittest.TestCase):
         filename = 'test.xlsx'
         dataset = mls.sl.datasets.DataSetFactory.create_dataset('FileDataSet')
         params = {'directory': self.d, 'filename': filename}
-        expected_columns = ['Column1', 'Column2 ', 'Column3', 'Column 4']
+        expected_columns = ['Sheet', 'Column1', 'Column2 ', 'Column3', 'Column 4']
         dataset.set_generation_parameters(params)
         df = dataset.generate()
         self.assertIsInstance(df, pd.DataFrame)
@@ -124,12 +124,12 @@ class TestFileDataSet(unittest.TestCase):
         """
         :test : mlsurvey.sl.datasets.generate()
         :condition : load xslx file with loading parameters
-        :main_result : file loaded
+        :main_result : file loaded. sheet merged, one column is added with sheet's name
         """
         filename = 'test.xlsx'
         dataset = mls.sl.datasets.DataSetFactory.create_dataset('FileDataSet')
-        params = {'directory': self.d, 'filename': filename, 'merge_sheet': True}
-        expected_columns = ['Column1', 'Column2 ', 'Column3', 'Column 4']
+        params = {'directory': self.d, 'filename': filename}
+        expected_columns = ['Sheet', 'Column1', 'Column2 ', 'Column3', 'Column 4']
         dataset.set_generation_parameters(params)
         df = dataset.generate()
         self.assertIsInstance(df, pd.DataFrame)
@@ -137,6 +137,8 @@ class TestFileDataSet(unittest.TestCase):
         self.assertEqual('A', df['Column1'][0])
         self.assertEqual('2ndSheet2', df['Column2 '][2])
         self.assertEqual('RRRR', df['Column 4'][2])
+        self.assertEqual('OtherSheet ', df['Sheet'][2])
+        self.assertEqual('1stSheet', df['Sheet'][0])
 
     def test_generate_file_dataset_json(self):
         """

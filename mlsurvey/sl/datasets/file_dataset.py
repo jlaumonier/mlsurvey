@@ -69,7 +69,15 @@ class FileDataSet(DataSet):
         def _merge_if_multiples_sheets(data):
             # merge all the sheets data into one DataFrame
             if isinstance(data, Dict):
-                data = pd.concat(data, ignore_index=True)
+                list_sheets = data.keys()
+                # concat adding a index as list of sheets
+                data = pd.concat(data, keys=list_sheets)
+                # put the indexed into the dataframe
+                data.reset_index(inplace=True)
+                # drop the level 1 index
+                data.drop('level_1', axis=1, inplace=True)
+                # rename the level 0 index as Sheet
+                data.rename(columns={'level_0': 'Sheet'}, inplace=True)
             return data
 
         try:
