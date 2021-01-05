@@ -78,6 +78,10 @@ class FileDataSet(DataSet):
                 data.drop('level_1', axis=1, inplace=True)
                 # rename the level 0 index as Sheet
                 data.rename(columns={'level_0': 'Sheet'}, inplace=True)
+                # move 'Sheet' column at the end
+                list_cols = data.columns.tolist()
+                list_cols.insert(len(list_cols), list_cols.pop(list_cols.index('Sheet')))
+                data = data.reindex(list_cols, axis=1)
             return data
 
         try:

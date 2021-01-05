@@ -112,7 +112,7 @@ class TestFileDataSet(unittest.TestCase):
         filename = 'test.xlsx'
         dataset = mls.sl.datasets.DataSetFactory.create_dataset('FileDataSet')
         params = {'directory': self.d, 'filename': filename}
-        expected_columns = ['Sheet', 'Column1', 'Column2 ', 'Column3', 'Column 4']
+        expected_columns = ['Column1', 'Column2 ', 'Column3', 'Column 4', 'Sheet']
         dataset.set_generation_parameters(params)
         df = dataset.generate()
         self.assertIsInstance(df, pd.DataFrame)
@@ -124,12 +124,12 @@ class TestFileDataSet(unittest.TestCase):
         """
         :test : mlsurvey.sl.datasets.generate()
         :condition : load xslx file with loading parameters
-        :main_result : file loaded. sheet merged, one column is added with sheet's name
+        :main_result : file loaded. sheet merged, one column is added with sheet's name at the end
         """
         filename = 'test.xlsx'
         dataset = mls.sl.datasets.DataSetFactory.create_dataset('FileDataSet')
         params = {'directory': self.d, 'filename': filename}
-        expected_columns = ['Sheet', 'Column1', 'Column2 ', 'Column3', 'Column 4']
+        expected_columns = ['Column1', 'Column2 ', 'Column3', 'Column 4', 'Sheet']
         dataset.set_generation_parameters(params)
         df = dataset.generate()
         self.assertIsInstance(df, pd.DataFrame)
