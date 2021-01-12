@@ -33,6 +33,7 @@ setuptools.setup(
                       'luigi',
                       'xlrd',
                       'mlflow',
-                      'xlsxwriter'],
+                      'xlsxwriter',
+                      'openpyxl'],
     python_requires='>=3.6'
 )

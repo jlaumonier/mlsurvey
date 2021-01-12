@@ -18,3 +18,5 @@ xlrd
 mlflow
 xlsxwriter
 kaleido
+openpyxl
+psutil

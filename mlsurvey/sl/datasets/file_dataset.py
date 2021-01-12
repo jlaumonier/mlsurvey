@@ -87,7 +87,7 @@ class FileDataSet(DataSet):
         try:
             result = None
             if self.storage == 'Pandas':
-                result = pd.read_excel(fullname, sheet_name=None)
+                result = pd.read_excel(fullname, sheet_name=None, engine='openpyxl')
                 result = _merge_if_multiples_sheets(result)
         except FileNotFoundError as e:
             raise mls.exceptions.ConfigError(e)
