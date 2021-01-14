@@ -18,7 +18,7 @@ Notes for TODO
 
 TODO
 ^^^^
-* A : Replacing luigi by another workflow tools. Luigi is good for production, not for research.
+* A : Installing with Singularity
 * A : Refactoring Logging with application config. Using application config
 * F : Handle interactive graphs with plotly instead of html generation
 * F : Refactoring visualize result to handle json/image for all type of results
@@ -55,7 +55,8 @@ TODO
 
 Current
 ^^^^^^^
-
+* A : Replacing luigi by another workflow tools. Luigi is good for production, not for research.
+* A : Implementing load data task based on kedro
 
 Done
 ^^^^
