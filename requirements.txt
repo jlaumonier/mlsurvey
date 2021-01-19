@@ -20,3 +20,4 @@ xlsxwriter
 kaleido
 openpyxl
 psutil
+kedro
