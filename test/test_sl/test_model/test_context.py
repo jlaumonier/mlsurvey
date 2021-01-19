@@ -69,7 +69,7 @@ class TestContext(unittest.TestCase):
         self.assertEqual('81bf56aa9c122a3f3a259cde42facd49',
                          mls.Utils.md5_file(os.path.join(log.directory, 'algorithm.json')))
         self.assertTrue(os.path.isfile(os.path.join(log.directory, 'model.joblib')))
-        self.assertEqual('4dc6000a33a1ca18a3aaedb7f9802955',
+        self.assertEqual('7d1e55650014e21b4568ed3e3d1fc531',
                          mls.Utils.md5_file(os.path.join(log.directory, 'model.joblib')))
         self.assertTrue(os.path.isfile(os.path.join(log.directory, 'evaluation.json')))
         self.assertEqual('c8a8c328f655178bdfd600a7710cf8e1',

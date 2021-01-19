@@ -10,34 +10,39 @@ import mlsurvey as mls
 
 class TestFileOperation(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        directory = os.path.dirname(__file__)
+        cls.base_directory = os.path.join(directory, '')
+
     def test_save_json_file_saves(self):
-        directory = 'logs/testing/'
+        directory = os.path.join(self.base_directory, 'logs/testing/')
         data = {'testA': [[1, 2], [3, 4]], 'testB': 'Text'}
         mls.FileOperation.save_dict_as_json('dict.json', directory, data)
         self.assertTrue(os.path.isfile(directory + 'dict.json'))
         self.assertEqual('a82076220e033c1ed3469d173d715df2', mls.Utils.md5_file(directory + 'dict.json'))
 
     def test_save_json_with_tuple_file_saves(self):
-        directory = 'logs/testing/'
+        directory = os.path.join(self.base_directory, 'logs/testing/')
         data = {'testA': [[1, 2], [3, 4]], 'testB': 'Text', 'testC': (1, 3, 5)}
         mls.FileOperation.save_dict_as_json('dict.json', directory, data)
         self.assertTrue(os.path.isfile(directory + 'dict.json'))
         self.assertEqual('bf557710f7a993fd2bf6ef547b402634', mls.Utils.md5_file(directory + 'dict.json'))
 
     def test_load_json_dict_loaded(self):
-        directory = '../test/files/'
+        directory = os.path.join(self.base_directory, '../test/files/')
         result = mls.FileOperation.load_json_as_dict('dict.json', directory)
         expected = {'testA': [[1, 2], [3, 4]], 'testB': 'Text'}
         self.assertDictEqual(expected, result)
 
     def test_load_json_with_tuple_dict_loaded(self):
-        directory = '../test/files/'
+        directory = os.path.join(self.base_directory, '../test/files/')
         result = mls.FileOperation.load_json_as_dict('dict_with_tuple.json', directory)
         expected = {'testA': [[1, 2], [3, 4]], 'testB': 'Text', 'testC': (1, 3, 5)}
         self.assertDictEqual(expected, result)
 
     def test_load_json_with_tuple_dict_loaded_tuple_to_string(self):
-        directory = '../test/files/'
+        directory = os.path.join(self.base_directory, '../test/files/')
         result = mls.FileOperation.load_json_as_dict('dict_with_tuple.json', directory, tuple_to_string=True)
         expected = {'testA': [[1, 2], [3, 4]], 'testB': 'Text', 'testC': '(1, 3, 5)'}
         self.assertDictEqual(expected, result)
@@ -48,7 +53,7 @@ class TestFileOperation(unittest.TestCase):
         :condition : data is pandas dataframe
         :main_result : file exists
         """
-        directory = 'logs/testing/'
+        directory = os.path.join(self.base_directory, 'logs/testing/')
         data = pd.DataFrame([[1, 2], [3, 4]])
         mls.FileOperation.save_hdf('data.h5', directory, data)
         self.assertTrue(os.path.isfile(directory + 'data.h5'))
@@ -60,7 +65,7 @@ class TestFileOperation(unittest.TestCase):
         :condition : data is pandas dataframe, type is 'table'
         :main_result : file exists
         """
-        directory = 'logs/testing/'
+        directory = os.path.join(self.base_directory, 'logs/testing/')
         expected_columns = ['Col1', 'Col2']
         data = pd.DataFrame([[1, 2], [3, 4]], columns=expected_columns)
         params = {'format': 'table'}
@@ -78,7 +83,7 @@ class TestFileOperation(unittest.TestCase):
         :condition : data is pandas dataframe, and file exists
         :main_result : dataframe is read
         """
-        directory = '../test/files/'
+        directory = os.path.join(self.base_directory, '../test/files/')
         expected_columns = ['Col1', 'Col2']
         df = mls.FileOperation.read_hdf('data-pandas.h5', directory, 'Pandas')
         self.assertIsInstance(df, pd.DataFrame)
@@ -91,7 +96,7 @@ class TestFileOperation(unittest.TestCase):
         :condition : data is pandas dataframe
         :main_result : file exists
         """
-        directory = 'logs/testing/'
+        directory = os.path.join(self.base_directory, 'logs/testing/')
         data = pd.DataFrame([[1, 2], [3, 4]])
         mls.FileOperation.save_json('data.json', directory, data)
         self.assertTrue(os.path.isfile(os.path.join(directory, 'data.json')))
@@ -102,7 +107,7 @@ class TestFileOperation(unittest.TestCase):
         :condition : data is pandas dataframe, orientation is 'index'
         :main_result : file exists and contains the correct content
         """
-        directory = 'logs/testing/'
+        directory = os.path.join(self.base_directory, 'logs/testing/')
         data = pd.DataFrame([[1, 2], [3, 4]])
         params = {'orient': 'index'}
         mls.FileOperation.save_json('data.json', directory, data, params)
@@ -120,7 +125,7 @@ class TestFileOperation(unittest.TestCase):
         :condition : data is pandas dataframe, and file exists
         :main_result : dataframe is read
         """
-        directory = '../test/files/'
+        directory = os.path.join(self.base_directory, '../test/files/')
         df = mls.FileOperation.read_json('data-pandas.json', directory, 'Pandas')
         self.assertIsInstance(df, pd.DataFrame)
         np.testing.assert_array_equal(np.array([[1, 2], [3, 4]]), df.values)
@@ -131,7 +136,7 @@ class TestFileOperation(unittest.TestCase):
         :condition : plotly figure is generated
         :main_result : plotly figure is saved
         """
-        directory = 'logs/testing/'
+        directory = os.path.join(self.base_directory, 'logs/testing/')
         figure = go.Figure(data=go.Bar(y=[10, 20, 30, 30]))
         mls.FileOperation.save_plotly_figure('figure-test.png', directory, figure)
         # File exists

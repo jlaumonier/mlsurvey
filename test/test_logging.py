@@ -65,7 +65,7 @@ class TestLogging(unittest.TestCase):
         """
         base_dir = 'files/'
         dir_name = 'slw'
-        self.assertTrue(os.path.isdir(os.path.join(base_dir, dir_name)))
+        self.assertTrue(os.path.isdir(os.path.join(self.base_directory, base_dir, dir_name)))
         _ = mls.Logging(base_dir=base_dir, dir_name=dir_name)
         self.assertTrue(True)
 
@@ -151,7 +151,7 @@ class TestLogging(unittest.TestCase):
 
     def test_load_input_input_loaded(self):
         dir_name = 'files/input_load/'
-        log = mls.Logging(dir_name, base_dir='../test/')
+        log = mls.Logging(dir_name, base_dir=os.path.join(self.base_directory, '../test/'))
         results = log.load_input('input.json')
         i = results['test']
         self.assertEqual(0.6459514595757855, i.x[0, 0])
@@ -188,7 +188,7 @@ class TestLogging(unittest.TestCase):
 
     def test_load_json_dict_loaded(self):
         dir_name = 'files/'
-        log = mls.Logging(dir_name, base_dir='../test/')
+        log = mls.Logging(dir_name, base_dir=os.path.join(self.base_directory, '../test/'))
         result = log.load_json_as_dict('dict.json')
         expected = {'testA': [[1, 2], [3, 4]], 'testB': 'Text'}
         self.assertDictEqual(expected, result)
@@ -224,13 +224,13 @@ class TestLogging(unittest.TestCase):
 
     def test_load_classifier(self):
         dir_name = 'files/slw'
-        log = mls.Logging(dir_name, base_dir='../test/')
+        log = mls.Logging(dir_name, base_dir=os.path.join(self.base_directory, '../test/'))
         classifier = log.load_classifier()
         self.assertIsInstance(classifier, neighbors.KNeighborsClassifier)
 
     def test_load_classifier_filename_provided(self):
         dir_name = 'files/slw'
-        log = mls.Logging(dir_name, base_dir='../test/')
+        log = mls.Logging(dir_name, base_dir=os.path.join(self.base_directory, '../test/'))
         classifier = log.load_classifier(filename='test_model.joblib')
         self.assertIsInstance(classifier, neighbors.KNeighborsClassifier)
 

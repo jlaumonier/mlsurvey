@@ -1,45 +1,51 @@
 import unittest
+import os
 
 import mlsurvey as mls
 
 
 class TestConfig(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        directory = os.path.dirname(__file__)
+        cls.base_directory = os.path.join(directory, '')
+
     def test_load_config_config_loaded(self):
-        config = mls.Config('config_loaded.json')
+        config = mls.Config('config_loaded.json', directory=os.path.join(self.base_directory, 'config'))
         self.assertEqual('config loaded', config.data['testconfig'])
         self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_load_config_default_config_loaded(self):
-        config = mls.Config()
+        config = mls.Config(directory=os.path.join(self.base_directory, 'config'))
         self.assertEqual('config loaded', config.data['testconfig'])
         self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_get_dataset_dataset_config_obtained(self):
-        config = mls.Config('complete_config_loaded.json')
+        config = mls.Config('complete_config_loaded.json', directory=os.path.join(self.base_directory, 'config'))
         self.assertEqual('NClassRandomClassificationWithNoise', config.data['#refs']['datasets']['DataSet1']['type'])
         self.assertEqual(100, config.data['#refs']['datasets']['DataSet1']['parameters']['n_samples'])
         self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_load_config_from_other_directory(self):
-        config = mls.Config('config_loaded.json', 'files/')
+        config = mls.Config('config_loaded.json', directory=os.path.join(self.base_directory, 'files'))
         self.assertEqual('config loaded', config.data['testconfig'])
         self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_load_config_from_other_directory_without_end_slash(self):
-        config = mls.Config('config_loaded.json', 'files')
+        config = mls.Config('config_loaded.json', directory=os.path.join(self.base_directory, 'files'))
         self.assertEqual('config loaded', config.data['testconfig'])
         self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_load_multiple_config_config_loaded(self):
-        config = mls.Config('multiple_config.json')
+        config = mls.Config('multiple_config.json', directory=os.path.join(self.base_directory, 'config'))
         self.assertEqual('NClassRandomClassificationWithNoise', config.data['#refs']['datasets']['DataSet1']['type'])
         self.assertListEqual(['@datasets.DataSet1', '@datasets.DataSet2', '@datasets.DataSet3'],
                              config.data['learning_process']['parameters']['input'])
         self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_load_config_file_not_python_ready_config_loaded(self):
-        config = mls.Config('full_multiple_config.json')
+        config = mls.Config('full_multiple_config.json', directory=os.path.join(self.base_directory, 'config'))
         self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 
     def test_init_config_with_dictionary(self):
@@ -61,7 +67,7 @@ class TestConfig(unittest.TestCase):
         :main_result : raise FileNotFoundError
         """
         try:
-            _ = mls.Config('config_loaded_not_exists.json')
+            _ = mls.Config('config_loaded_not_exists.json', directory=os.path.join(self.base_directory, 'config'))
             self.assertTrue(False)
         except FileNotFoundError:
             self.assertTrue(True)
@@ -73,7 +79,7 @@ class TestConfig(unittest.TestCase):
         :main_result : raise ConfigError
         """
         try:
-            _ = mls.Config('config_loaded_not_json.json')
+            _ = mls.Config('config_loaded_not_json.json', directory=os.path.join(self.base_directory, 'config'))
             self.assertTrue(False)
         except mls.exceptions.ConfigError:
             self.assertTrue(True)
@@ -84,7 +90,7 @@ class TestConfig(unittest.TestCase):
         :condition : app_config.json exists
         :main_result : application config loaded
         """
-        config = mls.Config('config.json')
+        config = mls.Config('config.json', directory=os.path.join(self.base_directory, 'config'))
         self.assertFalse(config.app_config['app_section']['value'])
 
     def test_compact_should_compact(self):
