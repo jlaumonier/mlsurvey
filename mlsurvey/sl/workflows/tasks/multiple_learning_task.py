@@ -1,3 +1,4 @@
+from kedro.pipeline import node
 import mlsurvey as mls
 from mlsurvey.workflows.tasks import BaseTask
 from tqdm import tqdm
@@ -8,14 +9,6 @@ class MultipleLearningTask(BaseTask):
     """
     learn model from train data
     """
-
-    def requires(self):
-        return mls.sl.workflows.tasks.ExpandConfigTask(logging_directory=self.logging_directory,
-                                                       logging_base_directory=self.logging_base_directory,
-                                                       config_filename=self.config_filename,
-                                                       config_directory=self.config_directory,
-                                                       base_directory=self.base_directory,
-                                                       mlflow_run_id=self.mlflow_run_id)
 
     @staticmethod
     def task_run_one_config(p):
@@ -37,12 +30,12 @@ class MultipleLearningTask(BaseTask):
         wf.run()
         return wf
 
-    def run(self):
-        wf_type_string = self.config.data['learning_process']['type']
+    @staticmethod
+    def run(config, log, expanded_config):
+        wf_type_string = config.data['learning_process']['type']
         wf_type = mls.Utils.import_from_dotted_path(wf_type_string)
         slw = []
-        configs_pandas = [(c.filename, c.directory, self.base_directory, wf_type) for c in
-                          self.input()['expanded_config']]
+        configs_pandas = [(c.filename, c.directory, self.base_directory, wf_type) for c in expanded_config]
         pool = Pool(processes=1)
         with tqdm(total=len(configs_pandas)) as pbar:
             enumr = enumerate(pool.imap_unordered(MultipleLearningTask.task_run_one_config,
@@ -54,12 +47,8 @@ class MultipleLearningTask(BaseTask):
         pool.join()
 
         result = {'NbLearning': len(slw)}
-        self.log.save_dict_as_json(self.output()['result'].filename, result)
+        log.save_dict_as_json('results.json', result)
 
-    def output(self):
-        result_filename = 'results.json'
-        result = mls.sl.workflows.tasks.FileDirLocalTarget(directory=self.log.directory,
-                                                           filename=result_filename)
-
-        target = {'result': result}
-        return target
+    @classmethod
+    def get_node(cls):
+        return node(MultipleLearningTask.run, inputs=['config', 'log', 'expanded_config'], outputs=None)

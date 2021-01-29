@@ -50,7 +50,7 @@ class FileDataSet(DataSet):
         return result
 
     def __load_json(self, fullname, func_params: dict):
-        """ load csv file and return a pandas dataframe"""
+        """ load json file and return a pandas dataframe"""
         try:
             result = None
 

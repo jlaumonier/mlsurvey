@@ -59,16 +59,32 @@ class TestLoadDataTask(unittest.TestCase):
         config = mls.Config(name='complete_config_loaded.json', directory=final_config_directory)
         config.compact()
         temp_log = mls.Logging()
-        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
         log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir),
-                          dir_name=temp_log.dir_name,
-                          mlflow_run_id=run.info.run_id)
+                          dir_name=temp_log.dir_name)
 
         [dataset, data] = mls.workflows.tasks.LoadDataTask.load_data(config, log)
         self.assertIsInstance(dataset, mls.sl.datasets.NClassRandomClassificationWithNoise)
         self.assertIsInstance(data, mls.sl.models.DataPandas)
         self.assertEqual(100, len(data.x))
         self.assertEqual(100, len(data.y))
+        self.assertEqual(3, len(data.df.keys().tolist()))
+
+    def test_load_data_keep_columns(self):
+        """
+        :test : mlsurvey.workflows.tasks.LoadDataTask.load_data()
+        :condition : config contains parameter to keep some columns
+        :main_result : load the data with some columns only
+        """
+        # TODO revoir gestion configuation et logging
+        final_config_directory = os.path.join(str(self.base_directory), str(self.config_directory))
+        config = mls.Config(name='config_filedataset_keep_columns.json', directory=final_config_directory)
+        config.compact()
+        temp_log = mls.Logging()
+        log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir),
+                          dir_name=temp_log.dir_name)
+
+        [_, data] = mls.workflows.tasks.LoadDataTask.load_data(config, log, self.base_directory)
+        self.assertListEqual(['Column1', 'Column2 '], data.df.keys().tolist())
 
     def test_get_node(self):
         """
@@ -93,11 +109,8 @@ class TestLoadDataTask(unittest.TestCase):
         config = mls.Config(name='complete_config_loaded.json', directory=final_config_directory)
         config.compact()
         # init logging
-        temp_log = mls.Logging()
-        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
-        log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir),
-                          dir_name=temp_log.dir_name,
-                          mlflow_run_id=run.info.run_id)
+        log = mls.Logging(base_dir=os.path.join(self.base_directory, 'logs'),
+                          mlflow_log=True)
 
         data_catalog = DataCatalog({'config': MemoryDataSet(),
                                     'log': MemoryDataSet(),
@@ -111,7 +124,7 @@ class TestLoadDataTask(unittest.TestCase):
         runner = SequentialRunner()
         # Run the pipeline
         runner.run(pipeline, data_catalog)
-        dataset = data = data_catalog.load('dataset')
+        dataset = data_catalog.load('dataset')
         data = data_catalog.load('data')
 
         self.assertIsInstance(dataset, mls.sl.datasets.NClassRandomClassificationWithNoise)
@@ -149,4 +162,4 @@ class TestLoadDataTask(unittest.TestCase):
         self.assertEqual(100, len(raw_data.x))
         self.assertEqual(100, len(raw_data.y))
         # parameters in mlflow
-        self.assertIn('input.type', log.mlflow_client.get_run(log.mlflow_run_id).data.params)
+        self.assertIn('input.type', log.mlflow_client.get_run(log.mlflow_run.info.run_id).data.params)

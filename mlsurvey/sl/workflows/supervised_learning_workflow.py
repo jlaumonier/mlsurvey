@@ -1,6 +1,10 @@
 import os
 
-import luigi
+from kedro.io import DataCatalog, MemoryDataSet
+from kedro.pipeline import Pipeline
+from kedro.pipeline.node import Node
+from kedro.runner import SequentialRunner
+
 
 import mlsurvey as mls
 from mlsurvey.workflows.learning_workflow import LearningWorkflow
@@ -16,12 +20,19 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         """
         Run all tasks
         """
-        luigi.build([mls.sl.workflows.tasks.EvaluateTask(logging_directory=self.log.dir_name,
-                                                         logging_base_directory=os.path.join(self.base_directory,
-                                                                                             self.log.base_dir),
-                                                         config_filename=self.config_file,
-                                                         config_directory=self.config_directory,
-                                                         base_directory=self.base_directory,
-                                                         mlflow_run_id=self.log.mlflow_run_id)],
-                    local_scheduler=True)
+        # data
+        data_catalog = DataCatalog({'config': MemoryDataSet(),
+                                    'log': MemoryDataSet(),
+                                    'dataset': MemoryDataSet(),
+                                    'data': MemoryDataSet()})
+        data_catalog.save('config', self.config)
+        data_catalog.save('log', self.log)
+
+        load_data_node = mls.workflows.tasks.LoadDataTask.get_node()
+        # Assemble nodes into a pipeline
+        pipeline = Pipeline([load_data_node])
+        # Create a runner to run the pipeline
+        runner = SequentialRunner()
+        # Run the pipeline
+        runner.run(pipeline, data_catalog)
         self.terminate()

@@ -29,28 +29,36 @@ class TestLogging(unittest.TestCase):
         """
         :test : mlsurvey.Logging()
         :condition : -
-        :main_result : no error. everything is created as wanted
+        :main_result : no error. everything is created as wanted, mlflow not intialized
         """
         log = mls.Logging()
         # dir_name is initialized
         self.assertIsNotNone(log.dir_name)
+        # sub_dir is empty
+        self.assertEqual(log.sub_dir, '')
         # directory is set as wanted
-        self.assertEqual(os.path.join(log.base_dir, log.dir_name), log.directory)
+        self.assertEqual(os.path.join(log.base_dir, log.dir_name, log.sub_dir), log.directory)
         # log directory not created
         self.assertFalse(os.path.isdir(log.directory))
-        # mlflow initialization
-        self.assertIsInstance(log.mlflow_client, mlflow.tracking.MlflowClient)
-        self.assertIsNone(log.mlflow_run_id)
+        # mlflow not initialized
+        self.assertFalse(log.is_log_to_mlflow)
+        self.assertIsNone(log.mlflow_client)
+        self.assertIsNone(log.mlflow_experiment)
+        self.assertIsNone(log.mlflow_run)
 
-    def test_init_log_directory_mlflow_run_id_set(self):
+    def test_init_log_directory_mlflow_initialized(self):
         """
         :test : mlsurvey.Logging()
         :condition : set mlflow_run_id
-        :main_result : the log.mlflow_run_id is set
+        :main_result : the log mlflow parameters are initialized
         """
-        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
-        log = mls.Logging(mlflow_run_id=run.info.run_id)
-        self.assertIsInstance(log.mlflow_run_id, str)
+        log = mls.Logging(mlflow_log=True, mlflow_xp_name='Test')
+        # mlflow is initialized
+        self.assertTrue(log.is_log_to_mlflow)
+        self.assertIsInstance(log.mlflow_client, mlflow.tracking.MlflowClient)
+        self.assertIsNotNone(log.mlflow_experiment)
+        self.assertEqual(log.mlflow_experiment.name, 'Test')
+        self.assertIsNotNone(log.mlflow_run)
 
     def test_init_log_directory_create_with_fixed_name(self):
         dir_name = 'testing/'
@@ -69,6 +77,17 @@ class TestLogging(unittest.TestCase):
         _ = mls.Logging(base_dir=base_dir, dir_name=dir_name)
         self.assertTrue(True)
 
+    def test_set_sub_directory_subdir_is_changed(self):
+        """
+        :test : mlsurvey.set_sub_directory()
+        :condition : -
+        :main_result : sub and target directory is changed
+        """
+        sub_dir = 'sub_dir'
+        log = mls.Logging()
+        log.set_sub_dir(sub_dir)
+        self.assertEqual(os.path.join(log.base_dir, log.dir_name, log.sub_dir), log.directory)
+
     def test_save_inputs_input_saved(self):
         """
         :test : mlsurvey.Logging.save_input()
@@ -84,7 +103,7 @@ class TestLogging(unittest.TestCase):
         d_test = mls.sl.datasets.DataSetFactory.create_dataset('make_circles')
         d_test.params['random_state'] = 0
         i_test = mls.sl.models.DataFactory.create_data('Pandas', d_test.generate())
-        log = mls.Logging(dir_name)
+        log = mls.Logging(dir_name, mlflow_log=False)
         inputs = {'data': i_data, 'train': i_train, 'test': i_test}
         log.save_input(inputs)
         self.assertTrue(os.path.isfile(log.directory + 'data-content.h5'))
@@ -95,29 +114,24 @@ class TestLogging(unittest.TestCase):
         self.assertTrue(os.path.isfile(log.directory + 'test-content.json'))
         self.assertTrue(os.path.isfile(log.directory + 'input.json'))
         self.assertEqual('397a9f41ea039cbaf5bc4a8fb78c9b23', mls.Utils.md5_file(log.directory + 'input.json'))
-        try:
-            _ = log.mlflow_client.get_run(log.mlflow_run_id)
-            self.assertTrue(False)
-        except TypeError:
-            self.assertTrue(True)
 
     def test_save_inputs_input_saved_and_mlflow_artifacts(self):
         """
         :test : mlsurvey.Logging.save_input()
-        :condition : data initialized, mlflow run is initialized
+        :condition : data initialized, mlflow run is initialized, sub_dir is set
         :main_result : artifacts are saved
         """
         dir_name = 'testing/'
         d_data = mls.sl.datasets.DataSetFactory.create_dataset('make_moons')
         d_data.params['random_state'] = 0
         i_data = mls.sl.models.DataFactory.create_data('Pandas', d_data.generate())
-        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
-        log = mls.Logging(dir_name, mlflow_run_id=run.info.run_id)
+        log = mls.Logging(dir_name, mlflow_log=True)
         inputs = {'data': i_data}
+        log.set_sub_dir('sub_dir')
         log.save_input(inputs)
-        list_artifact = [i.path for i in log.mlflow_client.list_artifacts(log.mlflow_run_id)]
-        self.assertIn('data-content.json', list_artifact)
-        self.assertIn('input.json', list_artifact)
+        list_artifact = [i.path for i in log.mlflow_client.list_artifacts(log.mlflow_run.info.run_id, path=log.sub_dir)]
+        self.assertIn(os.path.join(log.sub_dir, 'data-content.json'), list_artifact)
+        self.assertIn(os.path.join(log.sub_dir, 'input.json'), list_artifact)
         self.assertEqual(2, len(list_artifact))
 
     def test_save_inputs_other_name_input_saved(self):
@@ -130,12 +144,11 @@ class TestLogging(unittest.TestCase):
         d_data = mls.sl.datasets.DataSetFactory.create_dataset('make_moons')
         d_data.params['random_state'] = 0
         i_data = mls.sl.models.DataFactory.create_data('Pandas', d_data.generate())
-        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
-        log = mls.Logging(dir_name, mlflow_run_id=run.info.run_id)
+        log = mls.Logging(dir_name, mlflow_log=True)
         inputs = {'data': i_data}
         log.save_input(inputs, metadata_filename='test.json')
         self.assertTrue(os.path.isfile(log.directory + 'test.json'))
-        list_artifact = [i.path for i in log.mlflow_client.list_artifacts(log.mlflow_run_id)]
+        list_artifact = [i.path for i in log.mlflow_client.list_artifacts(log.mlflow_run.info.run_id)]
         self.assertIn('test.json', list_artifact)
 
     def test_save_inputs_inputs_none_input_saved(self):
@@ -170,19 +183,20 @@ class TestLogging(unittest.TestCase):
         :main_result : dictionary is saved as json, and artifacts are in mlflow trakcing
         """
         dir_name = 'testing/'
-        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
-        log = mls.Logging(dir_name, mlflow_run_id=run.info.run_id)
+        log = mls.Logging(dir_name, mlflow_log=True)
+        log.set_sub_dir('sub_dir')
         d = {'testA': [[1, 2], [3, 4]], 'testB': 'Text'}
         log.save_dict_as_json('dict.json', d)
         # dir exists
-        self.assertTrue(os.path.isdir(log.base_dir + log.dir_name + '/'))
+        self.assertTrue(os.path.isdir(os.path.join(log.base_dir, log.dir_name)))
         # file exists
-        self.assertTrue(os.path.isfile(log.directory + 'dict.json'))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'dict.json')))
         # file content is ok
-        self.assertEqual('a82076220e033c1ed3469d173d715df2', mls.Utils.md5_file(log.directory + 'dict.json'))
-        list_artifact = [i.path for i in log.mlflow_client.list_artifacts(log.mlflow_run_id)]
+        self.assertEqual('a82076220e033c1ed3469d173d715df2',
+                         mls.Utils.md5_file(os.path.join(log.directory, 'dict.json')))
+        list_artifact = [i.path for i in log.mlflow_client.list_artifacts(log.mlflow_run.info.run_id, path=log.sub_dir)]
         # file is in the mlflow artifacts
-        self.assertIn('dict.json', list_artifact)
+        self.assertIn(os.path.join(log.sub_dir, 'dict.json'), list_artifact)
         # there can be only one
         self.assertEqual(1, len(list_artifact))
 
@@ -195,8 +209,8 @@ class TestLogging(unittest.TestCase):
 
     def test_save_classifier(self):
         dir_name = 'testing/'
-        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
-        log = mls.Logging(dir_name, mlflow_run_id=run.info.run_id)
+        log = mls.Logging(dir_name, mlflow_log=True)
+        log.set_sub_dir('sub_dir')
         classifier = neighbors.KNeighborsClassifier()
         log.save_classifier(classifier)
         # classifier exists
@@ -206,9 +220,9 @@ class TestLogging(unittest.TestCase):
         self.assertIsInstance(classifier, neighbors.KNeighborsClassifier)
         # classifier content is ok
         self.assertEqual(30, classifier.get_params()['leaf_size'])
-        list_artifact = [i.path for i in log.mlflow_client.list_artifacts(log.mlflow_run_id)]
+        list_artifact = [i.path for i in log.mlflow_client.list_artifacts(log.mlflow_run.info.run_id, path=log.sub_dir)]
         # file is in the mlflow artifacts
-        self.assertIn('model.joblib', list_artifact)
+        self.assertIn(os.path.join(log.sub_dir, 'model.joblib'), list_artifact)
         # there can be only one
         self.assertEqual(1, len(list_artifact))
 
@@ -260,13 +274,12 @@ class TestLogging(unittest.TestCase):
         }
         dir_name = 'testing/'
         filename = 'config.json'
-        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
-        log = mls.Logging(dir_name, mlflow_run_id=run.info.run_id)
+        log = mls.Logging(dir_name, mlflow_log=True)
         log.log_config(filename, dict_config)
         # file exists
         self.assertTrue(os.path.isfile(os.path.join(log.directory, filename)))
         # logged into mlflow
-        self.assertIn('input.type', log.mlflow_client.get_run(log.mlflow_run_id).data.params)
+        self.assertIn('input.type', log.mlflow_client.get_run(log.mlflow_run.info.run_id).data.params)
 
     def test_log_metrics_metrics_logged(self):
         """
@@ -283,13 +296,13 @@ class TestLogging(unittest.TestCase):
                                            "disparate_impact_rate": 0.8535902223731116}}
         dir_name = 'testing/'
         filename = 'config.json'
-        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
-        log = mls.Logging(dir_name, mlflow_run_id=run.info.run_id)
+        log = mls.Logging(dir_name, mlflow_log=True)
         log.log_metrics(filename, dict_metrics)
         # file exists
         self.assertTrue(os.path.isfile(os.path.join(log.directory, filename)))
         # logged into mlflow
-        self.assertIn('sub_evaluation.demographic_parity', log.mlflow_client.get_run(log.mlflow_run_id).data.metrics)
+        self.assertIn('sub_evaluation.demographic_parity',
+                      log.mlflow_client.get_run(log.mlflow_run.info.run_id).data.metrics)
 
     def test_save_plotly_figure(self):
         """
@@ -298,20 +311,22 @@ class TestLogging(unittest.TestCase):
         :main_result : figure is saved as image
         """
         dir_name = 'testing/'
-        sub_dir = 'plot/'
-        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
-        log = mls.Logging(dir_name, mlflow_run_id=run.info.run_id)
+        plot_dir = 'plot'
+        log = mls.Logging(dir_name, mlflow_log=True)
+        log.set_sub_dir('sub_dir')
         figure1 = go.Figure(data=go.Bar(y=[10, 20, 30, 30]))
         figure2 = go.Figure(data=go.Bar(y=[10, 20, 30, 30]))
         dict_fig = {'figure1.png': figure1, 'figure2.png': figure2}
-        log.save_plotly_figures(dict_fig, sub_dir)
+        log.save_plotly_figures(dict_fig, plot_dir)
         # dirs exists
-        self.assertTrue(os.path.isdir(os.path.join(log.base_dir, log.dir_name, sub_dir)))
+        self.assertTrue(os.path.isdir(os.path.join(log.directory, plot_dir)))
         # file exists
-        self.assertTrue(os.path.isfile(os.path.join(log.directory, sub_dir, 'figure1.png')))
-        self.assertTrue(os.path.isfile(os.path.join(log.directory, sub_dir, 'figure2.png')))
-        list_artifact = [i.path for i in log.mlflow_client.list_artifacts(log.mlflow_run_id)]
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, plot_dir, 'figure1.png')))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, plot_dir, 'figure2.png')))
+        list_artifact = [i.path for i in log.mlflow_client.list_artifacts(log.mlflow_run.info.run_id,
+                                                                          path=os.path.join(log.sub_dir, plot_dir))]
         # file is in the mlflow artifacts
-        self.assertIn('figure1.png', list_artifact)
+        self.assertIn(os.path.join(log.sub_dir, plot_dir, 'figure1.png'), list_artifact)
         # there can be only one
         self.assertEqual(2, len(list_artifact))
+

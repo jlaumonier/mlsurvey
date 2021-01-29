@@ -2,7 +2,10 @@ import os
 import unittest
 import shutil
 
-import luigi
+from kedro.io import DataCatalog, MemoryDataSet
+from kedro.pipeline import Pipeline
+from kedro.runner import SequentialRunner
+
 import mlflow
 
 import mlsurvey as mls
@@ -25,22 +28,40 @@ class TestExpandConfigTask(unittest.TestCase):
         log = mls.Logging()
         shutil.rmtree(os.path.join(cls.base_directory, log.base_dir), ignore_errors=True)
 
+    def _run_one_task(self, config_filename):
+        # create node from Task
+        expand_config_node = mls.sl.workflows.tasks.ExpandConfigTask.get_node()
+        # Prepare a data catalog
+        # TODO revoir gestion configuation et Logging
+        final_config_directory = os.path.join(str(self.base_directory), str(self.config_directory))
+        config = mls.Config(name=config_filename, directory=final_config_directory)
+        config.compact()
+        # init logging
+        log = mls.Logging(base_dir=os.path.join(self.base_directory, 'logs'),
+                          mlflow_log=True)
+
+        data_catalog = DataCatalog({'config': MemoryDataSet(),
+                                    'log': MemoryDataSet(),
+                                    'expanded_config': MemoryDataSet()})
+        data_catalog.save('config', config)
+        data_catalog.save('log', log)
+        # Assemble nodes into a pipeline
+        pipeline = Pipeline([expand_config_node])
+        # Create a runner to run the pipeline
+        runner = SequentialRunner()
+        # Run the pipeline
+        runner.run(pipeline, data_catalog)
+        return log, data_catalog
+
     def test_run_input_should_have_expanded(self):
         """
         :test : mlsurvey.sl.workflows.tasks.ExpandConfigTask.run()
         :condition : config file contains multiple values
         :main_result : configs have been expanded
         """
-        temp_log = mls.Logging()
-        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
-        luigi.build([mls.sl.workflows.tasks.ExpandConfigTask(logging_directory=temp_log.dir_name,
-                                                             logging_base_directory=os.path.join(self.base_directory,
-                                                                                                 temp_log.base_dir),
-                                                             config_filename='multiple_config.json',
-                                                             config_directory=self.config_directory,
-                                                             base_directory=self.base_directory,
-                                                             mlflow_run_id=run.info.run_id)], local_scheduler=True)
-        log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
+        log, data_catalog = self._run_one_task('multiple_config.json')
+        expanded_config = data_catalog.load('expanded_config')
+
         self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'config.json')))
         self.assertEqual('f12c72eb6037c48a634dbb2a0ae6e193',
                          mls.Utils.md5_file(os.path.join(log.directory, 'config.json')))
@@ -99,6 +120,7 @@ class TestExpandConfigTask(unittest.TestCase):
         configs = []
         for id_file, file in enumerate(list_files):
             configs.append(mls.Config(file, directory=log.directory))
+            self.assertDictEqual(d[id_file], expanded_config[id_file]['learning_process']['parameters'])
             self.assertDictEqual(d[id_file], configs[id_file].data['learning_process']['parameters'])
 
     def test_run_input_all_should_have_expanded(self):
@@ -107,16 +129,8 @@ class TestExpandConfigTask(unittest.TestCase):
         :condition : config file contains multiple values (more values)
         :main_result : configs have been expanded
         """
-        temp_log = mls.Logging()
-        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
-        luigi.build([mls.sl.workflows.tasks.ExpandConfigTask(logging_directory=temp_log.dir_name,
-                                                             logging_base_directory=os.path.join(self.base_directory,
-                                                                                                 temp_log.base_dir),
-                                                             config_filename='full_multiple_config.json',
-                                                             config_directory=self.config_directory,
-                                                             base_directory=self.base_directory,
-                                                             mlflow_run_id=run.info.run_id)], local_scheduler=True)
-        log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
+        log, data_catalog = self._run_one_task('full_multiple_config.json')
+
         list_files = [name for name in os.listdir(log.directory) if os.path.isfile(os.path.join(log.directory, name))]
         list_files = list(filter(lambda x: x.startswith('expand_config'), list_files))  # keeps only the expanded config
         list_files.sort()
@@ -143,16 +157,8 @@ class TestExpandConfigTask(unittest.TestCase):
         :condition : config file contains lists in fairness parameters
         :main_result : should expand
         """
-        temp_log = mls.Logging()
-        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
-        luigi.build([mls.sl.workflows.tasks.ExpandConfigTask(logging_directory=temp_log.dir_name,
-                                                             logging_base_directory=os.path.join(self.base_directory,
-                                                                                                 temp_log.base_dir),
-                                                             config_filename='multiple_config_multiple_fairness.json',
-                                                             config_directory=self.config_directory,
-                                                             base_directory=self.base_directory,
-                                                             mlflow_run_id=run.info.run_id)], local_scheduler=True)
-        log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
+        log, data_catalog = self._run_one_task('multiple_config_multiple_fairness.json')
+
         list_files = [name for name in os.listdir(log.directory) if os.path.isfile(os.path.join(log.directory, name))]
         list_files = list(filter(lambda x: x.startswith('expand_config'), list_files))  # keeps only the expanded config
         list_files.sort()

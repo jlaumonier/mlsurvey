@@ -1,11 +1,10 @@
-import os
-
 from kedro.pipeline import node
 
 import mlsurvey as mls
+from .base_task import BaseTask
 
 
-class LoadDataTask:
+class LoadDataTask(BaseTask):
     """
     Load/generate raw data from dataset described in a config file
     """
@@ -22,34 +21,37 @@ class LoadDataTask:
 
     @classmethod
     def log_inputs_outputs(cls, log, d):
-        task_log = mls.Logging(base_dir=log.base_dir,
-                               dir_name=os.path.join(log.dir_name,  str(cls.__name__)),
-                               mlflow_run_id=log.mlflow_run_id)
+        log.set_sub_dir(str(cls.__name__))
         # log config
-        task_log.log_config('config.json', d['config'].data)
+        log.log_config('config.json', d['config'].data)
         # log dataset
-        task_log.save_dict_as_json('dataset.json', d['dataset'].to_dict())
+        log.save_dict_as_json('dataset.json', d['dataset'].to_dict())
         # log raw_data
         inputs = {'raw_data': d['raw_data']}
-        task_log.save_input(inputs, 'raw_data.json')
+        log.save_input(inputs, 'raw_data.json')
+        log.set_sub_dir('')
 
     @staticmethod
-    def load_data(config, log):
+    def load_data(config, log, base_directory=''):
         # init dataset
         dataset_params_contents = config.data['learning_process']['parameters']['input']
         dataset = LoadDataTask.init_dataset(dataset_params_contents)
+
+        # this line is only for FileDataSet testing...
+        # Not sure if it is the most Pythonic and most TDDic way....
+        if hasattr(dataset, 'set_base_directory'):
+            dataset.set_base_directory(base_directory)
 
         # init data
         data = mls.sl.models.DataFactory.create_data(dataset.storage,
                                                      dataset.generate(),
                                                      y_col_name=dataset.metadata['y_col_name'])
 
-        # TODO keep only some columns
-        # if 'loading' in self.config.data['learning_process']['parameters']['input']:
-        #     loading_params = self.config.data['learning_process']['parameters']['input']['loading']
-        #     if 'columns_kept' in loading_params:
-        #         columns_kept = list(loading_params['columns_kept'])
-        #         raw_data = raw_data.copy_with_new_data_dataframe(raw_data.df[columns_kept])
+        if 'loading' in config.data['learning_process']['parameters']['input']:
+            loading_params = config.data['learning_process']['parameters']['input']['loading']
+            if 'columns_kept' in loading_params:
+                columns_kept = list(loading_params['columns_kept'])
+                data = data.copy_with_new_data_dataframe(data.df[columns_kept])
 
         d = {'config': config,
              'dataset': dataset,
