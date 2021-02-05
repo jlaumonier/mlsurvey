@@ -1,5 +1,4 @@
 import os
-import unittest
 import shutil
 
 from kedro.io import DataCatalog, MemoryDataSet
@@ -11,7 +10,7 @@ import mlflow
 import mlsurvey as mls
 
 
-class TestExpandConfigTask(unittest.TestCase):
+class TestExpandConfigTask(mls.testing.TaskTestCase):
     config_directory = ''
     base_directory = ''
 
@@ -31,15 +30,10 @@ class TestExpandConfigTask(unittest.TestCase):
     def _run_one_task(self, config_filename):
         # create node from Task
         expand_config_node = mls.sl.workflows.tasks.ExpandConfigTask.get_node()
+        config, log = self._init_config_log(config_filename,
+                                            self.base_directory,
+                                            self.config_directory)
         # Prepare a data catalog
-        # TODO revoir gestion configuation et Logging
-        final_config_directory = os.path.join(str(self.base_directory), str(self.config_directory))
-        config = mls.Config(name=config_filename, directory=final_config_directory)
-        config.compact()
-        # init logging
-        log = mls.Logging(base_dir=os.path.join(self.base_directory, 'logs'),
-                          mlflow_log=True)
-
         data_catalog = DataCatalog({'config': MemoryDataSet(),
                                     'log': MemoryDataSet(),
                                     'expanded_config': MemoryDataSet()})

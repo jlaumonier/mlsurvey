@@ -38,6 +38,9 @@ class Logging:
             if not self.mlflow_experiment:
                 xp_id = self.mlflow_client.create_experiment(mlflow_xp_name)
                 self.mlflow_experiment = self.mlflow_client.get_experiment(xp_id)
+            # Warning : during the execution, this instance mlflow_run does not contains
+            # other data than those at the creation. use mlflow_client.get_run(mlflow_run.info.run_id) to have
+            # the actual run with data
             self.mlflow_run = self.mlflow_client.create_run(self.mlflow_experiment.experiment_id)
 
     def set_sub_dir(self, sub_dir):

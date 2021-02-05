@@ -1,6 +1,5 @@
-# from sklearn.model_selection import train_test_split
+from kedro.pipeline import node
 
-import mlsurvey as mls
 from mlsurvey.workflows.tasks import BaseTask
 
 
@@ -9,44 +8,30 @@ class SplitDataTask(BaseTask):
     split data from prepared data  (train/test)
     """
 
-    def requires(self):
-        return [mls.sl.workflows.tasks.LoadDataTask(logging_directory=self.logging_directory,
-                                                    logging_base_directory=self.logging_base_directory,
-                                                    config_filename=self.config_filename,
-                                                    config_directory=self.config_directory,
-                                                    base_directory=self.base_directory,
-                                                    mlflow_run_id=self.mlflow_run_id),
-                mls.sl.workflows.tasks.PrepareDataTask(logging_directory=self.logging_directory,
-                                                       logging_base_directory=self.logging_base_directory,
-                                                       config_filename=self.config_filename,
-                                                       config_directory=self.config_directory,
-                                                       base_directory=self.base_directory,
-                                                       mlflow_run_id=self.mlflow_run_id
-                                                       )
-                ]
+    @classmethod
+    def get_node(cls):
+        return node(SplitDataTask.split_data,
+                    inputs=['config', 'log', 'raw_data', 'prepared_data'],
+                    outputs=['train_data', 'test_data', 'train_raw_data', 'test_raw_data'])
 
-    def run(self):
+    @staticmethod
+    def split_data(config, log, raw_data, prepared_data):
         """
         split the data for training/testing process.
         At the moment, only the split 'traintest' to split into train and test set is supported
         """
-        loaded_data = self.log.load_input(self.input()[1]['data'].filename)
-        data = loaded_data['data']
-        loaded_raw_data = self.log.load_input(self.input()[0]['raw_data'].filename)
-        raw_data = loaded_raw_data['raw_data']
-
-        split_params = self.config.data['learning_process']['parameters']['split']
+        split_params = config.data['learning_process']['parameters']['split']
         if split_params['type'] == 'traintest':
             # TODO test shuffle False
             if split_params['parameters']['shuffle']:
-                df_test = data.df.sample(frac=split_params['parameters']['test_size'] / len(data.df),
-                                         random_state=split_params['parameters']['random_state'])
+                df_test = prepared_data.df.sample(frac=split_params['parameters']['test_size'] / len(prepared_data.df),
+                                                  random_state=split_params['parameters']['random_state'])
             else:
-                df_test = data.df.head(len(data.df) * split_params['parameters']['test_size'])
-            df_train = data.df.drop(df_test.index)
+                df_test = prepared_data.df.head(len(prepared_data.df) * split_params['parameters']['test_size'])
+            df_train = prepared_data.df.drop(df_test.index)
 
-            data_train = data.copy_with_new_data_dataframe(df_train)
-            data_test = data.copy_with_new_data_dataframe(df_test)
+            data_train = prepared_data.copy_with_new_data_dataframe(df_train)
+            data_test = prepared_data.copy_with_new_data_dataframe(df_test)
             raw_data_train_df = raw_data.df.iloc[data_train.df.index]
             raw_data_train = raw_data.copy_with_new_data_dataframe(raw_data_train_df)
             raw_data_test_df = raw_data.df.iloc[data_test.df.index]
@@ -62,12 +47,19 @@ class SplitDataTask(BaseTask):
                             'test': data_test,
                             'raw_train': raw_data_train,
                             'raw_test': raw_data_test}
-            self.log.save_input(data_to_save, metadata_filename=self.output()['split_data'].filename)
+            SplitDataTask.log_inputs_outputs(log, data_to_save)
 
-    def output(self):
-        data_json_filename = 'split_data.json'
-        target_data = mls.sl.workflows.tasks.FileDirLocalTarget(directory=self.log.directory,
-                                                                filename=data_json_filename)
-        target = {'split_data': target_data}
+            return [data_train, data_test, raw_data_train, raw_data_test]
 
-        return target
+    @classmethod
+    def log_inputs_outputs(cls, log, d):
+        # Log inside sub directory
+        log.set_sub_dir(str(cls.__name__))
+        inputs = {'train': d['train'],
+                  'test': d['test'],
+                  'raw_train': d['raw_train'],
+                  'raw_test': d['raw_test']}
+        log.save_input(inputs, metadata_filename='split_data.json')
+        log.set_sub_dir('')
+
+

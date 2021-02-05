@@ -3,6 +3,7 @@ from . import sl
 from . import rl
 from . import workflows
 from . import visualize
+from . import testing
 from .config import Config
 from .fairness_utils import FairnessUtils
 from .fileoperation import FileOperation

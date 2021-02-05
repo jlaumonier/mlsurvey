@@ -1,3 +1,7 @@
+import os
+
+from kedro.pipeline import node
+
 import mlsurvey as mls
 from mlsurvey.workflows.tasks import BaseTask
 
@@ -6,31 +10,32 @@ class LearnTask(BaseTask):
     """
     learn model from train data
     """
+    @classmethod
+    def _log_inputs_outputs(cls, log, d):
+        log.set_sub_dir(str(cls.__name__))
+        model_fullpathname = os.path.join(log.directory, 'model.joblib')
+        # Log model metadata
+        log.save_dict_as_json('model.json', d['model_metadata'])
+        log.save_dict_as_json('algorithm.json', d['algorithm'].to_dict())
+        log.save_classifier(d['model'], filename='model.joblib')
+        log.set_sub_dir('')
+        return model_fullpathname
 
-    def requires(self):
-        return mls.sl.workflows.tasks.SplitDataTask(logging_directory=self.logging_directory,
-                                                    logging_base_directory=self.logging_base_directory,
-                                                    config_filename=self.config_filename,
-                                                    config_directory=self.config_directory,
-                                                    base_directory=self.base_directory,
-                                                    mlflow_run_id=self.mlflow_run_id)
-
-    def run(self):
-        loaded_data = self.log.load_input(self.input()['split_data'].filename)
-        data_train = loaded_data['train']
-
-        algorithm_params = self.config.data['learning_process']['parameters']['algorithm']
+    @staticmethod
+    def learn(config, log, train_data):
+        algorithm_params = config.data['learning_process']['parameters']['algorithm']
         algorithm = mls.sl.models.Algorithm(algorithm_params)
-        classifier = algorithm.learn(data_train.x, data_train.y)
-        self.log.save_dict_as_json(self.output()['algorithm'].filename, algorithm.to_dict())
-        self.log.save_classifier(classifier, filename=self.output()['model'].filename)
+        classifier = algorithm.learn(train_data.x, train_data.y)
 
-    def output(self):
-        algorithm_filename = 'algorithm.json'
-        algorithm = mls.sl.workflows.tasks.FileDirLocalTarget(directory=self.log.directory,
-                                                              filename=algorithm_filename)
-        model_filename = 'model.joblib'
-        model = mls.sl.workflows.tasks.FileDirLocalTarget(directory=self.log.directory,
-                                                          filename=model_filename)
-        target = {'algorithm': algorithm, 'model': model}
-        return target
+        # Logging
+        metadata = {'type': config.data['learning_process']['parameters']['algorithm']['type']}
+        d = {'model_metadata': metadata,
+             'algorithm': algorithm,
+             'model': classifier}
+        model_fullpathname = LearnTask._log_inputs_outputs(log, d)
+        return [model_fullpathname]
+
+    @classmethod
+    def get_node(cls):
+        return node(LearnTask.learn, inputs=['config', 'log', 'train_data'], outputs=['model_fullpath'])
+

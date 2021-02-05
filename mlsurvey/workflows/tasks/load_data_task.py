@@ -21,9 +21,11 @@ class LoadDataTask(BaseTask):
 
     @classmethod
     def log_inputs_outputs(cls, log, d):
-        log.set_sub_dir(str(cls.__name__))
+
         # log config
         log.log_config('config.json', d['config'].data)
+        # Log inside sub directory
+        log.set_sub_dir(str(cls.__name__))
         # log dataset
         log.save_dict_as_json('dataset.json', d['dataset'].to_dict())
         # log raw_data
@@ -62,4 +64,4 @@ class LoadDataTask(BaseTask):
 
     @classmethod
     def get_node(cls):
-        return node(LoadDataTask.load_data, inputs=['config', 'log'], outputs=['dataset', 'data'])
+        return node(LoadDataTask.load_data, inputs=['config', 'log', 'base_directory'], outputs=['dataset', 'raw_data'])

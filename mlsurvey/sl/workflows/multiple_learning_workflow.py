@@ -1,5 +1,7 @@
-import luigi
-import os
+from kedro.io import DataCatalog, MemoryDataSet
+from kedro.pipeline import Pipeline
+from kedro.runner import SequentialRunner
+
 
 import mlsurvey as mls
 from mlsurvey.workflows.learning_workflow import LearningWorkflow
@@ -11,13 +13,23 @@ class MultipleLearningWorkflow(LearningWorkflow):
         """
         Run the workflow : run each config
         """
-        luigi.build([mls.sl.workflows.tasks.MultipleLearningTask(logging_directory=self.log.dir_name,
-                                                                 logging_base_directory=os.path.join(
-                                                                     self.base_directory,
-                                                                     self.log.base_dir),
-                                                                 config_filename=self.config_file,
-                                                                 config_directory=self.config_directory,
-                                                                 base_directory=self.base_directory,
-                                                                 mlflow_run_id=self.log.mlflow_run_id)],
-                    local_scheduler=True)
-        self.terminate()
+        # data
+        data_catalog = DataCatalog({'config': MemoryDataSet(),
+                                    'log': MemoryDataSet(),
+                                    'base_directory': MemoryDataSet()})
+        data_catalog.save('config', self.config)
+        data_catalog.save('log', self.log)
+        data_catalog.save('base_directory', self.base_directory)
+
+        expand_config_node = mls.sl.workflows.tasks.ExpandConfigTask.get_node()
+        multiple_learning_node = mls.sl.workflows.tasks.MultipleLearningTask.get_node()
+
+        # Assemble nodes into a pipeline
+        pipeline = Pipeline([expand_config_node, multiple_learning_node])
+        # Create a runner to run the pipeline
+        runner = SequentialRunner()
+        # Run the pipeline
+        result = runner.run(pipeline, data_catalog)
+        if len(result) == 0:
+            self.terminate()
+

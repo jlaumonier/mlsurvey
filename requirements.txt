@@ -13,7 +13,6 @@ tqdm
 tinydb
 liac-arff
 tables
-luigi
 xlrd
 mlflow
 xlsxwriter

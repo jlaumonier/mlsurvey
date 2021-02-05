@@ -29,7 +29,7 @@ class TestSupervisedLearningWorkflow(unittest.TestCase):
                                                           base_directory=self.base_directory)
         slw.run()
         bd = os.path.join(self.base_directory, slw.log.directory)
-        self.assertTrue(os.path.isfile(os.path.join(bd, 'LoadDataTask', 'config.json')))
+        self.assertTrue(os.path.isfile(os.path.join(bd, 'config.json')))
         self.assertTrue(os.path.isfile(os.path.join(bd, 'LoadDataTask', 'dataset.json')))
         self.assertTrue(os.path.isfile(os.path.join(bd, 'LoadDataTask', 'raw_data.json')))
         self.assertTrue(os.path.isfile(os.path.join(bd, 'LoadDataTask', 'raw_data-content.h5')))

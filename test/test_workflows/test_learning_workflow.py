@@ -28,7 +28,7 @@ class TestLearningWorkflow(unittest.TestCase):
         self.assertEqual(self.base_directory, lw.base_directory)
         self.assertEqual(lw.config_file, 'config.json')
         self.assertIsInstance(lw.log, mls.Logging)
-        self.assertEqual(lw.log.base_dir, 'logs/')
+        self.assertEqual(lw.log.base_dir, os.path.join(self.base_directory, 'logs'))
 
     def test_init_with_confdir_should_init(self):
         lw = mls.workflows.LearningWorkflow(base_directory=self.base_directory,
@@ -44,6 +44,12 @@ class TestLearningWorkflow(unittest.TestCase):
         self.assertTrue(lw.task_terminated_init)
         self.assertEqual('complete_config_loaded.json', lw.config_file)
 
+    def test_init_with_confdict_should_init(self):
+        config_dict = {"testconfig": "config loaded"}
+        lw = mls.workflows.LearningWorkflow(base_directory=self.base_directory,
+                                            config_dict=config_dict)
+        self.assertEqual(config_dict, lw.config.data)
+
     def test_init_with_logdir_should_init(self):
         """
         :test : mlsurvey.workflows.LearningWorkflow()
@@ -53,7 +59,7 @@ class TestLearningWorkflow(unittest.TestCase):
         expected_dir = 'testlog/'
         slw = mls.workflows.LearningWorkflow(base_directory=self.base_directory,
                                              logging_dir=expected_dir)
-        self.assertEqual(os.path.join('logs/', expected_dir), slw.log.directory)
+        self.assertEqual(os.path.join(self.base_directory, 'logs/', expected_dir), slw.log.directory)
 
     def test_terminate(self):
         """
@@ -66,5 +72,3 @@ class TestLearningWorkflow(unittest.TestCase):
         self.assertTrue(slw.terminated)
         # should test but do not know how to test if mlflow run is terminated
         self.assertTrue(os.path.isfile(os.path.join(slw.log.base_dir, slw.log.dir_name, 'terminated.json')))
-
-

@@ -1,14 +1,17 @@
 import os
 import shutil
-import unittest
 
-import luigi
 import mlflow
 
 import mlsurvey as mls
 
+from kedro.io import DataCatalog, MemoryDataSet
+from kedro.pipeline import Pipeline
+from kedro.runner import SequentialRunner
+from kedro.pipeline.node import Node
 
-class TestSplitDataTask(unittest.TestCase):
+
+class TestSplitDataTask(mls.testing.TaskTestCase):
     config_directory = ''
     base_directory = ''
 
@@ -25,60 +28,92 @@ class TestSplitDataTask(unittest.TestCase):
         log = mls.Logging()
         shutil.rmtree(os.path.join(cls.base_directory, log.base_dir), ignore_errors=True)
 
+    def test_get_node(self):
+        """
+        :test : mlsurvey.workflows.tasks.PrepareDataTask.get_node()
+        :condition : -
+        :main_result : create a kedro with input and output parameter
+        """
+        prepare_data_node = mls.sl.workflows.tasks.SplitDataTask.get_node()
+        self.assertIsInstance(prepare_data_node, Node)
+
+    def test_split_data(self):
+        """
+        :test : mlsurvey.sl.workflows.tasks.SplitDataTask.split_data()
+        :condition : Data are prepared
+        :main_result : data are split (train test) (prepared and raw).
+        """
+        """
+        :test : mlsurvey.workflows.tasks.PrepareDataTask.prepare_data()
+        :condition : -
+        :main_result : load the data
+        """
+        config, log = self._init_config_log('complete_config_loaded.json',
+                                            self.base_directory,
+                                            self.config_directory)
+        df_raw_data = mls.FileOperation.read_hdf('raw_data-content.h5',
+                                                 os.path.join(self.base_directory, 'files/tasks/load_data'),
+                                                 'Pandas')
+        raw_data = mls.sl.models.DataFactory.create_data('Pandas', df_raw_data)
+        df_prepared_data = mls.FileOperation.read_hdf('data-content.h5',
+                                                      os.path.join(self.base_directory, 'files/tasks/prepare_data'),
+                                                      'Pandas')
+        prepared_data = mls.sl.models.DataFactory.create_data('Pandas', df_prepared_data)
+        [train_data,
+         test_data,
+         train_raw_data,
+         test_raw_data] = mls.sl.workflows.tasks.SplitDataTask.split_data(config, log, raw_data, prepared_data)
+        self.assertEqual(100, len(prepared_data.x))
+        self.assertEqual(100, len(prepared_data.y))
+        self.assertEqual(20, len(test_data.x))
+        self.assertEqual(20, len(test_data.y))
+        self.assertEqual(80, len(train_data.x))
+        self.assertEqual(80, len(train_data.y))
+        self.assertEqual(80, len(train_raw_data.x))
+        self.assertEqual(80, len(train_raw_data.y))
+        self.assertEqual(20, len(test_raw_data.x))
+        self.assertEqual(20, len(test_raw_data.y))
+        self.assertEqual(prepared_data.df.shape[1], train_data.df.shape[1])
+        self.assertEqual(prepared_data.df.shape[1], test_data.df.shape[1])
+        self.assertEqual(prepared_data.df.shape[1], train_raw_data.df.shape[1])
+        self.assertEqual(prepared_data.df.shape[1], test_raw_data.df.shape[1])
+        # dfs should havec been reindexed
+        self.assertEqual(len(train_data.df) - 1, train_data.df.index[len(train_data.df) - 1])
+        self.assertEqual(len(test_data.df) - 1, train_data.df.index[len(test_data.df) - 1])
+        self.assertEqual(len(train_raw_data.df) - 1, train_raw_data.df.index[len(train_raw_data.df) - 1])
+        self.assertEqual(len(test_raw_data.df) - 1, train_raw_data.df.index[len(test_raw_data.df) - 1])
+
+    def _run_one_task(self, config_filename):
+        # create node from Task
+        load_data_node = mls.workflows.tasks.LoadDataTask.get_node()
+        prepare_data_node = mls.sl.workflows.tasks.PrepareDataTask.get_node()
+        split_data_node = mls.sl.workflows.tasks.SplitDataTask.get_node()
+        config, log = self._init_config_log(config_filename, self.base_directory, self.config_directory)
+        # Prepare a data catalog
+        data_catalog = DataCatalog({'config': MemoryDataSet(),
+                                    'log': MemoryDataSet(),
+                                    'base_directory': MemoryDataSet()})
+        data_catalog.save('config', config)
+        data_catalog.save('log', log)
+        data_catalog.save('base_directory', self.base_directory)
+        # Assemble nodes into a pipeline
+        pipeline = Pipeline([load_data_node, prepare_data_node, split_data_node])
+        # Create a runner to run the pipeline
+        runner = SequentialRunner()
+        # Run the pipeline
+        runner.run(pipeline, data_catalog)
+        return log, config, data_catalog
+
     def test_run(self):
         """
         :test : mlsurvey.sl.workflows.tasks.SplitDataTask.run()
         :condition : Data are prepared, saved in hdf database and logged
         :main_result : data are split (train test).
         """
-        temp_log = mls.Logging()
-        run = self.mlflow_client.create_run(self.mlflow_experiments[0].experiment_id)
-        luigi.build([mls.sl.workflows.tasks.SplitDataTask(logging_directory=temp_log.dir_name,
-                                                          logging_base_directory=os.path.join(self.base_directory,
-                                                                                              temp_log.base_dir),
-                                                          config_filename='complete_config_loaded.json',
-                                                          config_directory=self.config_directory,
-                                                          mlflow_run_id=run.info.run_id)],
-                    local_scheduler=True)
-        log = mls.Logging(base_dir=os.path.join(self.base_directory, temp_log.base_dir), dir_name=temp_log.dir_name)
-        df_data = mls.FileOperation.read_hdf('data-content.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
-        data = mls.sl.models.DataFactory.create_data('Pandas', df_data)
-        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'train-content.h5')))
-        df_train = mls.FileOperation.read_hdf('train-content.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
-        data_train = mls.sl.models.DataFactory.create_data('Pandas', df_train)
-        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'test-content.h5')))
-        df_test = mls.FileOperation.read_hdf('test-content.h5', os.path.join(log.base_dir, log.dir_name), 'Pandas')
-        data_test = mls.sl.models.DataFactory.create_data('Pandas', df_test)
-
-        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'raw_train-content.h5')))
-        raw_df_train = mls.FileOperation.read_hdf('raw_train-content.h5',
-                                                  os.path.join(log.base_dir, log.dir_name),
-                                                  'Pandas')
-        raw_data_train = mls.sl.models.DataFactory.create_data('Pandas', raw_df_train)
-
-        self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'raw_test-content.h5')))
-        raw_df_test = mls.FileOperation.read_hdf('raw_test-content.h5',
-                                                 os.path.join(log.base_dir, log.dir_name),
-                                                 'Pandas')
-        raw_data_test = mls.sl.models.DataFactory.create_data('Pandas', raw_df_test)
-
-        self.assertEqual(100, len(data.x))
-        self.assertEqual(100, len(data.y))
-        self.assertEqual(20, len(data_test.x))
-        self.assertEqual(20, len(data_test.y))
-        self.assertEqual(80, len(data_train.x))
-        self.assertEqual(80, len(data_train.y))
-        self.assertEqual(80, len(raw_data_train.x))
-        self.assertEqual(80, len(raw_data_train.y))
-        self.assertEqual(20, len(raw_data_test.x))
-        self.assertEqual(20, len(raw_data_test.y))
-        self.assertEqual(data.df.shape[1], data_train.df.shape[1])
-        self.assertEqual(data.df.shape[1], data_test.df.shape[1])
-        self.assertEqual(data.df.shape[1], raw_data_train.df.shape[1])
-        self.assertEqual(data.df.shape[1], raw_data_test.df.shape[1])
-
-        # dfs should havec been reindexed
-        self.assertEqual(len(data_train.df) - 1, data_train.df.index[len(data_train.df) - 1])
-        self.assertEqual(len(data_test.df) - 1, data_train.df.index[len(data_test.df) - 1])
-        self.assertEqual(len(raw_data_train.df) - 1, raw_data_train.df.index[len(raw_data_train.df) - 1])
-        self.assertEqual(len(raw_data_test.df) - 1, raw_data_train.df.index[len(raw_data_test.df) - 1])
+        config_filename = 'complete_config_loaded.json'
+        log, config, data_catalog = self._run_one_task(config_filename)
+        log.set_sub_dir(str(mls.sl.workflows.tasks.SplitDataTask.__name__))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'train-content.h5')))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'test-content.h5')))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'raw_train-content.h5')))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'raw_test-content.h5')))

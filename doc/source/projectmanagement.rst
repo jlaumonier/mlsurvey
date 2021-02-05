@@ -54,11 +54,12 @@ TODO
 
 Current
 ^^^^^^^
-* A : Replacing luigi by another workflow tools. Luigi is good for production, not for research.
-* A : Replacing luigi by kedro
+
 
 Done
 ^^^^
+* A : Replacing luigi by another workflow tools. Luigi is good for production, not for research.
+* A : Replacing luigi by kedro
 * F : Updating Excel reader engine with openpyxl
 * F : Adding a column with sheet name when merging Excel sheet at dataset loading
 * F : Configuration : add config about the program behavior

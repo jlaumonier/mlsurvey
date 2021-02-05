@@ -1,8 +1,5 @@
-import os
-
 from kedro.io import DataCatalog, MemoryDataSet
 from kedro.pipeline import Pipeline
-from kedro.pipeline.node import Node
 from kedro.runner import SequentialRunner
 
 
@@ -23,10 +20,12 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         # data
         data_catalog = DataCatalog({'config': MemoryDataSet(),
                                     'log': MemoryDataSet(),
+                                    'base_directory': MemoryDataSet(),
                                     'dataset': MemoryDataSet(),
                                     'data': MemoryDataSet()})
         data_catalog.save('config', self.config)
         data_catalog.save('log', self.log)
+        data_catalog.save('base_directory', self.base_directory)
 
         load_data_node = mls.workflows.tasks.LoadDataTask.get_node()
         # Assemble nodes into a pipeline
@@ -34,5 +33,7 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         # Create a runner to run the pipeline
         runner = SequentialRunner()
         # Run the pipeline
-        runner.run(pipeline, data_catalog)
-        self.terminate()
+        result = runner.run(pipeline, data_catalog)
+        if len(result) == 0:
+            self.terminate()
+

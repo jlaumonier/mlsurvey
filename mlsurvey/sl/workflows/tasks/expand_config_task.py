@@ -9,6 +9,7 @@ class ExpandConfigTask(BaseTask):
     @staticmethod
     def expand_config(config, log):
         expanded_config = mls.ExpandDict.run(config.data)
+
         # save files
         for id_config, conf in enumerate(expanded_config):
             config_json_filename = 'expand_config' + str(id_config).zfill(len(str(len(expanded_config)))) + '.json'

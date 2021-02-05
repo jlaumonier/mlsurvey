@@ -28,6 +28,6 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
         """
         mlw = mls.sl.workflows.MultipleLearningWorkflow(config_file='multiple_config.json', config_directory=self.cd)
         mlw.run()
-        self.assertTrue(os.path.isfile(os.path.join(mlw.log.base_dir, mlw.log.dir_name, 'results.json')))
+        self.assertTrue(os.path.isfile(os.path.join(mlw.log.directory, 'results.json')))
         result_dict = mlw.log.load_json_as_dict('results.json')
         self.assertEqual(3, result_dict['NbLearning'])

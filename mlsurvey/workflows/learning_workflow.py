@@ -8,6 +8,7 @@ class LearningWorkflow:
 
     def __init__(self, config_file='config.json',
                  config_directory='config/',
+                 config_dict=None,
                  base_directory='',
                  logging_dir=None,
                  mlflow_log=False, mlflow_tracking_uri=None, mlflow_xp_name='Default'):
@@ -23,9 +24,12 @@ class LearningWorkflow:
         self.config_file = config_file
         # init mlflow
         final_config_directory = os.path.join(str(base_directory), str(config_directory))
-        self.config = mls.Config(name=config_file, directory=final_config_directory)
+        if config_dict:
+            self.config = mls.Config(config=config_dict)
+        else:
+            self.config = mls.Config(name=config_file, directory=final_config_directory)
         self.config.compact()
-        self.log = mls.Logging(base_dir=base_directory,
+        self.log = mls.Logging(base_dir=os.path.join(base_directory, 'logs'),
                                dir_name=logging_dir,
                                mlflow_log=mlflow_log, mlflow_tracking_uri=mlflow_tracking_uri,
                                mlflow_xp_name=mlflow_xp_name)
