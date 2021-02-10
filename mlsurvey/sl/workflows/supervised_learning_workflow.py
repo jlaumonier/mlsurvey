@@ -28,8 +28,12 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         data_catalog.save('base_directory', self.base_directory)
 
         load_data_node = mls.workflows.tasks.LoadDataTask.get_node()
+        prepare_data_node = mls.sl.workflows.tasks.PrepareDataTask.get_node()
+        split_data_node = mls.sl.workflows.tasks.SplitDataTask.get_node()
+        learn_node = mls.sl.workflows.tasks.LearnTask.get_node()
+        evaluate_node = mls.sl.workflows.tasks.EvaluateTask.get_node()
         # Assemble nodes into a pipeline
-        pipeline = Pipeline([load_data_node])
+        pipeline = Pipeline([load_data_node, prepare_data_node, split_data_node, learn_node, evaluate_node])
         # Create a runner to run the pipeline
         runner = SequentialRunner()
         # Run the pipeline

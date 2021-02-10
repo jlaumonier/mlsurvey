@@ -242,6 +242,14 @@ class TestLogging(unittest.TestCase):
         classifier = log.load_classifier()
         self.assertIsInstance(classifier, neighbors.KNeighborsClassifier)
 
+    def test_load_classifier_name_is_full_path(self):
+        dir_name = 'files/slw'
+        filename = os.path.join(self.base_directory, dir_name, 'test_model.joblib')
+        print(filename)
+        log = mls.Logging(dir_name, base_dir=os.path.join(self.base_directory, '../test/'))
+        classifier = log.load_classifier(filename=filename, name_is_full_path=True)
+        self.assertIsInstance(classifier, neighbors.KNeighborsClassifier)
+
     def test_load_classifier_filename_provided(self):
         dir_name = 'files/slw'
         log = mls.Logging(dir_name, base_dir=os.path.join(self.base_directory, '../test/'))

@@ -14,14 +14,15 @@ class EvaluateTask(BaseTask):
     @classmethod
     def _log_inputs_outputs(cls, log, d):
         log.set_sub_dir(str(cls.__name__))
-        log.mlflow_client.log_metric(log.mlflow_run.info.run_id, 'score', d['evaluation'].score)
+        if log.is_log_to_mlflow:
+            log.mlflow_client.log_metric(log.mlflow_run.info.run_id, 'score', d['evaluation'].score)
         log.log_metrics('evaluation.json', d['evaluation'].to_dict())
         log.set_sub_dir('')
 
     @staticmethod
     def evaluate(config, log, dataset, raw_data, prepared_data, test_data, model_fullpath):
 
-        classifier = log.load_classifier(model_fullpath)
+        classifier = log.load_classifier(model_fullpath, name_is_full_path=True)
 
         func_create_df = mls.Utils.func_create_dataframe(dataset.storage)
         df = func_create_df(classifier.predict(test_data.x), columns=['target_pred'])
