@@ -30,10 +30,10 @@ setuptools.setup(
                       'tinydb',
                       'liac-arff',
                       'tables',
-                      'luigi',
                       'xlrd',
                       'mlflow',
                       'xlsxwriter',
-                      'openpyxl'],
+                      'openpyxl',
+                      'kedro'],
     python_requires='>=3.6'
 )
