@@ -67,7 +67,7 @@ class TestLearningWorkflow(unittest.TestCase):
         :condition : -
         :main_result : mlflow is terminated and terminated.json is written
         """
-        slw = mls.workflows.LearningWorkflow(base_directory=self.base_directory)
+        slw = mls.workflows.LearningWorkflow(base_directory=self.base_directory, mlflow_log=True)
         slw.terminate()
         self.assertTrue(slw.terminated)
         # should test but do not know how to test if mlflow run is terminated

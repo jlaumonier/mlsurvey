@@ -37,9 +37,9 @@ class LearningWorkflow:
 
     def terminate(self):
         self.log.msg('Workflow ' + self.__class__.__name__ + ' is terminated', logging.INFO)
-        self.log.terminate_mlflow()
+        url = self.log.terminate_mlflow()
         self.terminated = True
-        dict_terminated = {'Terminated': self.terminated}
+        dict_terminated = {'Terminated': self.terminated, 'mlflow_run_url': url}
         self.log.save_dict_as_json('terminated.json', dict_terminated)
 
     @staticmethod

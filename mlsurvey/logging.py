@@ -156,8 +156,12 @@ class Logging:
     def terminate_mlflow(self):
         """terminate mlflow run"""
         # Not tested
+        url = ''
         if self.is_log_to_mlflow:
             self.mlflow_client.set_terminated(self.mlflow_run.info.run_id)
+            url = "experiments/" + str(self.mlflow_experiment.experiment_id) + "/runs/" + \
+                  str(self.mlflow_run.info.run_id)
+        return url
 
     @staticmethod
     def msg(msg: str, level):
