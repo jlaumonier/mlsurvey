@@ -37,7 +37,6 @@ class SupervisedLearningWorkflow(LearningWorkflow):
         # Create a runner to run the pipeline
         runner = SequentialRunner()
         # Run the pipeline
-        result = runner.run(pipeline, data_catalog)
-        if len(result) == 0:
-            self.terminate()
+        runner.run(pipeline, data_catalog)
+        self.terminate()
 

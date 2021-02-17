@@ -119,8 +119,8 @@ class Logging:
     def load_classifier(self, filename='model.joblib', name_is_full_path=False):
         """ load a scikitlearn classifier"""
         os.makedirs(self.directory, exist_ok=True)
-        dir = '' if name_is_full_path else self.directory
-        return joblib.load(os.path.join(dir, filename))
+        directory = '' if name_is_full_path else self.directory
+        return joblib.load(os.path.join(directory, filename))
 
     def save_plotly_figures(self, dict_figures, plot_directory):
         """ save a list of plotly figure into image files into sub_directory"""

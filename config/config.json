@@ -143,17 +143,11 @@
     "type": "mlsurvey.sl.workflows.SupervisedLearningWorkflow",
     "parameters": {
       "input": [
-        "@datasets.DataSetNClassRandom",
-        "@datasets.DataSetCircle",
-        "@datasets.DataSetMoon",
-        "@datasets.DataSetIris",
-        "@datasets.DataSetGermanCredit"
+        "@datasets.DataSetNClassRandom"
       ],
       "split": "@splits.traintest20",
       "algorithm": [
-        "@algorithms.knn-base",
-        "@algorithms.svm-base",
-        "@algorithms.nn-base"
+        "@algorithms.knn-base"
       ]
     }
   }

@@ -2,7 +2,7 @@ import mlsurvey as mls
 
 
 def main():
-    mlw = mls.sl.workflows.MultipleLearningWorkflow()
+    mlw = mls.sl.workflows.MultipleLearningWorkflow(mlflow_log=True)
     mlw.run()
 
 

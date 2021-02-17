@@ -11,7 +11,7 @@ class LearningWorkflow:
                  config_dict=None,
                  base_directory='',
                  logging_dir=None,
-                 mlflow_log=False, mlflow_tracking_uri=None, mlflow_xp_name='Default'):
+                 mlflow_log=False, mlflow_xp_name='Default'):
         """
         :param config_file config file name, default config.json
         :param config_directory
@@ -29,6 +29,9 @@ class LearningWorkflow:
         else:
             self.config = mls.Config(name=config_file, directory=final_config_directory)
         self.config.compact()
+        mlflow_tracking_uri = None
+        if 'mlflow' in self.config.app_config:
+            mlflow_tracking_uri = self.config.app_config['mlflow']['tracking_uri']
         self.log = mls.Logging(base_dir=os.path.join(base_directory, 'logs'),
                                dir_name=logging_dir,
                                mlflow_log=mlflow_log, mlflow_tracking_uri=mlflow_tracking_uri,
