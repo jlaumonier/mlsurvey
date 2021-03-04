@@ -1,6 +1,6 @@
 {
   "mlflow":
   {
-    "tracking_uri" : "http://192.168.0.190:5000"
+    "tracking_uri" : null
   }
 }
