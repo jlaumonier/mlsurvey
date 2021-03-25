@@ -28,14 +28,14 @@ class MultipleLearningTask(BaseTask):
         return wf
 
     @staticmethod
-    def run(config, log, expanded_config):
+    def run(config, log, base_directory, expanded_config):
         wf_type_string = config.data['learning_process']['type']
         wf_type = mls.Utils.import_from_dotted_path(wf_type_string)
         slw = []
-        configs_pandas = [(c, '', wf_type) for c in expanded_config]
+        configs_pandas = [(c, base_directory, wf_type) for c in expanded_config]
 
-        for c in configs_pandas:
-            res_wf = MultipleLearningTask.task_run_one_config(c)
+        for conf in configs_pandas:
+            res_wf = MultipleLearningTask.task_run_one_config(conf)
             slw.append(res_wf)
 
         result = {'NbLearning': len(slw)}
@@ -44,5 +44,5 @@ class MultipleLearningTask(BaseTask):
     @classmethod
     def get_node(cls):
         return node(MultipleLearningTask.run,
-                    inputs=['config', 'log', 'expanded_config'],
+                    inputs=['config', 'log', 'base_directory', 'expanded_config'],
                     outputs=None)

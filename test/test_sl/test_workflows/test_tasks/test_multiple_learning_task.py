@@ -117,4 +117,4 @@ class TestMultipleLearningTask(mls.testing.TaskTestCase):
         log, data_catalog = self._run_one_task('multiple_config.json')
         self.assertTrue(os.path.isfile(os.path.join(log.directory, 'results.json')))
         result_dict = log.load_json_as_dict('results.json')
-        self.assertEqual(3, result_dict['NbLearning'])
+        self.assertEqual(4, result_dict['NbLearning'])

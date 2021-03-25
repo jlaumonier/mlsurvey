@@ -57,22 +57,22 @@ class TestExpandConfigTask(mls.testing.TaskTestCase):
         expanded_config = data_catalog.load('expanded_config')
 
         self.assertTrue(os.path.isfile(os.path.join(log.base_dir, log.dir_name, 'config.json')))
-        self.assertEqual('f12c72eb6037c48a634dbb2a0ae6e193',
+        self.assertEqual('9d21f7582b06adf062e384b6fd3f83bb',
                          mls.Utils.md5_file(os.path.join(log.directory, 'config.json')))
         list_files = [name for name in os.listdir(log.directory) if os.path.isfile(os.path.join(log.directory, name))]
         list_files = list(filter(lambda x: x.startswith('expand_config'), list_files))  # keeps only the expanded config
         list_files.sort()
         nb_files = len(list_files)
-        self.assertEqual(3, nb_files)
+        self.assertEqual(4, nb_files)
         d = [{"input": {"type": "NClassRandomClassificationWithNoise",
                         "parameters": {"n_samples": 100, "shuffle": True, "random_state": 0, "noise": 0}
                         },
               "split": {"type": "traintest",
-                        "parameters": {"test_size": 20, "random_state": 0, "shuffle": True}
+                        "parameters": {"test_size": 5, "random_state": 0, "shuffle": True}
                         },
               "algorithm": {"type": "sklearn.neighbors.KNeighborsClassifier",
                             "hyperparameters": {
-                                "n_neighbors": 15,
+                                "n_neighbors": 2,
                                 "algorithm": "auto",
                                 "weights": "uniform"
                             }
@@ -87,11 +87,11 @@ class TestExpandConfigTask(mls.testing.TaskTestCase):
                             "factor": 0.3
                         }},
               "split": {"type": "traintest",
-                        "parameters": {"test_size": 20, "random_state": 0, "shuffle": True}
+                        "parameters": {"test_size": 5, "random_state": 0, "shuffle": True}
                         },
               "algorithm": {"type": "sklearn.neighbors.KNeighborsClassifier",
                             "hyperparameters": {
-                                "n_neighbors": 15,
+                                "n_neighbors": 2,
                                 "algorithm": "auto",
                                 "weights": "uniform"
                             }
@@ -101,16 +101,37 @@ class TestExpandConfigTask(mls.testing.TaskTestCase):
                         "parameters": {}
                         },
               "split": {"type": "traintest",
-                        "parameters": {"test_size": 20, "random_state": 0, "shuffle": True}
+                        "parameters": {"test_size": 5, "random_state": 0, "shuffle": True}
                         },
               "algorithm": {"type": "sklearn.neighbors.KNeighborsClassifier",
                             "hyperparameters": {
-                                "n_neighbors": 15,
+                                "n_neighbors": 2,
                                 "algorithm": "auto",
                                 "weights": "uniform"
                             }
                             }
-              }]
+              },
+             {"input": {"type": "FileDataSet",
+                        "parameters": {
+                            "directory": "files/dataset",
+                            "filename": "test-fairness.arff"
+                        },
+                        "metadata": {
+                            "y_col_name": "class"
+                        }
+                        },
+              "split": {"type": "traintest",
+                        "parameters": {"test_size": 5, "random_state": 0, "shuffle": True}
+                        },
+              "algorithm": {"type": "sklearn.neighbors.KNeighborsClassifier",
+                            "hyperparameters": {
+                                "n_neighbors": 2,
+                                "algorithm": "auto",
+                                "weights": "uniform"
+                            }
+                            }
+              }
+             ]
         configs = []
         for id_file, file in enumerate(list_files):
             configs.append(mls.Config(file, directory=log.directory))

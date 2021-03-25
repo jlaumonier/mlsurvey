@@ -26,8 +26,10 @@ class TestMultipleLearningWorkflow(unittest.TestCase):
         :condition : config file contains lists in fairness parameters
         :main_result : all learning have ran
         """
-        mlw = mls.sl.workflows.MultipleLearningWorkflow(config_file='multiple_config.json', config_directory=self.cd)
+        mlw = mls.sl.workflows.MultipleLearningWorkflow(config_file='multiple_config.json',
+                                                        base_directory=self.bd,
+                                                        config_directory=self.cd)
         mlw.run()
         self.assertTrue(os.path.isfile(os.path.join(mlw.log.directory, 'results.json')))
         result_dict = mlw.log.load_json_as_dict('results.json')
-        self.assertEqual(3, result_dict['NbLearning'])
+        self.assertEqual(4, result_dict['NbLearning'])

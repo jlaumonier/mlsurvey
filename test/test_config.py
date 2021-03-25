@@ -40,7 +40,7 @@ class TestConfig(unittest.TestCase):
     def test_load_multiple_config_config_loaded(self):
         config = mls.Config('multiple_config.json', directory=os.path.join(self.base_directory, 'config'))
         self.assertEqual('NClassRandomClassificationWithNoise', config.data['#refs']['datasets']['DataSet1']['type'])
-        self.assertListEqual(['@datasets.DataSet1', '@datasets.DataSet2', '@datasets.DataSet3'],
+        self.assertListEqual(['@datasets.DataSet1', '@datasets.DataSet2', '@datasets.DataSet3', '@datasets.DataSet4'],
                              config.data['learning_process']['parameters']['input'])
         self.assertTrue(mls.Utils.check_dict_python_ready(config.data))
 

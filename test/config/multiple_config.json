@@ -24,13 +24,23 @@
         "type": "load_iris",
         "parameters": {
         }
+      },
+      "DataSet4": {
+        "type": "FileDataSet",
+        "parameters": {
+          "directory": "files/dataset",
+          "filename": "test-fairness.arff"
+        },
+        "metadata": {
+          "y_col_name": "class"
+        }
       }
     },
     "algorithms": {
       "knn-base": {
         "type": "sklearn.neighbors.KNeighborsClassifier",
         "hyperparameters": {
-          "n_neighbors": 15,
+          "n_neighbors": 2,
           "algorithm": "auto",
           "weights": "uniform"
         }
@@ -40,7 +50,7 @@
       "traintest20": {
         "type": "traintest",
         "parameters": {
-          "test_size": 20,
+          "test_size": 5,
           "random_state": 0,
           "shuffle": true
         }
@@ -53,7 +63,8 @@
       "input": [
         "@datasets.DataSet1",
         "@datasets.DataSet2",
-        "@datasets.DataSet3"
+        "@datasets.DataSet3",
+        "@datasets.DataSet4"
       ],
       "split": [
         "@splits.traintest20"
