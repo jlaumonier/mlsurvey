@@ -24,7 +24,7 @@ class Logging:
         # adding a random number to avoid the creating at the same microsecond !!
         salt_random_number = random.randint(0, 9)
         if dir_name is None:
-            dir_name = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f") + '-' + str(salt_random_number)
+            dir_name = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S.%f") + '-' + str(salt_random_number)
         self.dir_name = dir_name
         self.sub_dir = ''
         # mlflow initialization
