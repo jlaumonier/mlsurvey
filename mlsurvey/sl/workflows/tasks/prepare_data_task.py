@@ -22,8 +22,9 @@ class PrepareDataTask(BaseTask):
     def prepare_data(config, log, raw_data):
         # convert categorical to int
         cat_columns = raw_data.df.select_dtypes(['object']).columns
-        raw_data.df[cat_columns] = raw_data.df[cat_columns].astype('category')
-        raw_data.df[cat_columns] = raw_data.df[cat_columns].apply(lambda c: c.cat.codes)
+        if not cat_columns.empty:
+            raw_data.df[cat_columns] = raw_data.df[cat_columns].astype('category')
+            raw_data.df[cat_columns] = raw_data.df[cat_columns].apply(lambda c: c.cat.codes)
 
         x_transformed = StandardScaler().fit_transform(raw_data.x)
         prepared_data = raw_data.copy_with_new_data([x_transformed, raw_data.y])

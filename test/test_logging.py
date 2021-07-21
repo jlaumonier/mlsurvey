@@ -237,13 +237,13 @@ class TestLogging(unittest.TestCase):
         self.assertEqual(30, classifier.get_params()['leaf_size'])
 
     def test_load_classifier(self):
-        dir_name = 'files/slw'
+        dir_name = 'files/slw/LearnTask'
         log = mls.Logging(dir_name, base_dir=os.path.join(self.base_directory, '../test/'))
         classifier = log.load_classifier()
         self.assertIsInstance(classifier, neighbors.KNeighborsClassifier)
 
     def test_load_classifier_name_is_full_path(self):
-        dir_name = 'files/slw'
+        dir_name = 'files/slw/LearnTask'
         filename = os.path.join(self.base_directory, dir_name, 'test_model.joblib')
         print(filename)
         log = mls.Logging(dir_name, base_dir=os.path.join(self.base_directory, '../test/'))
@@ -251,7 +251,7 @@ class TestLogging(unittest.TestCase):
         self.assertIsInstance(classifier, neighbors.KNeighborsClassifier)
 
     def test_load_classifier_filename_provided(self):
-        dir_name = 'files/slw'
+        dir_name = 'files/slw/LearnTask'
         log = mls.Logging(dir_name, base_dir=os.path.join(self.base_directory, '../test/'))
         classifier = log.load_classifier(filename='test_model.joblib')
         self.assertIsInstance(classifier, neighbors.KNeighborsClassifier)

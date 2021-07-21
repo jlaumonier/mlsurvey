@@ -1,2 +1,0 @@
-{
-  "type": "sklearn.neighbors.KNeighborsClassifier", "hyperparameters": {"n_neighbors": 2, "algorithm": "auto", "weights": "uniform"}}

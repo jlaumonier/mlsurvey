@@ -39,7 +39,9 @@ class TestEvaluationFactory(unittest.TestCase):
 
     def test_create_evaluation_from_dict_created(self):
         expected_cm = np.array([[1, 2], [3, 4]])
-        source = {'type': 'EvaluationSupervised', 'score': 0.55, 'confusion_matrix': expected_cm.tolist()}
+        source = {'type': 'EvaluationSupervised', 'score': 0.55, 'precision': 0.7, 'recall': 0.65,
+                  'accuracy': 0.6, 'f1': 0.5, 'confusion_matrix': expected_cm.tolist(),
+                  'per_label': {}}
         evaluation_factory = mls.sl.models.EvaluationFactory()
         mls.sl.models.EvaluationFactory.add_factory('EvaluationSupervised',
                                                     mls.sl.models.EvaluationSupervised.Factory)

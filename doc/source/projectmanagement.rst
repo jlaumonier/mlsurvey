@@ -18,12 +18,12 @@ Notes for TODO
 
 TODO
 ^^^^
+* A : Refactoring : remove context because of the reorganization by tasks in logs
 * F : Refactoring visualisation with new logging structure (sub-directory)
 * A : Refactoring Logging with application config. Using application config
 * F : Handle interactive graphs with plotly instead of html generation
 * F : Refactoring visualize result to handle json/image for all type of results
 * A : Refactoring : generalize for unsupervised algorithms
-* A : Refactoring : remove context ?
 * F : Load CSV : choose the separator.
 * F : Use the column names in all the processes (sl, fairness, visualization)
 * F : Parameters in config. Allow multiple parameters to be dependant (e.g. fairness.protected_attribute and fairness.privileged_classes)

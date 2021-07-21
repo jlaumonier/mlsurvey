@@ -1,2 +1,0 @@
-{
-  "type": "sklearn.svm.SVC", "hyperparameters": {"C": 0.9, "kernel": "rbf", "gamma": "auto"}}

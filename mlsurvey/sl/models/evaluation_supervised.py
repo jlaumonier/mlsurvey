@@ -10,11 +10,22 @@ class EvaluationSupervised(Evaluation):
         super().__init__()
         self.score = 0.0
         self.confusion_matrix = np.array([])
+        self.accuracy = 0.0
+        self.precision = 0.0
+        self.recall = 0.0
+        self.f1 = 0.0
+        self.per_label = {}
         self.sub_evaluation = None
 
     def to_dict(self):
         eval_dict = super().to_dict()
-        supervised_dict = {'score': self.score, 'confusion_matrix': self.confusion_matrix.tolist()}
+        supervised_dict = {'score': self.score,
+                           'accuracy': self.accuracy,
+                           'precision': self.precision,
+                           'recall': self.recall,
+                           'f1': self.f1,
+                           'confusion_matrix': self.confusion_matrix.tolist(),
+                           'per_label': self.per_label}
         if self.sub_evaluation is not None:
             supervised_dict['sub_evaluation'] = self.sub_evaluation.to_dict()
         result = {**eval_dict, **supervised_dict}
@@ -23,6 +34,11 @@ class EvaluationSupervised(Evaluation):
     def from_dict(self, d_src):
         self.score = d_src['score']
         self.confusion_matrix = np.array(d_src['confusion_matrix'])
+        self.precision = d_src['precision']
+        self.accuracy = d_src['accuracy']
+        self.recall = d_src['recall']
+        self.f1 = d_src['f1']
+        self.per_label = d_src['per_label']
         if 'sub_evaluation' in d_src:
             self.sub_evaluation = EvaluationFactory.create_instance_from_dict(d_src['sub_evaluation'])
 
