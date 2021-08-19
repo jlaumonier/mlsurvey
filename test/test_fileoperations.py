@@ -141,3 +141,21 @@ class TestFileOperation(unittest.TestCase):
         mls.FileOperation.save_plotly_figure('figure-test.png', directory, figure)
         # File exists
         self.assertTrue(os.path.isfile(os.path.join(directory, 'figure-test.png')))
+
+    def test_load_input_should_load_file(self):
+        """
+        :test : mlsurvey.FileOperation.load_input()
+        :condition : input file exists
+        :main_result : input file is loaded in the correct format
+        """
+        directory = os.path.join(self.base_directory, '../test/files/input_load/')
+        results = mls.FileOperation.load_input(filename='input.json', directory=directory)
+        i = results['test']
+        self.assertEqual(0.6459514595757855, i.x[0, 0])
+        self.assertEqual(1.0499271427368027, i.x[0, 1])
+        self.assertEqual(1.0, i.y[0])
+        self.assertEqual(1, i.y_pred[0])
+        self.assertEqual(2, i.x.shape[1])
+        self.assertEqual(20, i.x.shape[0])
+        self.assertEqual(20, i.y.shape[0])
+        self.assertEqual(20, i.y_pred.shape[0])

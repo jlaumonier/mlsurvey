@@ -12,6 +12,8 @@ import mlsurvey as mls
 
 class TestLogging(unittest.TestCase):
     base_directory = ''
+    mlflow_client = None
+    mlflow_experiments = None
 
     @classmethod
     def setUpClass(cls):

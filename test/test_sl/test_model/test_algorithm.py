@@ -14,7 +14,8 @@ class TestAlgorithm(unittest.TestCase):
                 'weights': 'uniform'
             }
         }
-        algo = mls.sl.models.Algorithm(config)
+        algo = mls.sl.models.Algorithm(config, 'test_directory')
+        self.assertEqual('test_directory', algo.base_directory)
         self.assertEqual(config['type'], algo.algorithm_family)
         self.assertEqual(config['hyperparameters']['n_neighbors'], algo.hyperparameters['n_neighbors'])
         self.assertEqual(config['hyperparameters']['algorithm'], algo.hyperparameters['algorithm'])

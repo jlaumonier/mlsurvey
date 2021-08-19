@@ -14,6 +14,8 @@ from kedro.pipeline.node import Node
 class TestSplitDataTask(mls.testing.TaskTestCase):
     config_directory = ''
     base_directory = ''
+    mlflow_client = None
+    mlflow_experiments = None
 
     @classmethod
     def setUpClass(cls):

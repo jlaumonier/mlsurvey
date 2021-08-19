@@ -13,6 +13,8 @@ import mlsurvey as mls
 class TestExpandConfigTask(mls.testing.TaskTestCase):
     config_directory = ''
     base_directory = ''
+    mlflow_client = None
+    mlflow_experiments = None
 
     @classmethod
     def setUpClass(cls):

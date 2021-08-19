@@ -111,3 +111,19 @@ class FileOperation:
         os.makedirs(directory, exist_ok=True)
         full_path = os.path.join(directory, filename)
         figure.write_image(full_path)
+
+    @classmethod
+    def load_input(cls, filename, directory):
+        """
+        load inputs from json file. The file may contains multiple input {"input1": input1, "input2": input2"}
+        :param filename: the name of the file
+        :param directory directory of the files to load
+        :return dictionary containing each inputs as mlsurvey.sl.models.Data format
+        """
+        data = cls.load_json_as_dict(filename=filename, directory=directory)
+        result = {}
+        for k, v in data.items():
+            df = mls.FileOperation.read_hdf(v['data_path'], directory, v['df_format'])
+            i = mls.sl.models.DataFactory.create_data_from_dict(v['df_format'], v['metadata'], df)
+            result[k] = i
+        return result

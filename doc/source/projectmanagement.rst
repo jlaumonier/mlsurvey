@@ -59,6 +59,7 @@ Current
 
 Done
 ^^^^
+* F : Adding base_directory in Algorithm. Creating load_input() to load from specific directory
 * A : Replacing luigi by another workflow tools. Luigi is good for production, not for research.
 * A : Replacing luigi by kedro
 * F : Updating Excel reader engine with openpyxl

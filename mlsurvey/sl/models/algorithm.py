@@ -3,16 +3,18 @@ import mlsurvey as mls
 
 class Algorithm:
 
-    def __init__(self, config):
+    def __init__(self, config, base_directory=''):
         """
         Initialize the algorithm class using the config
         :param config dictionary containing keys 'type' and 'hyperparamters'.
         The config 'type' is the name of the class defining the algorithm (e.g. sklearn.svm.SVC)
         the config 'hyperparamters' is a dictionary used to initialize the class
+        :param base_directory if needed by the algorithm to load file (submodels...), '' by default
         Raise a mlsurvey.exceptions.ConfigError if keys are not found in config
         """
         self.algorithm_family = None
         self.hyperparameters = None
+        self.base_directory = base_directory
         try:
             self.algorithm_family = config['type']
             self.hyperparameters = config['hyperparameters']

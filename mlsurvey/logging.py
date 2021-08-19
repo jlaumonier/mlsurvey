@@ -86,12 +86,7 @@ class Logging:
         :param filename: the name of the file
         :return: dictionary containing each inputs
         """
-        data = self.load_json_as_dict(filename)
-        result = {}
-        for k, v in data.items():
-            df = mls.FileOperation.read_hdf(v['data_path'], self.directory, v['df_format'])
-            i = mls.sl.models.DataFactory.create_data_from_dict(v['df_format'], v['metadata'], df)
-            result[k] = i
+        result = mls.FileOperation.load_input(filename=filename, directory=self.directory)
         return result
 
     def save_dict_as_json(self, filename, d):
