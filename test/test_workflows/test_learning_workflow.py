@@ -1,6 +1,6 @@
-import unittest
 import os
 import shutil
+import unittest
 
 import mlsurvey as mls
 
@@ -29,6 +29,7 @@ class TestLearningWorkflow(unittest.TestCase):
         self.assertEqual(lw.config_file, 'config.json')
         self.assertIsInstance(lw.log, mls.Logging)
         self.assertEqual(lw.log.base_dir, os.path.join(self.base_directory, 'logs'))
+        self.assertIsNone(lw.sources_directories)
 
     def test_init_with_confdir_should_init(self):
         lw = mls.workflows.LearningWorkflow(base_directory=self.base_directory,
@@ -60,6 +61,23 @@ class TestLearningWorkflow(unittest.TestCase):
         slw = mls.workflows.LearningWorkflow(base_directory=self.base_directory,
                                              logging_dir=expected_dir)
         self.assertEqual(os.path.join(self.base_directory, 'logs/', expected_dir), slw.log.directory)
+
+    def test_init_with_sources_directories_should_init(self):
+        """
+        :test : mlsurvey.workflows.LearningWorkflow()
+        :condition : set sources directories
+        :main_result : sources directories are initialized and copied inside the log directory
+        """
+        slw = mls.workflows.LearningWorkflow(base_directory=self.base_directory,
+                                             sources_directories={'source1': os.path.join(self.base_directory,
+                                                                                          'files/slw'),
+                                                                  'source2': os.path.join(self.base_directory,
+                                                                                          'files/config.json')})
+        self.assertEqual(2, len(slw.sources_directories))
+        self.assertEqual(2, len([i for i in os.listdir(os.path.join(slw.log.directory, 'sources'))]))
+        self.assertTrue(os.path.isdir(os.path.join(slw.log.directory, 'sources', 'source1', 'slw', 'EvaluateTask')))
+        self.assertTrue(os.path.isfile(os.path.join(slw.log.directory, 'sources', 'source1', 'slw', 'config.json')))
+        self.assertTrue(os.path.isfile(os.path.join(slw.log.directory, 'sources', 'source2', 'config.json')))
 
     def test_terminate(self):
         """

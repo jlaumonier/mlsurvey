@@ -1,6 +1,8 @@
 import datetime
 import os
 import random
+import shutil
+import pathlib
 
 import joblib
 import pandas as pd
@@ -147,6 +149,15 @@ class Logging:
             for key, value in metrics.items():
                 if isinstance(value, int) or isinstance(value, float):
                     self.mlflow_client.log_metric(self.mlflow_run.info.run_id, key, value)
+
+    def copy_source_tree(self, source, dest_dir):
+        """ copy a directory (recursively) or file into self.directory/'sources/' """
+        if os.path.isdir(source):
+            shutil.copytree(source, os.path.join(self.directory, 'sources', dest_dir, pathlib.PurePath(source).name))
+        if os.path.isfile(source):
+            dest_full_dir = os.path.join(self.directory, 'sources', dest_dir)
+            os.makedirs(dest_full_dir, exist_ok=True)
+            shutil.copyfile(source, os.path.join(dest_full_dir, pathlib.PurePath(source).name))
 
     def terminate_mlflow(self):
         """terminate mlflow run"""

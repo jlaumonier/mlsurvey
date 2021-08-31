@@ -5,18 +5,23 @@ import mlsurvey as mls
 
 
 class LearningWorkflow:
+    sources_directories = None
 
     def __init__(self, config_file='config.json',
                  config_directory='config/',
                  config_dict=None,
                  base_directory='',
                  logging_dir=None,
-                 mlflow_log=False, mlflow_xp_name='Default'):
+                 mlflow_log=False, mlflow_xp_name='Default',
+                 sources_directories=None):
         """
         :param config_file config file name, default config.json
         :param config_directory
         :param base_directory
         :param logging_dir
+        :param mlflow_log
+        :param mlflow_xp_name
+        :poram sources_directories
         """
         self.terminated = False
         self.config_directory = config_directory
@@ -37,6 +42,12 @@ class LearningWorkflow:
                                mlflow_log=mlflow_log, mlflow_tracking_uri=mlflow_tracking_uri,
                                mlflow_xp_name=mlflow_xp_name)
         self.task_terminated_init = True
+        self.sources_directories = sources_directories
+        if self.sources_directories:
+            print('Copying sources directories...', end='')
+            for src_dir_k in sources_directories.keys():
+                self.log.copy_source_tree(source=self.sources_directories[src_dir_k], dest_dir=src_dir_k)
+            print('Done')
 
     def terminate(self):
         self.log.msg('Workflow ' + self.__class__.__name__ + ' is terminated', logging.INFO)

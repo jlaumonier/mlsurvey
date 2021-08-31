@@ -247,7 +247,6 @@ class TestLogging(unittest.TestCase):
     def test_load_classifier_name_is_full_path(self):
         dir_name = 'files/slw/LearnTask'
         filename = os.path.join(self.base_directory, dir_name, 'test_model.joblib')
-        print(filename)
         log = mls.Logging(dir_name, base_dir=os.path.join(self.base_directory, '../test/'))
         classifier = log.load_classifier(filename=filename, name_is_full_path=True)
         self.assertIsInstance(classifier, neighbors.KNeighborsClassifier)
@@ -340,3 +339,31 @@ class TestLogging(unittest.TestCase):
         # there can be only one
         self.assertEqual(2, len(list_artifact))
 
+    def test_copy_tree_dir_should_be_copied_in_log_dir(self):
+        """
+        :test : mlsurvey.Logging.copy_source_tree()
+        :condition : source directory exists
+        :main_result : source directory is recursively copied into log sub directory sources/
+        """
+        dir_name = 'testing/'
+        log = mls.Logging(dir_name)
+
+        log.copy_source_tree(source=os.path.join(self.base_directory, 'files/slw'),
+                             dest_dir='src1')
+
+        self.assertTrue(os.path.isdir(os.path.join(log.directory, 'sources', 'src1', 'slw', 'EvaluateTask')))
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'sources', 'src1', 'slw', 'config.json')))
+
+    def test_copy_tree_file_should_be_copied_in_log_dir(self):
+        """
+        :test : mlsurvey.Logging.copy_source_tree()
+        :condition : source file exists
+        :main_result : source file is copied into log sub directory sources/
+        """
+        dir_name = 'testing/'
+        log = mls.Logging(dir_name=dir_name)
+
+        log.copy_source_tree(source=os.path.join(self.base_directory, 'files/config.json'),
+                             dest_dir='src2')
+
+        self.assertTrue(os.path.isfile(os.path.join(log.directory, 'sources', 'src2', 'config.json')))
