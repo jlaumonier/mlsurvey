@@ -16,7 +16,7 @@ class EvaluateTask(BaseTask):
         log.set_sub_dir(str(cls.__name__))
         # TODO Redondant ?
         if log.is_log_to_mlflow:
-            log.mlflow_client.log_metric(log.mlflow_run.info.run_id, 'score', d['evaluation'].score)
+            log.mlflow_client.log_metric(log.mlflow_current_run.info.run_id, 'score', d['evaluation'].score)
         log.log_metrics('evaluation.json', d['evaluation'].to_dict())
         log.set_sub_dir('')
 

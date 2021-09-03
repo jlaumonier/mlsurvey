@@ -139,4 +139,4 @@ class TestLoadDataTask(mls.testing.TaskTestCase):
         self.assertEqual(100, len(raw_data.x))
         self.assertEqual(100, len(raw_data.y))
         # parameters in mlflow
-        self.assertIn('input.type', log.mlflow_client.get_run(log.mlflow_run.info.run_id).data.params)
+        self.assertIn('input.type', log.mlflow_client.get_run(log.mlflow_current_run.info.run_id).data.params)

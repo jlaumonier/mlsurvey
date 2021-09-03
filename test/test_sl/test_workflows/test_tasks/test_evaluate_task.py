@@ -116,7 +116,7 @@ class TestEvaluateTask(mls.testing.TaskTestCase):
         # evaluation file exists
         self.assertTrue(os.path.isfile(os.path.join(log.directory, 'evaluation.json')))
         # metric in mlflow
-        self.assertIn('score', log.mlflow_client.get_run(log.mlflow_run.info.run_id).data.metrics)
+        self.assertIn('score', log.mlflow_client.get_run(log.mlflow_current_run.info.run_id).data.metrics)
 
     def test_run_with_fairness_evaluated(self):
         """
@@ -140,7 +140,7 @@ class TestEvaluateTask(mls.testing.TaskTestCase):
         self.assertAlmostEqual(-0.6666666, evaluation.sub_evaluation.average_equalized_odds, delta=1e-07)
         # fairness in mlflow
         self.assertIn('sub_evaluation.disparate_impact_rate',
-                      log.mlflow_client.get_run(log.mlflow_run.info.run_id).data.metrics)
+                      log.mlflow_client.get_run(log.mlflow_current_run.info.run_id).data.metrics)
 
     def test_run_with_fairness_evaluated_with_real_data(self):
         """
