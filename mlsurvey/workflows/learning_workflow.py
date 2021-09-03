@@ -12,7 +12,7 @@ class LearningWorkflow:
                  config_dict=None,
                  base_directory='',
                  logging_dir=None,
-                 mlflow_log=False, mlflow_xp_name='Default',
+                 mlflow_log=False, mlflow_xp_name=None,
                  sources_directories=None):
         """
         :param config_file config file name, default config.json

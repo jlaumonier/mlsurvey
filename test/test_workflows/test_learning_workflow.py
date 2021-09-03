@@ -79,6 +79,17 @@ class TestLearningWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(slw.log.directory, 'sources', 'source1', 'slw', 'config.json')))
         self.assertTrue(os.path.isfile(os.path.join(slw.log.directory, 'sources', 'source2', 'config.json')))
 
+    def test_init_with_mlflow_mlflow_should_init(self):
+        """
+        :test : mlsurvey.workflows.LearningWorkflow()
+        :condition : init mlflow without xp_name
+        :main_result : mlflow is initialized and xp name is set correctly
+        """
+        slw = mls.workflows.LearningWorkflow(base_directory=self.base_directory,
+                                             mlflow_log=True)
+        self.assertEqual(slw.log.mlflow_experiment.name, slw.log.dir_name)
+        self.assertIsNotNone(slw.log.mlflow_current_run)
+
     def test_terminate(self):
         """
         :test : mlsurvey.workflows.LearningWorkflow.terminate()

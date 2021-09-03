@@ -99,6 +99,7 @@ class TestPrepareDataTask(mls.testing.TaskTestCase):
         :test : mlsurvey.sl.workflows.tasks.PrepareDataTask.run()
         :condition : data is textual
         :main_result : data are prepared.
+        Warning : need at least 12GB of (free) ram to execute this test because text into dataframe is not optimized
         """
         config_filename = 'config_dataset_text.json'
         log, config, data_catalog = self._run_one_task(config_filename)
