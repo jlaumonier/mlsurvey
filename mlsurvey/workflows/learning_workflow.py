@@ -1,6 +1,9 @@
 from abc import abstractmethod
 import logging
 import os
+
+from codecarbon.emissions_tracker import EmissionsTracker
+
 import mlsurvey as mls
 
 
@@ -41,6 +44,8 @@ class LearningWorkflow:
                                dir_name=logging_dir,
                                mlflow_log=mlflow_log, mlflow_tracking_uri=mlflow_tracking_uri,
                                mlflow_xp_name=mlflow_xp_name)
+        self.emissions_tracker = EmissionsTracker(output_dir=self.log.directory)
+        self.emissions_tracker.start()
         self.task_terminated_init = True
         self.sources_directories = sources_directories
         if self.sources_directories:
@@ -55,6 +60,8 @@ class LearningWorkflow:
         self.terminated = True
         dict_terminated = {'Terminated': self.terminated, 'mlflow_run_url': url}
         self.log.save_dict_as_json('terminated.json', dict_terminated)
+        self.emissions_tracker.stop()
+        self.log.save_mlflow_artifact('emissions.csv')
 
     @staticmethod
     def visualize_class():

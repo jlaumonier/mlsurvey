@@ -428,3 +428,21 @@ class TestLogging(unittest.TestCase):
         metrics_2 = mlflow_run_2.data.metrics
         self.assertIn('score', metrics_2)
         self.assertEqual(0.1, metrics_2['score'])
+
+    def test_save_mlflow_artifact_artifact_should_be_saved_mlflow(self):
+        dir_name = 'testing/'
+        log = mls.Logging(dir_name, mlflow_log=True)
+        log.set_sub_dir('sub_dir')
+        d = {'testA': [[1, 2], [3, 4]], 'testB': 'Text'}
+        mls.FileOperation.save_dict_as_json('dict.json', log.directory, d)
+        log.set_sub_dir('')
+
+        log.save_mlflow_artifact('sub_dir/dict.json')
+
+        list_artifact = [i.path for i in
+                         log.mlflow_client.list_artifacts(log.mlflow_current_run.info.run_id, path=log.sub_dir)]
+        # file is in the mlflow artifacts
+        self.assertIn(os.path.join(log.sub_dir, 'dict.json'), list_artifact)
+        # there can be only one
+        self.assertEqual(1, len(list_artifact))
+

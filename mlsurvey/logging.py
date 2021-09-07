@@ -179,8 +179,14 @@ class Logging:
         self.mlflow_current_run = self.mlflow_client.create_run(self.mlflow_experiment.experiment_id)
         self.mlflow_runs.append(self.mlflow_current_run)
 
+    def save_mlflow_artifact(self, path_to_file):
+        """ save an existing file from log directory (or subdirectory) into mlflow artifacts (current run)"""
+        if self.is_log_to_mlflow:
+            self.mlflow_client.log_artifact(self.mlflow_current_run.info.run_id,
+                                            os.path.join(self.directory, path_to_file),
+                                            self.sub_dir)
+
     @staticmethod
     def msg(msg: str, level):
         """ Log a msg in the python classical log"""
         print(level, " ", msg)
-

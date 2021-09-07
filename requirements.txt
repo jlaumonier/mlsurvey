@@ -20,3 +20,4 @@ kaleido
 openpyxl
 psutil
 kedro
+codecarbon

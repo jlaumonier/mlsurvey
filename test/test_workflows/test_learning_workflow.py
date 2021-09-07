@@ -6,6 +6,7 @@ import mlsurvey as mls
 
 
 class TestLearningWorkflow(unittest.TestCase):
+    base_directory = ''
 
     @classmethod
     def setUpClass(cls):
@@ -16,6 +17,7 @@ class TestLearningWorkflow(unittest.TestCase):
     def tearDownClass(cls):
         log = mls.Logging()
         shutil.rmtree(log.base_dir, ignore_errors=True)
+        shutil.rmtree(os.path.join(cls.base_directory, log.base_dir), ignore_errors=True)
 
     def test_visualize_class(self):
         self.assertEqual(mls.workflows.LearningWorkflow.visualize_class(), mls.visualize.VisualizeLogDetail)
@@ -98,6 +100,13 @@ class TestLearningWorkflow(unittest.TestCase):
         """
         slw = mls.workflows.LearningWorkflow(base_directory=self.base_directory, mlflow_log=True)
         slw.terminate()
+
         self.assertTrue(slw.terminated)
         # should test but do not know how to test if mlflow run is terminated
-        self.assertTrue(os.path.isfile(os.path.join(slw.log.base_dir, slw.log.dir_name, 'terminated.json')))
+        self.assertTrue(os.path.isfile(os.path.join(slw.log.directory, 'terminated.json')))
+        self.assertTrue(os.path.isfile(os.path.join(slw.log.directory, 'emissions.csv')))
+        list_artifact = [i.path for i in
+                         slw.log.mlflow_client.list_artifacts(slw.log.mlflow_current_run.info.run_id,
+                                                              path=slw.log.sub_dir)]
+        # emissions file is in the mlflow artifacts
+        self.assertIn('emissions.csv', list_artifact)
