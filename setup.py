@@ -34,6 +34,7 @@ setuptools.setup(
                       'mlflow',
                       'xlsxwriter',
                       'openpyxl',
-                      'kedro'],
+                      'kedro',
+                      'codecarbon'],
     python_requires='>=3.6'
 )
