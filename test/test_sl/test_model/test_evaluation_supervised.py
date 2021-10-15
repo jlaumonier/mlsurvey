@@ -24,6 +24,7 @@ class TestEvaluationSupervised(unittest.TestCase):
         self.recall = 1.5
         self.accuracy = 2.0
         self.f1 = 3.0
+        self.support = {}
         self.per_label = {}
         evs.confusion_matrix = np.array([[1, 2, 3],
                                          [4, 5, 6],
@@ -35,6 +36,7 @@ class TestEvaluationSupervised(unittest.TestCase):
                     'accuracy': evs.accuracy,
                     'f1': evs.f1,
                     'confusion_matrix': evs.confusion_matrix.tolist(),
+                    'support': evs.support,
                     'per_label': evs.per_label}
         result = evs.to_dict()
         self.assertDictEqual(expected, result)
@@ -48,6 +50,7 @@ class TestEvaluationSupervised(unittest.TestCase):
         evf = mls.sl.models.EvaluationFairness()
         evf.probability = np.array([0.7, 0.3])
         evf.demographic_parity = 0.33
+        evf.support = {}
         evs.sub_evaluation = evf
         expected_sub_eval = evf.to_dict()
         expected = {'type': 'EvaluationSupervised',
@@ -58,6 +61,7 @@ class TestEvaluationSupervised(unittest.TestCase):
                     'f1': evs.f1,
                     'confusion_matrix': evs.confusion_matrix.tolist(),
                     'sub_evaluation': expected_sub_eval,
+                    'support': evs.support,
                     'per_label': evs.per_label}
         result = evs.to_dict()
         self.assertDictEqual(expected, result)
@@ -73,6 +77,7 @@ class TestEvaluationSupervised(unittest.TestCase):
                   'accuracy': 0.6,
                   'f1': 0.5,
                   'confusion_matrix': [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+                  'support': {'Test': 1},
                   'per_label': {'TAG1': {'p': 0.2}}}
         evs = mls.sl.models.EvaluationSupervised()
         evs.from_dict(source)
@@ -81,6 +86,7 @@ class TestEvaluationSupervised(unittest.TestCase):
         self.assertEqual(0.65, evs.recall)
         self.assertEqual(0.6, evs.accuracy)
         self.assertEqual(0.5, evs.f1)
+        self.assertDictEqual( {'Test': 1}, evs.support)
         self.assertDictEqual({'TAG1': {'p': 0.2}}, evs.per_label)
         np.testing.assert_array_equal(expected_confusion_matrix, evs.confusion_matrix)
 
@@ -101,6 +107,7 @@ class TestEvaluationSupervised(unittest.TestCase):
                   'f1': 0.5,
                   'confusion_matrix': [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
                   'per_label': {'TAG1': {'p': 0.2}},
+                  'support': {'Test': 1},
                   'sub_evaluation': {'type': 'EvaluationFairness',
                                      'demographic_parity': expected_sub_eval_demographic_parity,
                                      'equal_opportunity': expected_sub_eval_equal_opportunity,

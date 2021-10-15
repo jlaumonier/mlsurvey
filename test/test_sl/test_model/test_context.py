@@ -72,7 +72,7 @@ class TestContext(unittest.TestCase):
         self.assertEqual('7d1e55650014e21b4568ed3e3d1fc531',
                          mls.Utils.md5_file(os.path.join(log.directory, 'model.joblib')))
         self.assertTrue(os.path.isfile(os.path.join(log.directory, 'evaluation.json')))
-        self.assertEqual('82314484ea8aabcee7f8cfbcbc74aabc',
+        self.assertEqual('8299d4c5088f0c94b75f4bf0aef527d7',
                          mls.Utils.md5_file(os.path.join(log.directory, 'evaluation.json')))
 
     def test_save_context_no_algorithm_neither_classifier_should_save(self):
@@ -87,7 +87,7 @@ class TestContext(unittest.TestCase):
         self.assertEqual('e024075ecfdd447815a1226dc9eff25d',
                          mls.Utils.md5_file(os.path.join(log.directory, 'input.json')))
         self.assertTrue(os.path.isfile(os.path.join(log.directory, 'evaluation.json')))
-        self.assertEqual('82314484ea8aabcee7f8cfbcbc74aabc',
+        self.assertEqual('8299d4c5088f0c94b75f4bf0aef527d7',
                          mls.Utils.md5_file(os.path.join(log.directory, 'evaluation.json')))
 
     def test_load_context(self):
